@@ -1,4 +1,4 @@
-package io.hotmoka.android.wallet
+package io.hotmoka.android.mokito
 
 import android.os.Bundle
 import android.view.View

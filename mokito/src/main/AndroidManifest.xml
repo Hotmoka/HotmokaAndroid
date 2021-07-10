@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.hotmoka.android.wallet">
+    package="io.hotmoka.android.mokito">
 
     <application
         android:allowBackup="true"
@@ -11,7 +11,7 @@
         android:theme="@style/Theme.HotmokaAndroid"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".Mokito">
+        <activity android:name="io.hotmoka.android.mokito.Mokito">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

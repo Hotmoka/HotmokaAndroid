@@ -1,4 +1,4 @@
-package io.hotmoka.android.wallet
+package io.hotmoka.android.mokito
 
 import org.junit.Test
 

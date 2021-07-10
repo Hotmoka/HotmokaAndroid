@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 
 class AndroidRemoteNode : Service() {
     private var node: Node? = null
@@ -25,7 +26,7 @@ class AndroidRemoteNode : Service() {
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
     companion object {
-        private val TAG = "AndroidRemoteNode"
+        private const val TAG = "AndroidRemoteNode"
 
         fun of(
             context: Context,
@@ -44,7 +45,7 @@ class AndroidRemoteNode : Service() {
                 }
 
                 override fun onServiceDisconnected(name: ComponentName) {
-                    onDisconnected
+                    onDisconnected()
                 }
             }
 
@@ -59,7 +60,7 @@ class AndroidRemoteNode : Service() {
         val config = RemoteNodeConfig.Builder().setURL(url).setWebSockets(websockets).build()
 
         ioScope.launch(Dispatchers.IO) {
-            node = RemoteNode.of(config);
+            node = RemoteNode.of(config)
             Log.d(TAG, "created remote node of type " + node!!::class.simpleName)
         }
 
@@ -73,66 +74,64 @@ class AndroidRemoteNode : Service() {
     }
 
     fun getTakamakaCode(): TransactionReference {
-        val result = node?.takamakaCode
-        if (result == null)
-            throw InternalFailureException("unexpected null result")
-        else {
-            Log.d(TAG, "getTakamakaCode => success")
-            return result;
+        node?.let {
+            val result = it.takamakaCode
+            if (result == null)
+                throw InternalFailureException("unexpected null result")
+            else {
+                Log.d(TAG, "getTakamakaCode => success")
+                return result
+            }
         }
+
+        throw IllegalStateException("remote node not connected")
     }
 
     fun getTakamakaCode(onSuccess: (TransactionReference) -> Unit, onException: (Throwable) -> Unit) {
         ioScope.launch(Dispatchers.IO) {
-            var result: TransactionReference
+            val result: TransactionReference
 
             try {
                 result = getTakamakaCode()
             }
             catch (e: Throwable) {
                 Log.d(TAG, "getTakamakaCode => failure: $e")
-                mainScope.launch(Dispatchers.Main) {
-                    onException(e)
-                }
-
+                mainScope.launch(Dispatchers.Main) { onException(e) }
                 return@launch
             }
 
-            mainScope.launch(Dispatchers.Main) {
-                onSuccess(result);
-            }
+            mainScope.launch(Dispatchers.Main) { onSuccess(result) }
         }
     }
 
     fun getManifest(): StorageReference {
-        val result = node?.manifest
-        if (result == null)
-            throw InternalFailureException("unexpected null result")
-        else {
-            Log.d(TAG, "getManifest => success")
-            return result;
+        node?.let {
+            val result = it.manifest
+            if (result == null)
+                throw InternalFailureException("unexpected null result")
+            else {
+                Log.d(TAG, "getManifest => success")
+                return result
+            }
         }
+
+        throw IllegalStateException("remote node not connected")
     }
 
     fun getManifest(onSuccess: (StorageReference) -> Unit, onException: (Throwable) -> Unit) {
         ioScope.launch(Dispatchers.IO) {
-            var result: StorageReference
+            val result: StorageReference
 
             try {
                 result = getManifest()
             }
             catch (e: Throwable) {
                 Log.d(TAG, "getManifest => failure: $e")
-                mainScope.launch(Dispatchers.Main) {
-                    onException(e)
-                }
-
+                mainScope.launch(Dispatchers.Main) { onException(e) }
                 return@launch
             }
 
-            mainScope.launch(Dispatchers.Main) {
-                onSuccess(result);
-            }
+            mainScope.launch(Dispatchers.Main) { onSuccess(result) }
         }
     }
 }

@@ -1,3 +1,3 @@
 rootProject.name = "HotmokaAndroid"
-include ':wallet'
+include ':mokito'
 include ':remote'

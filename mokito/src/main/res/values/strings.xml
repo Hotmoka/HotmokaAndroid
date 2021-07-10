@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Mokito</string>
+    <string name="get_takamaka_code">Get TakamakaCode</string>
+    <string name="get_manifest">Get Manifest</string>
+</resources>
