@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.hotmoka.android.remote">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application>
+        android:usesCleartextTraffic="true"
+
+        <service
+            android:name=".NodeService"
+            android:enabled="true"
+            android:exported="true"></service>
+    </application>
+
+</manifest>
