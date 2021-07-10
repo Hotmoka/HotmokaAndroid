@@ -8,7 +8,7 @@
         android:usesCleartextTraffic="true"
 
         <service
-            android:name=".NodeService"
+            android:name=".AndroidRemoteNode"
             android:enabled="true"
             android:exported="true"></service>
     </application>

@@ -11,7 +11,7 @@
         android:theme="@style/Theme.HotmokaAndroid"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".HotmokaActivity">
+        <activity android:name=".Mokito">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

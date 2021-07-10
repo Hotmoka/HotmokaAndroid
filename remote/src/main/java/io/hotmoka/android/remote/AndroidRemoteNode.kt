@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.util.Log
 import io.hotmoka.beans.InternalFailureException
 import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.nodes.Node
 import io.hotmoka.remote.RemoteNode
 import io.hotmoka.remote.RemoteNodeConfig
@@ -18,27 +19,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 
-class NodeService : Service() {
-    private val TAG = "NodeService"
+class AndroidRemoteNode : Service() {
     private var node: Node? = null
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
     companion object {
+        private val TAG = "AndroidRemoteNode"
 
-        fun bind(
+        fun of(
             context: Context,
             config: RemoteNodeConfig,
-            onConnected: (NodeService) -> Unit,
+            onConnected: (AndroidRemoteNode) -> Unit,
             onDisconnected: () -> Unit = {}
         ) {
-            val intent = Intent(context, NodeService::class.java)
+            val intent = Intent(context, AndroidRemoteNode::class.java)
             intent.putExtra("url", config.url)
             intent.putExtra("webSockets", config.webSockets)
 
             val myConnection = object : ServiceConnection {
                 override fun onServiceConnected(className: ComponentName, service: IBinder) {
-                    val binder = service as NodeService.MyLocalBinder
+                    val binder = service as AndroidRemoteNode.MyLocalBinder
                     onConnected(binder.getService())
                 }
 
@@ -66,29 +67,71 @@ class NodeService : Service() {
     }
 
     private inner class MyLocalBinder : Binder() {
-        fun getService() : NodeService {
-            return this@NodeService
+        fun getService() : AndroidRemoteNode {
+            return this@AndroidRemoteNode
+        }
+    }
+
+    fun getTakamakaCode(): TransactionReference {
+        val result = node?.takamakaCode
+        if (result == null)
+            throw InternalFailureException("unexpected null result")
+        else {
+            Log.d(TAG, "getTakamakaCode => success")
+            return result;
         }
     }
 
     fun getTakamakaCode(onSuccess: (TransactionReference) -> Unit, onException: (Throwable) -> Unit) {
         ioScope.launch(Dispatchers.IO) {
+            var result: TransactionReference
+
             try {
-                val result = node?.takamakaCode
-                if (result == null)
-                    throw InternalFailureException("unexpected null result")
-                else {
-                    Log.d(TAG, "getTakamakaCode => success")
-                    mainScope.launch(Dispatchers.Main) {
-                        onSuccess(result);
-                    }
-                }
+                result = getTakamakaCode()
             }
             catch (e: Throwable) {
                 Log.d(TAG, "getTakamakaCode => failure: $e")
                 mainScope.launch(Dispatchers.Main) {
                     onException(e)
                 }
+
+                return@launch
+            }
+
+            mainScope.launch(Dispatchers.Main) {
+                onSuccess(result);
+            }
+        }
+    }
+
+    fun getManifest(): StorageReference {
+        val result = node?.manifest
+        if (result == null)
+            throw InternalFailureException("unexpected null result")
+        else {
+            Log.d(TAG, "getManifest => success")
+            return result;
+        }
+    }
+
+    fun getManifest(onSuccess: (StorageReference) -> Unit, onException: (Throwable) -> Unit) {
+        ioScope.launch(Dispatchers.IO) {
+            var result: StorageReference
+
+            try {
+                result = getManifest()
+            }
+            catch (e: Throwable) {
+                Log.d(TAG, "getManifest => failure: $e")
+                mainScope.launch(Dispatchers.Main) {
+                    onException(e)
+                }
+
+                return@launch
+            }
+
+            mainScope.launch(Dispatchers.Main) {
+                onSuccess(result);
             }
         }
     }

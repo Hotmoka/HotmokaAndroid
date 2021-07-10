@@ -4,22 +4,26 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import io.hotmoka.android.remote.NodeService
+import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.remote.RemoteNodeConfig
 import kotlinx.android.synthetic.main.activity_main.*
 
-class HotmokaActivity : AppCompatActivity() {
-    var nodeService: NodeService? = null
+class Mokito : AppCompatActivity() {
+    private var node: AndroidRemoteNode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val config = RemoteNodeConfig.Builder().setURL("panarea.hotmoka.io").build()
-        NodeService.bind(this, config, { nodeService = it }, { nodeService = null })
+        AndroidRemoteNode.of(this, config, { node = it }, { node = null })
     }
 
     fun getTakamakaCode(view: View) {
-        nodeService?.getTakamakaCode({ textView.text = it.toString() }, ::notifyException);
+        node?.getTakamakaCode({ textView.text = it.toString() }, ::notifyException);
+    }
+
+    fun getManifest(view: View) {
+        node?.getManifest({ textView.text = it.toString() }, ::notifyException);
     }
 
     private fun notifyException(t: Throwable) {
