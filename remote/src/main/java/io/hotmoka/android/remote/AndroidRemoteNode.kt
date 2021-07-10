@@ -134,4 +134,35 @@ class AndroidRemoteNode : Service() {
             mainScope.launch(Dispatchers.Main) { onSuccess(result) }
         }
     }
+
+    fun getNameOfSignatureAlgorithmForRequests(): String {
+        node?.let {
+            val result = it.nameOfSignatureAlgorithmForRequests
+            if (result == null)
+                throw InternalFailureException("unexpected null result")
+            else {
+                Log.d(TAG, "getNameOfSignatureAlgorithmForRequests => success")
+                return result
+            }
+        }
+
+        throw IllegalStateException("remote node not connected")
+    }
+
+    fun getNameOfSignatureAlgorithmForRequests(onSuccess: (String) -> Unit, onException: (Throwable) -> Unit) {
+        ioScope.launch(Dispatchers.IO) {
+            val result: String
+
+            try {
+                result = getNameOfSignatureAlgorithmForRequests()
+            }
+            catch (e: Throwable) {
+                Log.d(TAG, "getNameOfSignatureAlgorithmForRequests => failure: $e")
+                mainScope.launch(Dispatchers.Main) { onException(e) }
+                return@launch
+            }
+
+            mainScope.launch(Dispatchers.Main) { onSuccess(result) }
+        }
+    }
 }

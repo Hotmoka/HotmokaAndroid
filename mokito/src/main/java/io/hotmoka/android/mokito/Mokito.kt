@@ -26,6 +26,10 @@ class Mokito : AppCompatActivity() {
         node?.getManifest({ textView.text = it.toString() }, ::notifyException);
     }
 
+    fun getNameOfSignatureAlgorithmForRequests(view: View) {
+        node?.getNameOfSignatureAlgorithmForRequests({ textView.text = it }, ::notifyException);
+    }
+
     private fun notifyException(t: Throwable) {
         Toast.makeText(this, t.toString(), Toast.LENGTH_LONG).show()
     }
