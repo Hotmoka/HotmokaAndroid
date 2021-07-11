@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.remote.RemoteNodeConfig
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +28,11 @@ class Mokito : AppCompatActivity() {
         AndroidRemoteNode.of(this, config, { node = it }, { node = null })
     }
 
+    override fun onDestroy() {
+        node?.close()
+        super.onDestroy()
+    }
+
     fun getTakamakaCode(view: View) {
         node?.getTakamakaCode({ textView.text = it.toString() }, ::notifyException);
     }
@@ -42,6 +46,36 @@ class Mokito : AppCompatActivity() {
     }
 
     fun complex(view: View) {
+        node?.let { it ->
+            ioScope.launch {
+                try {
+                    val response = node?.getResponse(it.getManifest().transaction)
+                    mainScope.launch {
+                        textView.text = response.toString()
+                    }
+                } catch (t: Throwable) {
+                    mainScope.launch { notifyException(t) }
+                }
+            }
+        }
+    }
+
+    fun complex1(view: View) {
+        node?.let { it ->
+            ioScope.launch {
+                try {
+                    val request = node?.getRequest(it.getManifest().transaction)
+                    mainScope.launch {
+                        textView.text = request.toString()
+                    }
+                } catch (t: Throwable) {
+                    mainScope.launch { notifyException(t) }
+                }
+            }
+        }
+    }
+
+    fun complex2(view: View) {
         node?.let { it ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 ioScope.launch(Dispatchers.IO) {
