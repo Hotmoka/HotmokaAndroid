@@ -3,4 +3,5 @@
     <string name="get_takamaka_code">Get TakamakaCode</string>
     <string name="get_manifest">Get Manifest</string>
     <string name="get_signature_name">GET SIGNATURE NAME</string>
+    <string name="get_manifest_class">Complex</string>
 </resources>

@@ -11,6 +11,8 @@ import android.util.Log
 import io.hotmoka.beans.InternalFailureException
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.updates.ClassTag
+import io.hotmoka.beans.updates.Update
 import io.hotmoka.nodes.Node
 import io.hotmoka.remote.RemoteNode
 import io.hotmoka.remote.RemoteNodeConfig
@@ -19,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
+import java.util.stream.Stream
 
 class AndroidRemoteNode : Service() {
     private var node: Node? = null
@@ -74,17 +77,7 @@ class AndroidRemoteNode : Service() {
     }
 
     fun getTakamakaCode(): TransactionReference {
-        node?.let {
-            val result = it.takamakaCode
-            if (result == null)
-                throw InternalFailureException("unexpected null result")
-            else {
-                Log.d(TAG, "getTakamakaCode => success")
-                return result
-            }
-        }
-
-        throw IllegalStateException("remote node not connected")
+        return callSafely(Node::getTakamakaCode, "getTakamakaCode")
     }
 
     fun getTakamakaCode(onSuccess: (TransactionReference) -> Unit, onException: (Throwable) -> Unit) {
@@ -105,17 +98,7 @@ class AndroidRemoteNode : Service() {
     }
 
     fun getManifest(): StorageReference {
-        node?.let {
-            val result = it.manifest
-            if (result == null)
-                throw InternalFailureException("unexpected null result")
-            else {
-                Log.d(TAG, "getManifest => success")
-                return result
-            }
-        }
-
-        throw IllegalStateException("remote node not connected")
+        return callSafely(Node::getManifest, "getManifest")
     }
 
     fun getManifest(onSuccess: (StorageReference) -> Unit, onException: (Throwable) -> Unit) {
@@ -136,17 +119,7 @@ class AndroidRemoteNode : Service() {
     }
 
     fun getNameOfSignatureAlgorithmForRequests(): String {
-        node?.let {
-            val result = it.nameOfSignatureAlgorithmForRequests
-            if (result == null)
-                throw InternalFailureException("unexpected null result")
-            else {
-                Log.d(TAG, "getNameOfSignatureAlgorithmForRequests => success")
-                return result
-            }
-        }
-
-        throw IllegalStateException("remote node not connected")
+        return callSafely(Node::getNameOfSignatureAlgorithmForRequests, "getNameOfSignatureAlgorithmForRequests")
     }
 
     fun getNameOfSignatureAlgorithmForRequests(onSuccess: (String) -> Unit, onException: (Throwable) -> Unit) {
@@ -164,5 +137,27 @@ class AndroidRemoteNode : Service() {
 
             mainScope.launch(Dispatchers.Main) { onSuccess(result) }
         }
+    }
+
+    fun getClassTag(reference: StorageReference): ClassTag {
+        return callSafely({ node -> node.getClassTag(reference) }, "getClassTag")
+    }
+
+    fun getState(reference: StorageReference): Stream<Update> {
+        return callSafely({ node -> node.getState(reference) }, "getState")
+    }
+
+    private fun <T> callSafely(task: (Node) -> T, name: String): T {
+        node?.let {
+            val result = task(it)
+            if (result == null)
+                throw InternalFailureException("unexpected null result")
+            else {
+                Log.d(TAG, "$name => success")
+                return result
+            }
+        }
+
+        throw IllegalStateException("remote node not connected")
     }
 }
