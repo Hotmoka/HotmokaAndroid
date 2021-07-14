@@ -2,13 +2,22 @@ package io.hotmoka.android.mokito
 
 import android.os.Build
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.navigation.NavigationView
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import io.hotmoka.android.mokito.databinding.ActivityMainBinding
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.remote.RemoteNodeConfig
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,15 +26,12 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 
 class Mokito : AppCompatActivity() {
+    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var binding: ActivityMainBinding
     private var node: AndroidRemoteNode? = null
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val config = RemoteNodeConfig.Builder().setURL("panarea.hotmoka.io").build()
-        AndroidRemoteNode.of(this, config, { node = it }, { node = null })
+    fun getNode(): AndroidRemoteNode? {
+        return node
     }
 
     override fun onDestroy() {
@@ -33,70 +39,43 @@ class Mokito : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun getTakamakaCode(view: View) {
-        node?.getTakamakaCode({ textView.text = it.toString() }, ::notifyException);
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    fun getManifest(view: View) {
-        node?.getManifest({ textView.text = it.toString() }, ::notifyException);
-    }
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    fun getNameOfSignatureAlgorithmForRequests(view: View) {
-        node?.getNameOfSignatureAlgorithmForRequests({ textView.text = it }, ::notifyException);
-    }
+        setSupportActionBar(binding.appBarMokito.toolbar)
 
-    fun complex(view: View) {
-        node?.let { it ->
-            ioScope.launch {
-                try {
-                    val response = node?.getResponse(it.getManifest().transaction)
-                    mainScope.launch {
-                        textView.text = response.toString()
-                    }
-                } catch (t: Throwable) {
-                    mainScope.launch { notifyException(t) }
-                }
-            }
+        binding.appBarMokito.fab.setOnClickListener { view ->
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
         }
+        val drawerLayout: DrawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
+        val navController = findNavController(R.id.nav_host_fragment_content_mokito)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+            ), drawerLayout
+        )
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+
+        val config = RemoteNodeConfig.Builder().setURL("panarea.hotmoka.io").build()
+        AndroidRemoteNode.of(this, config, { node = it }, { node = null })
     }
 
-    fun complex1(view: View) {
-        node?.let { it ->
-            ioScope.launch {
-                try {
-                    val request = node?.getRequest(it.getManifest().transaction)
-                    mainScope.launch {
-                        textView.text = request.toString()
-                    }
-                } catch (t: Throwable) {
-                    mainScope.launch { notifyException(t) }
-                }
-            }
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.mokito, menu)
+        return true
     }
 
-    fun complex2(view: View) {
-        node?.let { it ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                ioScope.launch(Dispatchers.IO) {
-                    try {
-                        val state: Stream<Update>? = node?.getState(it.getManifest())
-                        mainScope.launch {
-                            textView.text = state
-                                ?.map(Update::toString) // only API >= 24
-                                ?.collect(Collectors.joining())
-                        }
-                    } catch (t: Throwable) {
-                        mainScope.launch { notifyException(t) }
-                    }
-                }
-            }
-            else
-                notifyException(IllegalStateException("this function is only available on Android API >= 24"))
-        }
-    }
-
-    private fun notifyException(t: Throwable) {
-        Toast.makeText(this, t.toString(), Toast.LENGTH_LONG).show()
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = findNavController(R.id.nav_host_fragment_content_mokito)
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }
