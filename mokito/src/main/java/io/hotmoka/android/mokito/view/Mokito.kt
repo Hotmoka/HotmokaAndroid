@@ -11,6 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.MokitoBinding
 import io.hotmoka.android.remote.AndroidRemoteNode
@@ -63,6 +64,16 @@ class Mokito : AppCompatActivity() {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.mokito, menu)
         return true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MVC.view = this
+    }
+
+    override fun onStop() {
+        MVC.view = null
+        super.onStop()
     }
 
     override fun onSupportNavigateUp(): Boolean {
