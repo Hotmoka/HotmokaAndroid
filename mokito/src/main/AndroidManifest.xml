@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HotmokaAndroid">
         <activity
-            android:name=".Mokito"
+            android:name=".view.Mokito"
             android:label="@string/app_name"
             android:theme="@style/Theme.HotmokaAndroid.NoActionBar">
             <intent-filter>

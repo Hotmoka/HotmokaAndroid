@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.ui.home
+package io.hotmoka.android.mokito.view.home
 
 import android.os.Build
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import io.hotmoka.android.mokito.Mokito
+import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.databinding.FragmentHomeBinding
 import io.hotmoka.beans.updates.Update
 import kotlinx.coroutines.CoroutineScope

@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.ui.slideshow
+package io.hotmoka.android.mokito.view.slideshow
 
 import android.os.Bundle
 import android.view.LayoutInflater

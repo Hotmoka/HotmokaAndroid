@@ -1,10 +1,7 @@
-package io.hotmoka.android.mokito
+package io.hotmoka.android.mokito.view
 
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
-import android.view.View
-import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -14,20 +11,14 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import io.hotmoka.android.mokito.databinding.ActivityMainBinding
+import io.hotmoka.android.mokito.R
+import io.hotmoka.android.mokito.databinding.MokitoBinding
 import io.hotmoka.android.remote.AndroidRemoteNode
-import io.hotmoka.beans.updates.Update
 import io.hotmoka.remote.RemoteNodeConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 class Mokito : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: MokitoBinding
     private var node: AndroidRemoteNode? = null
 
     fun getNode(): AndroidRemoteNode? {
@@ -42,7 +33,7 @@ class Mokito : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = MokitoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMokito.toolbar)

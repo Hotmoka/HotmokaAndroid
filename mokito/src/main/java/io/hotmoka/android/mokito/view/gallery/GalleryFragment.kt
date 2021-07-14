@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.ui.gallery
+package io.hotmoka.android.mokito.view.gallery
 
 import android.os.Bundle
 import android.view.LayoutInflater
