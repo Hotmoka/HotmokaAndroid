@@ -22,4 +22,25 @@
         android:name="io.hotmoka.android.mokito.view.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/insert_reference"
+        android:name="io.hotmoka.android.mokito.view.InsertReferenceFragment"
+        android:label="@string/insert_storage_reference"
+        tools:layout="@layout/fragment_insert_reference" >
+        <action
+            android:id="@+id/action_insert_reference_to_show_state"
+            app:destination="@id/show_state" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/show_state"
+        android:name="io.hotmoka.android.mokito.view.ShowStateFragment"
+        android:label="@string/object_state" >
+        <argument
+            android:name="reference"
+            app:argType="string"
+            android:defaultValue="" />
+    </fragment>
+
 </navigation>

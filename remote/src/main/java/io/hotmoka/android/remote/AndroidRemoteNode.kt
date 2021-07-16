@@ -1,12 +1,6 @@
 package io.hotmoka.android.remote
 
-import android.app.Service
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.Binder
-import android.os.IBinder
 import android.util.Log
 import io.hotmoka.beans.InternalFailureException
 import io.hotmoka.beans.references.TransactionReference
@@ -28,62 +22,71 @@ import kotlinx.coroutines.launch
 import java.util.function.BiConsumer
 import java.util.stream.Stream
 
-class AndroidRemoteNode : Service(), Node {
+class AndroidRemoteNode : Node {
     private var node: Node? = null
+    private var config: RemoteNodeConfig? = null
+    private var connected: Boolean = false
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
     companion object {
         private const val TAG = "AndroidRemoteNode"
+    }
 
-        fun of(
-            context: Context,
-            config: RemoteNodeConfig,
-            onConnected: (AndroidRemoteNode) -> Unit,
-            onDisconnected: () -> Unit = {}
-        ) {
-            val intent = Intent(context, AndroidRemoteNode::class.java)
-            intent.putExtra("url", config.url)
-            intent.putExtra("webSockets", config.webSockets)
+    fun connect(config: RemoteNodeConfig, onConnected: () -> Unit = {}, onFailure: (Throwable) -> Unit = {}) {
+        ioScope.launch {
+            this@AndroidRemoteNode.config = config
 
-            val myConnection = object : ServiceConnection {
-                override fun onServiceConnected(className: ComponentName, service: IBinder) {
-                    val binder = service as AndroidRemoteNode.MyLocalBinder
-                    onConnected(binder.getService())
+            try {
+                node = RemoteNode.of(config)
+                connected = true
+            }
+            catch (t: Throwable) {
+                mainScope.launch {
+                    onFailure(t)
                 }
 
-                override fun onServiceDisconnected(name: ComponentName) {
+                return@launch
+            }
+
+            Log.d(TAG, "created remote node of type " + node!!::class.simpleName)
+
+            mainScope.launch {
+                onConnected()
+            }
+        }
+    }
+
+    fun disconnect(onDisconnected: () -> Unit = {}, onFailure: (Throwable) -> Unit = {}) {
+        node?.let {
+            ioScope.launch {
+                try {
+                    it.close()
+                    connected = false
+                }
+                catch (t: Throwable) {
+                    mainScope.launch {
+                        onFailure(t)
+                    }
+
+                    return@launch
+                }
+
+                Log.d(TAG, "disconnected from $config?.url")
+
+                mainScope.launch {
                     onDisconnected()
                 }
             }
-
-            context.bindService(intent, myConnection, BIND_AUTO_CREATE)
         }
     }
 
-    override fun onBind(intent: Intent): IBinder {
-        val url = intent.getStringExtra("url")
-            ?: throw IllegalArgumentException("missing node url to bind to service")
-        val websockets = intent.getBooleanExtra("webSockets", false)
-        val config = RemoteNodeConfig.Builder().setURL(url).setWebSockets(websockets).build()
-
-        ioScope.launch(Dispatchers.IO) {
-            node = RemoteNode.of(config)
-            Log.d(TAG, "created remote node of type " + node!!::class.simpleName)
-        }
-
-        return MyLocalBinder()
-    }
-
-    private inner class MyLocalBinder : Binder() {
-        fun getService() : AndroidRemoteNode {
-            return this@AndroidRemoteNode
-        }
+    fun isConnected() : Boolean {
+        return connected
     }
 
     override fun close() {
         node?.close()
-        stopSelf()
     }
 
     override fun getTakamakaCode(): TransactionReference {
@@ -91,7 +94,7 @@ class AndroidRemoteNode : Service(), Node {
     }
 
     fun getTakamakaCode(onSuccess: (TransactionReference) -> Unit, onException: (Throwable) -> Unit) {
-        ioScope.launch(Dispatchers.IO) {
+        ioScope.launch {
             val result: TransactionReference
 
             try {

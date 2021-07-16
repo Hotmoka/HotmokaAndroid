@@ -6,8 +6,11 @@
     <string name="nav_header_subtitle">The Hotmoka wallet</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_show_state">Show object state</string>
+    <string name="insert_storage_reference">Insert Storage Reference</string>
+    <string name="object_state">Object state</string>
+    <string name="show_state">Show State</string>
 </resources>

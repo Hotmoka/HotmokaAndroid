@@ -1,6 +1,5 @@
 package io.hotmoka.android.mokito.view.home
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +8,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.databinding.FragmentHomeBinding
-import io.hotmoka.beans.updates.Update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
-import java.util.stream.Collectors
-import java.util.stream.Stream
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -44,34 +39,66 @@ class HomeFragment : Fragment() {
     }
 
     private fun getTakamakaCode(view: View) {
-        context.getNode()?.getTakamakaCode({ binding.textView.text = it.toString() }, ::notifyException)
+        ioScope.launch {
+            try {
+                val takamakaCode = context.applicationContext.controller.getTakamakaCode()
+                mainScope.launch {
+                    binding.textView.text = takamakaCode.toString()
+                }
+            }
+            catch (t: Throwable) {
+                mainScope.launch { notifyException(t) }
+            }
+        }
     }
 
     private fun getManifest(view: View) {
-        context.getNode()?.getManifest({ binding.textView.text = it.toString() }, ::notifyException)
+        ioScope.launch {
+            try {
+                val manifest = context.applicationContext.controller.getManifest()
+                mainScope.launch {
+                    binding.textView.text = manifest.toString()
+                }
+            }
+            catch (t: Throwable) {
+                mainScope.launch { notifyException(t) }
+            }
+        }
     }
 
     private fun getNameOfSignatureAlgorithmForRequests(view: View) {
-        context.getNode()?.getNameOfSignatureAlgorithmForRequests({ binding.textView.text = it }, ::notifyException)
+        ioScope.launch {
+            try {
+                val algorithm = context.applicationContext.controller.getNameOfSignatureAlgorithmForRequests()
+                mainScope.launch {
+                    binding.textView.text = algorithm
+                }
+            }
+            catch (t: Throwable) {
+                mainScope.launch { notifyException(t) }
+            }
+        }
     }
 
     private fun complex(view: View) {
-        context.getNode()?.let { it ->
+        context.applicationContext.controller.let {
             ioScope.launch {
                 try {
-                    val response = it.getResponse(it.manifest.transaction)
+                    val response = it.getResponse(it.getManifest().transaction)
                     mainScope.launch {
                         binding.textView.text = response.toString()
                     }
-                } catch (t: Throwable) {
+                }
+                catch (t: Throwable) {
                     mainScope.launch { notifyException(t) }
                 }
             }
         }
     }
 
+    /*
     private fun complex1(view: View) {
-        context.getNode()?.let { it ->
+        context.applicationContext.controller.let { it ->
             ioScope.launch {
                 try {
                     val request = it.getRequest(it.manifest.transaction)
@@ -86,7 +113,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun complex2(view: View) {
-        context.getNode()?.let { it ->
+        context.applicationContext.controller.let { it ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 ioScope.launch(Dispatchers.IO) {
                     try {
@@ -105,6 +132,7 @@ class HomeFragment : Fragment() {
                 notifyException(IllegalStateException("this function is only available on Android API >= 24"))
         }
     }
+     */
 
     private fun notifyException(t: Throwable) {
         Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
