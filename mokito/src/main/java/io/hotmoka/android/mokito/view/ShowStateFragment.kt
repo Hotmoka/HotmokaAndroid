@@ -1,16 +1,15 @@
 package io.hotmoka.android.mokito.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.*
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.view.isInvisible
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.R.*
 import io.hotmoka.android.mokito.databinding.FragmentShowStateBinding
 import io.hotmoka.beans.updates.*
@@ -24,10 +23,29 @@ open class ShowStateFragment : AbstractFragment() {
     private var _binding: FragmentShowStateBinding? = null
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentShowStateBinding.inflate(inflater, container, false)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.show_state, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_reload) {
+            getShownReference()?.let { getController().requestStateOf(it) }
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onStart() {
@@ -42,6 +60,15 @@ open class ShowStateFragment : AbstractFragment() {
         }
     }
 
+    protected open fun getShownReference(): StorageReference? {
+        arguments?.let {
+            val args = ShowStateFragmentArgs.fromBundle(it)
+            return StorageReference(args.reference)
+        }
+
+        return null
+    }
+
     protected fun showOrRequestStateOf(reference: StorageReference) {
         val state = getModel().getState(reference)
         if (state != null)
@@ -51,7 +78,7 @@ open class ShowStateFragment : AbstractFragment() {
     }
 
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
-        if (isRequestedObject(reference)) {
+        if (reference == getShownReference()) {
             setSubtitle(reference.toString())
             showState(state)
         }
@@ -84,15 +111,6 @@ open class ShowStateFragment : AbstractFragment() {
         state.sortWith(UpdateComparator(tag))
         binding.recyclerView.adapter = RecyclerAdapter(state, tag)
         binding.recyclerView.adapter?.notifyDataSetChanged()
-    }
-
-    protected open fun isRequestedObject(reference: StorageReference): Boolean {
-        arguments?.let {
-            val args = ShowStateFragmentArgs.fromBundle(it)
-            return reference == StorageReference(args.reference);
-        }
-
-        return false
     }
 
     override fun onDestroyView() {

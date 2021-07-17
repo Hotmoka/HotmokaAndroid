@@ -15,7 +15,7 @@ class ShowManifestFragment : ShowStateFragment() {
             getController().requestStateOfManifest()
     }
 
-    override fun isRequestedObject(reference: StorageReference): Boolean {
-        return reference == getModel().getManifest()
+    override fun getShownReference(): StorageReference? {
+        return getModel().getManifest()
     }
 }
