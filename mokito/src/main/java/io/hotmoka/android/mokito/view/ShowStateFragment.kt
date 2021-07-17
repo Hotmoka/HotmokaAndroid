@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.view.isInvisible
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -103,6 +105,7 @@ open class ShowStateFragment : AbstractFragment() {
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val itemDescription: TextView = itemView.findViewById(id.item_description)
             val itemValue: TextView = itemView.findViewById(id.item_value)
+            val itemArrow: ImageView = itemView.findViewById(id.item_arrow)
             val card: CardView = itemView.findViewById(id.card_view)
         }
 
@@ -122,6 +125,7 @@ open class ShowStateFragment : AbstractFragment() {
                 viewHolder.itemValue.text = "from jar at ${update.jar}"
                 viewHolder.card.isClickable = false
                 viewHolder.card.setCardBackgroundColor(0xFFFF5722.toInt())
+                viewHolder.itemArrow.visibility = View.GONE
             }
             else {
                 val field = (update as UpdateOfField).field
@@ -133,6 +137,7 @@ open class ShowStateFragment : AbstractFragment() {
 
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true
+                        viewHolder.itemArrow.visibility = View.VISIBLE
                         viewHolder.card.setOnClickListener {
                             val action: ShowStateFragmentDirections.ActionShowStateSelf =
                                 ShowStateFragmentDirections.actionShowStateSelf()
@@ -140,8 +145,10 @@ open class ShowStateFragment : AbstractFragment() {
                             Navigation.findNavController(it).navigate(action)
                         }
                     }
-                    else
+                    else {
                         viewHolder.card.isClickable = false
+                        viewHolder.itemArrow.visibility = View.GONE
+                    }
                 }
                 else {
                     // field inherited from a superclass
@@ -152,6 +159,7 @@ open class ShowStateFragment : AbstractFragment() {
 
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true
+                        viewHolder.itemArrow.visibility = View.VISIBLE
                         viewHolder.card.setOnClickListener {
                             val action: ShowStateFragmentDirections.ActionShowStateSelf =
                                 ShowStateFragmentDirections.actionShowStateSelf()
@@ -159,8 +167,10 @@ open class ShowStateFragment : AbstractFragment() {
                             Navigation.findNavController(it).navigate(action)
                         }
                     }
-                    else
+                    else {
                         viewHolder.card.isClickable = false
+                        viewHolder.itemArrow.visibility = View.GONE
+                    }
                 }
             }
         }
