@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_slideshow" />
         <item
+            android:id="@+id/show_manifest"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_show_manifest" />
+        <item
             android:id="@+id/insert_reference"
             android:icon="@drawable/ic_menu_send"
             android:title="@string/menu_show_state" />

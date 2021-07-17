@@ -1,9 +1,20 @@
 package io.hotmoka.android.mokito.model
 
+import io.hotmoka.android.mokito.MVC
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class Model {
+class Model(val mvc: MVC) {
+
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+
+    /**
+     * The manifest of the Hotmoka node.
+     */
+    private var manifest: StorageReference? = null
 
     /**
      * A map from a storage reference to its state, if has been already
@@ -17,7 +28,18 @@ class Model {
      * Clears all information contained in this model.
      */
     fun clear() {
+        manifest = null
         states.clear()
+    }
+
+    fun getManifest(): StorageReference? = manifest
+
+    fun setManifest(manifest: StorageReference) {
+        this.manifest = manifest
+
+        mainScope.launch {
+            mvc.view?.onManifestChanged(manifest)
+        }
     }
 
     /**
@@ -41,5 +63,9 @@ class Model {
      */
     fun setState(reference: StorageReference, state: Array<Update>) {
         states[reference] = state
+
+        mainScope.launch {
+            mvc.view?.onStateChanged(reference, state)
+        }
     }
 }

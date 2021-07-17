@@ -26,7 +26,8 @@ class Mokito : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.insert_reference
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.insert_reference,
+                R.id.show_manifest
             ), binding.drawerLayout
         )
 
@@ -42,16 +43,6 @@ class Mokito : AppCompatActivity() {
 
     override fun getApplicationContext(): MVC {
         return super.getApplicationContext() as MVC
-    }
-
-    override fun onStart() {
-        super.onStart()
-        applicationContext.view = this
-    }
-
-    override fun onStop() {
-        applicationContext.view = null
-        super.onStop()
     }
 
     override fun onSupportNavigateUp(): Boolean {

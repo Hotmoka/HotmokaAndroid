@@ -36,11 +36,16 @@
     <fragment
         android:id="@+id/show_state"
         android:name="io.hotmoka.android.mokito.view.ShowStateFragment"
-        android:label="@string/object_state" >
+        android:label="@string/state_of_object" >
         <argument
             android:name="reference"
             app:argType="string"
             android:defaultValue="" />
     </fragment>
+
+    <fragment
+        android:id="@+id/show_manifest"
+        android:name="io.hotmoka.android.mokito.view.ShowManifestFragment"
+        android:label="@string/manifest" />
 
 </navigation>

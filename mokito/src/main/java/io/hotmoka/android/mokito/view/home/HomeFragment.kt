@@ -4,15 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.databinding.FragmentHomeBinding
+import io.hotmoka.android.mokito.view.AbstractFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment() {
+class HomeFragment : AbstractFragment() {
     private var _binding: FragmentHomeBinding? = null
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -32,10 +30,6 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun getContext(): Mokito {
-        return super.getContext() as Mokito
     }
 
     private fun getTakamakaCode(view: View) {
@@ -133,8 +127,4 @@ class HomeFragment : Fragment() {
         }
     }
      */
-
-    private fun notifyException(t: Throwable) {
-        Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
-    }
 }

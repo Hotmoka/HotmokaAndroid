@@ -10,7 +10,9 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_show_state">Show object state</string>
+    <string name="menu_show_manifest">Show manifest</string>
     <string name="insert_storage_reference">Insert Storage Reference</string>
-    <string name="object_state">Object state</string>
+    <string name="state_of_object">State of object</string>
+    <string name="manifest">Manifest</string>
     <string name="show_state">Show State</string>
 </resources>
