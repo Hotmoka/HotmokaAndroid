@@ -41,11 +41,18 @@
             android:name="reference"
             app:argType="string"
             android:defaultValue="" />
+        <action
+            android:id="@+id/action_show_state_self"
+            app:destination="@id/show_state" />
     </fragment>
 
     <fragment
         android:id="@+id/show_manifest"
         android:name="io.hotmoka.android.mokito.view.ShowManifestFragment"
-        android:label="@string/manifest" />
+        android:label="@string/manifest">
+        <action
+            android:id="@+id/action_show_state_self"
+            app:destination="@id/show_state" />
+    </fragment>
 
 </navigation>
