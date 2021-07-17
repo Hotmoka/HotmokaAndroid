@@ -95,7 +95,6 @@ open class ShowStateFragment : AbstractFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        setSubtitle("");
         _binding = null
     }
 

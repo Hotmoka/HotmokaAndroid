@@ -12,6 +12,7 @@ abstract class AbstractFragment : Fragment(), View {
     override fun onStart() {
         super.onStart()
         context.applicationContext.view = this
+        setSubtitle("")
     }
 
     override fun onStop() {
