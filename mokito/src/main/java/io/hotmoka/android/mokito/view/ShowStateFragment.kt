@@ -11,10 +11,9 @@ import io.hotmoka.beans.values.StorageReference
 /**
  * A fragment used to show the state of an object from its storage reference.
  */
-class ShowStateFragment : AbstractFragment() {
+open class ShowStateFragment : AbstractFragment() {
     private var _binding: FragmentShowStateBinding? = null
     private val binding get() = _binding!!
-    private var reference: StorageReference? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentShowStateBinding.inflate(inflater, container, false)
@@ -23,23 +22,36 @@ class ShowStateFragment : AbstractFragment() {
 
     override fun onStart() {
         super.onStart()
+        showOrRequestState()
+    }
+
+    protected open fun showOrRequestState() {
         arguments?.let {
             val args = ShowStateFragmentArgs.fromBundle(it)
-            reference = StorageReference(args.reference)
-            reference?.let {
-                val state = getModel().getState(it)
-                if (state != null)
-                    onStateChanged(it, state)
-                else
-                    getController().requestStateOf(it)
-            }
+            showOrRequestStateOf(StorageReference(args.reference))
         }
     }
 
+    protected fun showOrRequestStateOf(reference: StorageReference) {
+        val state = getModel().getState(reference)
+        if (state != null)
+            onStateChanged(reference, state)
+        else
+            getController().requestStateOf(reference)
+    }
+
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
-        if (reference == this.reference) {
+        if (isRequestedObject(reference))
             setSubtitle(reference.toString())
+    }
+
+    protected open fun isRequestedObject(reference: StorageReference): Boolean {
+        arguments?.let {
+            val args = ShowStateFragmentArgs.fromBundle(it)
+            return reference == StorageReference(args.reference);
         }
+
+        return false
     }
 
     override fun onDestroyView() {
