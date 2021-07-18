@@ -31,6 +31,7 @@ open class ShowStateFragment : AbstractFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentShowStateBinding.inflate(inflater, container, false)
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
+        binding.recyclerView.adapter = RecyclerAdapter(null)
         return binding.root
     }
 
@@ -54,9 +55,8 @@ open class ShowStateFragment : AbstractFragment() {
     }
 
     protected open fun showOrRequestState() {
-        arguments?.let {
-            val args = ShowStateFragmentArgs.fromBundle(it)
-            showOrRequestStateOf(StorageReference(args.reference))
+        getShownReference()?.let {
+            showOrRequestStateOf(it)
         }
     }
 
@@ -109,8 +109,11 @@ open class ShowStateFragment : AbstractFragment() {
     private fun showState(state: Array<Update>) {
         val tag = state.filterIsInstance<ClassTag>().first()
         state.sortWith(UpdateComparator(tag))
-        binding.recyclerView.adapter = RecyclerAdapter(state, tag)
-        binding.recyclerView.adapter?.notifyDataSetChanged()
+        binding.recyclerView.adapter?.let {
+            (it as RecyclerAdapter).state = state
+            it.tag = tag
+            it.notifyDataSetChanged()
+        }
     }
 
     override fun onDestroyView() {
@@ -118,7 +121,8 @@ open class ShowStateFragment : AbstractFragment() {
         _binding = null
     }
 
-    class RecyclerAdapter(val state: Array<Update>, val tag: ClassTag) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+    class RecyclerAdapter(var tag: ClassTag?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+        var state = emptyArray<Update>()
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val itemDescription: TextView = itemView.findViewById(id.item_description)
@@ -147,7 +151,7 @@ open class ShowStateFragment : AbstractFragment() {
             }
             else {
                 val field = (update as UpdateOfField).field
-                if (field.definingClass == tag.clazz) {
+                if (field.definingClass == tag?.clazz) {
                     // field in the same class
                     viewHolder.itemDescription.text = "${field.name}: ${field.type}"
                     viewHolder.itemValue.text = valueToPrint(update)

@@ -8,7 +8,7 @@ import io.hotmoka.beans.values.StorageReference
 class ShowManifestFragment : ShowStateFragment() {
 
     override fun showOrRequestState() {
-        val manifest = getModel().getManifest()
+        val manifest = getShownReference()
         if (manifest != null)
             showOrRequestStateOf(manifest)
         else
