@@ -1,7 +1,6 @@
 package io.hotmoka.android.mokito.view
 
 import android.os.Bundle
-import android.view.Menu
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -27,18 +26,13 @@ class Mokito : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.insert_reference,
-                R.id.show_manifest
+                R.id.show_manifest, R.id.settings
             ), binding.drawerLayout
         )
 
         val navController = findNavController(R.id.nav_host_fragment_content_mokito)
         setupActionBarWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.mokito, menu)
-        return true
     }
 
     override fun getApplicationContext(): MVC {

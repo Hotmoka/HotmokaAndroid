@@ -55,4 +55,9 @@
             app:destination="@id/show_state" />
     </fragment>
 
+    <fragment
+        android:id="@+id/settings"
+        android:name="io.hotmoka.android.mokito.view.SettingsFragment"
+        android:label="@string/settings" />
+
 </navigation>

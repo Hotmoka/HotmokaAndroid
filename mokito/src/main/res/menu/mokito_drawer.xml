@@ -24,5 +24,9 @@
             android:id="@+id/insert_reference"
             android:icon="@drawable/ic_menu_send"
             android:title="@string/menu_show_state" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_menu_send"
+            android:title="@string/menu_settings" />
     </group>
 </menu>

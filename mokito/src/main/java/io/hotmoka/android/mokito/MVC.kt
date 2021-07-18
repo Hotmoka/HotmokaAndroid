@@ -7,14 +7,6 @@ import io.hotmoka.android.mokito.view.View
 
 class MVC: Application() {
     val model = Model(this)
-
-    var view: View? = null
-        set(value) {
-            field = value
-
-            if (value != null)
-                controller.ensureConnected()
-        }
-
+    var view: View? = null // dynamically set to the current fragment
     val controller = Controller(this)
 }

@@ -71,10 +71,17 @@ open class ShowStateFragment : AbstractFragment() {
 
     protected fun showOrRequestStateOf(reference: StorageReference) {
         val state = getModel().getState(reference)
-        if (state != null)
+        if (state != null) {
             onStateChanged(reference, state)
-        else
+        }
+        else {
+            binding.recyclerView.adapter?.let {
+                (it as RecyclerAdapter).state = emptyArray()
+                it.notifyDataSetChanged()
+            }
+
             getController().requestStateOf(reference)
+        }
     }
 
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
@@ -97,12 +104,12 @@ open class ShowStateFragment : AbstractFragment() {
             val field1IsInherited = updateOfField1.field.definingClass != tag.clazz
             val field2IsInherited = updateOfField2.field.definingClass != tag.clazz
 
-            if (!field1IsInherited && field2IsInherited)
-                return -1
+            return if (!field1IsInherited && field2IsInherited)
+                -1
             else if (field1IsInherited && !field2IsInherited)
-                return 1
+                1
             else
-                return update1.compareTo(update2)
+                update1.compareTo(update2)
         }
     }
 
@@ -121,14 +128,14 @@ open class ShowStateFragment : AbstractFragment() {
         _binding = null
     }
 
-    class RecyclerAdapter(var tag: ClassTag?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+    inner class RecyclerAdapter(var tag: ClassTag?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         var state = emptyArray<Update>()
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemDescription: TextView = itemView.findViewById(id.item_description)
-            val itemValue: TextView = itemView.findViewById(id.item_value)
-            val itemArrow: ImageView = itemView.findViewById(id.item_arrow)
-            val card: CardView = itemView.findViewById(id.card_view)
+            val itemDescription: TextView = itemView.findViewById(R.id.item_description)
+            val itemValue: TextView = itemView.findViewById(R.id.item_value)
+            val itemArrow: ImageView = itemView.findViewById(R.id.item_arrow)
+            val card: CardView = itemView.findViewById(R.id.card_view)
         }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
@@ -143,8 +150,8 @@ open class ShowStateFragment : AbstractFragment() {
 
             if (update is ClassTag) {
                 // class tag
-                viewHolder.itemDescription.text = "class ${update.clazz}"
-                viewHolder.itemValue.text = "from jar at ${update.jar}"
+                viewHolder.itemDescription.text = resources.getString(string.class_description, update.clazz.toString())
+                viewHolder.itemValue.text = resources.getString(string.jar_description, update.jar.toString())
                 viewHolder.card.isClickable = false
                 viewHolder.card.setCardBackgroundColor(0xFFFF5722.toInt())
                 viewHolder.itemArrow.visibility = View.GONE
@@ -153,7 +160,8 @@ open class ShowStateFragment : AbstractFragment() {
                 val field = (update as UpdateOfField).field
                 if (field.definingClass == tag?.clazz) {
                     // field in the same class
-                    viewHolder.itemDescription.text = "${field.name}: ${field.type}"
+                    viewHolder.itemDescription.text = resources.getString(string.field_description,
+                        field.name, field.type.toString())
                     viewHolder.itemValue.text = valueToPrint(update)
                     viewHolder.card.setCardBackgroundColor(0xFFCDDC39.toInt())
 
@@ -174,8 +182,8 @@ open class ShowStateFragment : AbstractFragment() {
                 }
                 else {
                     // field inherited from a superclass
-                    viewHolder.itemDescription.text =
-                        "${field.name}: ${field.type} (inherited from ${field.definingClass})"
+                    viewHolder.itemDescription.text = resources.getString(string.field_inherited_description,
+                        field.name, field.type.toString(), field.definingClass.toString())
                     viewHolder.itemValue.text = valueToPrint(update)
                     viewHolder.card.setCardBackgroundColor(0xFF00BCD4.toInt())
 
@@ -198,10 +206,10 @@ open class ShowStateFragment : AbstractFragment() {
         }
 
         private fun valueToPrint(update: UpdateOfField): String {
-            if (update is UpdateOfString)
-                return "\"${update.value}\"";
+            return if (update is UpdateOfString)
+                "\"${update.value}\""
             else
-                return update.value.toString();
+                update.value.toString()
         }
 
         override fun getItemCount(): Int {

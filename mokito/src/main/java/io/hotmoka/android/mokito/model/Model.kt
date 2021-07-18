@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.model
 
+import android.util.Log
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
@@ -7,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class Model(val mvc: MVC) {
+class Model(private val mvc: MVC) {
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
@@ -28,6 +29,7 @@ class Model(val mvc: MVC) {
      * Clears all information contained in this model.
      */
     fun clear() {
+        Log.d("Model", "cleaning everything")
         manifest = null
         states.clear()
     }

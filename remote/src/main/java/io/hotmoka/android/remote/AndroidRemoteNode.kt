@@ -1,6 +1,5 @@
 package io.hotmoka.android.remote
 
-import android.content.Context
 import android.util.Log
 import io.hotmoka.beans.InternalFailureException
 import io.hotmoka.beans.references.TransactionReference
@@ -16,76 +15,39 @@ import io.hotmoka.nodes.Node.Subscription
 import io.hotmoka.nodes.Node.JarSupplier
 import io.hotmoka.remote.RemoteNode
 import io.hotmoka.remote.RemoteNodeConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.function.BiConsumer
 import java.util.stream.Stream
 
 class AndroidRemoteNode : Node {
     private var node: Node? = null
     private var config: RemoteNodeConfig? = null
-    private var connected: Boolean = false
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     companion object {
         private const val TAG = "AndroidRemoteNode"
     }
 
-    fun connect(config: RemoteNodeConfig, onConnected: () -> Unit = {}, onFailure: (Throwable) -> Unit = {}) {
-        ioScope.launch {
-            this@AndroidRemoteNode.config = config
-
-            try {
-                node = RemoteNode.of(config)
-                connected = true
-            }
-            catch (t: Throwable) {
-                mainScope.launch {
-                    onFailure(t)
-                }
-
-                return@launch
-            }
-
-            Log.d(TAG, "created remote node of type " + node!!::class.simpleName)
-
-            mainScope.launch {
-                onConnected()
-            }
+    fun connect(config: RemoteNodeConfig) {
+        this.config = config
+        with (RemoteNode.of(config)) {
+            this@AndroidRemoteNode.node = this
+            Log.d(TAG, "connected to ${config.url} through a ${this::class.simpleName}")
         }
     }
 
-    fun disconnect(onDisconnected: () -> Unit = {}, onFailure: (Throwable) -> Unit = {}) {
+    fun disconnect() {
         node?.let {
-            ioScope.launch {
-                try {
-                    it.close()
-                    connected = false
-                }
-                catch (t: Throwable) {
-                    mainScope.launch {
-                        onFailure(t)
-                    }
-
-                    return@launch
-                }
-
-                Log.d(TAG, "disconnected from $config?.url")
-
-                mainScope.launch {
-                    onDisconnected()
-                }
-            }
+            close()
+            Log.d(TAG, "disconnected from ${config?.url}")
         }
     }
 
     fun isConnected() : Boolean {
-        return connected
+        return node != null
     }
 
     override fun close() {
+        val node = this.node
+        this.node = null
         node?.close()
     }
 
@@ -93,63 +55,12 @@ class AndroidRemoteNode : Node {
         return callSafely(Node::getTakamakaCode, "getTakamakaCode")
     }
 
-    fun getTakamakaCode(onSuccess: (TransactionReference) -> Unit, onException: (Throwable) -> Unit) {
-        ioScope.launch {
-            val result: TransactionReference
-
-            try {
-                result = getTakamakaCode()
-            }
-            catch (e: Throwable) {
-                Log.d(TAG, "getTakamakaCode => failure: $e")
-                mainScope.launch(Dispatchers.Main) { onException(e) }
-                return@launch
-            }
-
-            mainScope.launch(Dispatchers.Main) { onSuccess(result) }
-        }
-    }
-
     override fun getManifest(): StorageReference {
         return callSafely(Node::getManifest, "getManifest")
     }
 
-    fun getManifest(onSuccess: (StorageReference) -> Unit, onException: (Throwable) -> Unit) {
-        ioScope.launch(Dispatchers.IO) {
-            val result: StorageReference
-
-            try {
-                result = getManifest()
-            }
-            catch (e: Throwable) {
-                Log.d(TAG, "getManifest => failure: $e")
-                mainScope.launch(Dispatchers.Main) { onException(e) }
-                return@launch
-            }
-
-            mainScope.launch(Dispatchers.Main) { onSuccess(result) }
-        }
-    }
-
     override fun getNameOfSignatureAlgorithmForRequests(): String {
         return callSafely(Node::getNameOfSignatureAlgorithmForRequests, "getNameOfSignatureAlgorithmForRequests")
-    }
-
-    fun getNameOfSignatureAlgorithmForRequests(onSuccess: (String) -> Unit, onException: (Throwable) -> Unit) {
-        ioScope.launch(Dispatchers.IO) {
-            val result: String
-
-            try {
-                result = getNameOfSignatureAlgorithmForRequests()
-            }
-            catch (e: Throwable) {
-                Log.d(TAG, "getNameOfSignatureAlgorithmForRequests => failure: $e")
-                mainScope.launch(Dispatchers.Main) { onException(e) }
-                return@launch
-            }
-
-            mainScope.launch(Dispatchers.Main) { onSuccess(result) }
-        }
     }
 
     override fun getClassTag(reference: StorageReference): ClassTag {

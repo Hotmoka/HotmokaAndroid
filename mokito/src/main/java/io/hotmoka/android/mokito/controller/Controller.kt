@@ -1,8 +1,9 @@
 package io.hotmoka.android.mokito.controller
 
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
-import io.hotmoka.android.mokito.Settings
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
@@ -12,34 +13,44 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class Controller(private val mvc: MVC) {
-    private val node: AndroidRemoteNode = AndroidRemoteNode()
+    private var node: AndroidRemoteNode = AndroidRemoteNode()
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mainScope = CoroutineScope(Dispatchers.Main)
 
-    fun ensureConnected() {
-        if (!node.isConnected()) {
-            val config = RemoteNodeConfig.Builder()
-                .setURL(Settings.url)
-                .setWebSockets(Settings.webSockets)
-                .build()
+    private fun ensureConnected() {
+        if (!node.isConnected())
+            connect()
+    }
 
-            node.connect(config,
-                {
-                    mvc.view?.getContext().let {
-                        Toast.makeText(it, "Connected to ${config.url}", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                { t: Throwable ->
-                    mvc.view?.getContext().let {
-                        Toast.makeText(it, t.toString(), Toast.LENGTH_LONG).show()
-                    }
-                }
-            )
+    private fun connect() {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mvc)
+        val config = RemoteNodeConfig.Builder()
+            .setURL(sharedPreferences.getString("url", "panarea.hotmoka.io"))
+            .setWebSockets(sharedPreferences.getBoolean("webSockets", false))
+            .build()
+
+        node.connect(config)
+
+        mainScope.launch {
+            mvc.view?.getContext()?.let {
+                Toast.makeText(it, it.getString(R.string.connected, config.url), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun requestReconnect() {
+        safeRunAsIO {
+            // we clear the model, since the new node might contain different data
+            mvc.model.clear()
+
+            node.disconnect()
+            connect()
         }
     }
 
     fun requestStateOf(reference: StorageReference) {
         safeRunAsIO {
+            ensureConnected()
             val state = node.getState(reference)
             mvc.model.setState(reference, state.toArray { arrayOfNulls<Update>(it) })
         }
@@ -47,6 +58,7 @@ class Controller(private val mvc: MVC) {
 
     fun requestStateOfManifest() {
         safeRunAsIO {
+            ensureConnected()
             requestStateOf(getManifestCached())
         }
     }

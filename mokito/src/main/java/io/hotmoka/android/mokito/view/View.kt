@@ -2,7 +2,6 @@ package io.hotmoka.android.mokito.view
 
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
-import java.util.stream.Stream
 
 interface View {
 
