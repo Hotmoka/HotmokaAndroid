@@ -3,30 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_accounts">
 
     <fragment
-        android:id="@+id/nav_home"
+        android:id="@+id/nav_accounts"
         android:name="io.hotmoka.android.mokito.view.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="@string/menu_accounts"
         tools:layout="@layout/fragment_home" />
-
-    <fragment
-        android:id="@+id/nav_gallery"
-        android:name="io.hotmoka.android.mokito.view.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="io.hotmoka.android.mokito.view.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
 
     <fragment
         android:id="@+id/insert_reference"
         android:name="io.hotmoka.android.mokito.view.InsertReferenceFragment"
-        android:label="@string/insert_storage_reference"
+        android:label="@string/object_explorer"
         tools:layout="@layout/fragment_insert_reference" >
         <action
             android:id="@+id/action_insert_reference_to_show_state"

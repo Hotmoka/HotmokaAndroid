@@ -46,7 +46,7 @@
             android:id="@+id/item_arrow"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:background="@drawable/ic_menu_send"
+            android:background="@drawable/ic_arrow_right"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

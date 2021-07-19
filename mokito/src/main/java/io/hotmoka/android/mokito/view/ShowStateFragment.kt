@@ -153,7 +153,7 @@ open class ShowStateFragment : AbstractFragment() {
                 viewHolder.itemDescription.text = resources.getString(string.class_description, update.clazz.toString())
                 viewHolder.itemValue.text = resources.getString(string.jar_description, update.jar.toString())
                 viewHolder.card.isClickable = false
-                viewHolder.card.setCardBackgroundColor(0xFFFF5722.toInt())
+                viewHolder.card.setCardBackgroundColor(0xFFFFFFFF.toInt())
                 viewHolder.itemArrow.visibility = View.GONE
             }
             else {
@@ -163,7 +163,7 @@ open class ShowStateFragment : AbstractFragment() {
                     viewHolder.itemDescription.text = resources.getString(string.field_description,
                         field.name, field.type.toString())
                     viewHolder.itemValue.text = valueToPrint(update)
-                    viewHolder.card.setCardBackgroundColor(0xFFCDDC39.toInt())
+                    viewHolder.card.setCardBackgroundColor(0xFFE0E0E0.toInt()) //FFCDDC39.toInt())
 
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true
@@ -185,7 +185,7 @@ open class ShowStateFragment : AbstractFragment() {
                     viewHolder.itemDescription.text = resources.getString(string.field_inherited_description,
                         field.name, field.type.toString(), field.definingClass.toString())
                     viewHolder.itemValue.text = valueToPrint(update)
-                    viewHolder.card.setCardBackgroundColor(0xFF00BCD4.toInt())
+                    viewHolder.card.setCardBackgroundColor(0xFFC0C0C0.toInt())
 
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true

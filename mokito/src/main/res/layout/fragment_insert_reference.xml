@@ -14,21 +14,34 @@
         android:text="@string/show_state"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/reference" />
+        app:layout_constraintTop_toBottomOf="@+id/reference" />
 
     <EditText
         android:id="@+id/reference"
-        android:layout_width="0dp"
+        android:layout_width="395dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:inputType="text"
-        android:text="@string/insert_storage_reference"
-        app:layout_constraintBottom_toTopOf="@id/showState"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/showState"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/insert_the_storage_reference_of_the_object"
+        app:layout_constraintBottom_toTopOf="@+id/reference"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

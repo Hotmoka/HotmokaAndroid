@@ -24,8 +24,12 @@ class Controller(private val mvc: MVC) {
 
     private fun connect() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mvc)
+        var url = sharedPreferences.getString("url", "panarea.hotmoka.io")
+        if (url!!.startsWith("http://"))
+            url = url.substring("http://".length)
+
         val config = RemoteNodeConfig.Builder()
-            .setURL(sharedPreferences.getString("url", "panarea.hotmoka.io"))
+            .setURL(url)
             .setWebSockets(sharedPreferences.getBoolean("webSockets", false))
             .build()
 

@@ -25,7 +25,7 @@ class Mokito : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.insert_reference,
+                R.id.nav_accounts, R.id.insert_reference,
                 R.id.show_manifest, R.id.settings
             ), binding.drawerLayout
         )
