@@ -24,4 +24,6 @@ interface View {
      * @param state the state of {@code reference} that has been changed
      */
     fun onStateChanged(reference: StorageReference, state: Array<Update>)
+
+    fun onAccountCreated(account: StorageReference)
 }

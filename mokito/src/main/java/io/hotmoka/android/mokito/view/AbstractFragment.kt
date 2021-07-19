@@ -42,6 +42,9 @@ abstract class AbstractFragment : Fragment(), View {
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
     }
 
+    override fun onAccountCreated(account: StorageReference) {
+    }
+
     protected fun notifyException(t: Throwable) {
         notifyProblem(t.toString())
     }

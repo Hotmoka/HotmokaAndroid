@@ -30,6 +30,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
     }
 
+    override fun onAccountCreated(account: StorageReference) {
+    }
+
     private fun clearSubtitle() {
         context.supportActionBar!!.subtitle = ""
     }

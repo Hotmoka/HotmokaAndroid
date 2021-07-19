@@ -70,4 +70,10 @@ class Model(private val mvc: MVC) {
             mvc.view?.onStateChanged(reference, state)
         }
     }
+
+    fun addAccount(account: StorageReference) {
+        mainScope.launch {
+            mvc.view?.onAccountCreated(account)
+        }
+    }
 }

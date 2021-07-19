@@ -49,6 +49,8 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'io.hotmoka:io-hotmoka-beans:1.0.1'
     implementation 'io.hotmoka:io-hotmoka-remote:1.0.1'
+    implementation 'io.hotmoka:io-hotmoka-crypto:1.0.1'
+    implementation 'io.hotmoka:io-hotmoka-views:1.0.1'
     implementation project(path: ':remote')
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
