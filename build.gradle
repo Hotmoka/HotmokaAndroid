@@ -2,6 +2,7 @@
 buildscript {
     ext.kotlin_version = "1.5.20"
     repositories {
+        mavenLocal() // TODO: remove at the end
         google()
         mavenCentral()
     }
@@ -17,9 +18,10 @@ buildscript {
 
 allprojects {
     repositories {
+        mavenLocal() // TODO: remove at the end
         google()
         mavenCentral()
-        jcenter() // Warning: this repository is going to shut down soon
+        //jcenter() // Warning: this repository is going to shut down soon
     }
 }
 

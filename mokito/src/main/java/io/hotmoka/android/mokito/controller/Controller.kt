@@ -7,22 +7,15 @@ import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.remote.AndroidRemoteNode
-import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
-import io.hotmoka.beans.requests.SignedTransactionRequest
-import io.hotmoka.beans.signatures.CodeSignature
-import io.hotmoka.beans.signatures.NonVoidMethodSignature
-import io.hotmoka.beans.types.ClassType
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.BigIntegerValue
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.beans.values.StringValue
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.remote.RemoteNodeConfig
-import io.hotmoka.views.GasHelper
-import io.hotmoka.views.NonceHelper
+import io.hotmoka.views.AccountCreationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters
 import java.math.BigInteger
 
 class Controller(private val mvc: MVC) {
@@ -86,33 +79,16 @@ class Controller(private val mvc: MVC) {
             ensureConnected()
             val signatureAlgorithmOfNewAccount = SignatureAlgorithmForTransactionRequests.mk("ed25519")
             val keys = signatureAlgorithmOfNewAccount.keyPair
+            val balance = BigInteger.valueOf(123456789L)
+            var account = AccountCreationHelper(node)
+                .fromFaucet(signatureAlgorithmOfNewAccount,
+                    keys.public, balance, BigInteger.ZERO) { _ -> {} }
+            Log.d("Controller", "created new account $account")
+            account = AccountCreationHelper(node).fromPayer(account, keys, signatureAlgorithmOfNewAccount, keys.public, BigInteger.ZERO, BigInteger.ZERO, false, { _ -> {} }, { _ -> {}})
             val publicKey = Base64.encodeToString(keys.public.encoded, Base64.DEFAULT)
             Log.d("Controller", publicKey)
-            val _100_000 = BigInteger.valueOf(100_000L)
-            val balance = BigInteger.valueOf(123456L)
-            val manifest = node.manifest
-            val takamakaCode = node.takamakaCode
-            val chainId = (node.runInstanceMethodCallTransaction(
-                InstanceMethodCallTransactionRequest(manifest, _100_000, takamakaCode,
-                    CodeSignature.GET_CHAIN_ID, manifest)) as StringValue).value
-            val gamete = node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(manifest, _100_000, takamakaCode, CodeSignature.GET_GAMETE, manifest)) as StorageReference
-            val methodName = "faucetED25519"
-            val eoaType = ClassType(ClassType.EOA.name + "ed25519".uppercase())
-            val gas = _100_000
-
-            // we use an empty signature algorithm and an arbitrary key, since the faucet is unsigned
-            val signature = SignatureAlgorithmForTransactionRequests.empty()
-            val signer = SignedTransactionRequest.Signer.with(signature, signature.keyPair)
-            val nonceHelper = NonceHelper(node)
-            val gasHelper = GasHelper(node)
-            val request = InstanceMethodCallTransactionRequest(signer, gamete, nonceHelper.getNonceOf(gamete), chainId, gas, gasHelper.gasPrice, takamakaCode,
-                NonVoidMethodSignature(ClassType.GAMETE, methodName, eoaType, ClassType.BIG_INTEGER, ClassType.BIG_INTEGER, ClassType.STRING),
-                gamete,
-                BigIntegerValue(balance), BigIntegerValue(BigInteger.ZERO), StringValue(publicKey)
-            )
-
-            val account = node.addInstanceMethodCallTransaction(request) as StorageReference
             Log.d("Controller", "created new account $account")
+            Log.d("Controller", "the account has length ${account.transaction.hashAsBytes.size}")
             mvc.model.addAccount(account)
         }
     }
