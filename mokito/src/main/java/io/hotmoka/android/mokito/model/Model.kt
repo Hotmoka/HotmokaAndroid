@@ -71,7 +71,7 @@ class Model(private val mvc: MVC) {
         }
     }
 
-    fun addAccount(account: StorageReference) {
+    fun addAccount(account: StorageReference, entropy: ByteArray) {
         mainScope.launch {
             mvc.view?.onAccountCreated(account)
         }

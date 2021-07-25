@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import io.hotmoka.android.mokito.databinding.FragmentAccountsBinding
 import io.hotmoka.beans.values.StorageReference
+import java.math.BigInteger
 
 class AccountsFragment : AbstractFragment() {
     private var _binding: FragmentAccountsBinding? = null
@@ -19,7 +20,7 @@ class AccountsFragment : AbstractFragment() {
     override fun onStart() {
         super.onStart()
 
-        getController().requestNewAccountFromFaucet()
+        getController().requestNewAccountFromFaucet("password", BigInteger.valueOf(123456789L))
     }
 
     override fun onAccountCreated(account: StorageReference) {

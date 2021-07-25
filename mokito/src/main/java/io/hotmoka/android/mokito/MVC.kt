@@ -13,15 +13,17 @@ class MVC: Application() {
     var view: View? = null // dynamically set to the current fragment
     val controller = Controller(this)
 
-    init {
-        // we remove the BC provider, since by default, in Android, it corresponds
-        // to the old, internal BC provider
-        Security.removeProvider("BC")
-        // we register the current BC provider instead, from the BC dependency taken from Maven
-        Security.addProvider(BouncyCastleProvider())
+    companion object {
+        init {
+            // we remove the BC provider, since by default, in Android, it corresponds
+            // to the old, internal BC provider
+            Security.removeProvider("BC")
+            // we register the current BC provider instead, from the BC dependency taken from Maven
+            Security.addProvider(BouncyCastleProvider())
 
-        // for more information, see
-        // https://stackoverflow.com/questions/2584401/how-to-add-bouncy-castle-algorithm-to-android
-        // answer by satur9nine
+            // for more information, see
+            // https://stackoverflow.com/questions/2584401/how-to-add-bouncy-castle-algorithm-to-android
+            // answer by satur9nine
+        }
     }
 }
