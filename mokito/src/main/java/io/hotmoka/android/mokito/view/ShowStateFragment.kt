@@ -163,7 +163,7 @@ open class ShowStateFragment : AbstractFragment() {
                     viewHolder.itemDescription.text = resources.getString(string.field_description,
                         field.name, field.type.toString())
                     viewHolder.itemValue.text = valueToPrint(update)
-                    viewHolder.card.setCardBackgroundColor(0xFFE0E0E0.toInt()) //FFCDDC39.toInt())
+                    viewHolder.card.setCardBackgroundColor(0xFFE0E0E0.toInt())
 
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true

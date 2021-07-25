@@ -82,7 +82,7 @@ class Controller(private val mvc: MVC) {
      * Creates a random array of the given amount of bytes.
      */
     private fun entropy(bytes: Int): ByteArray {
-        val entropy = ByteArray(16)
+        val entropy = ByteArray(bytes)
         random.nextBytes(entropy)
         return entropy
     }
