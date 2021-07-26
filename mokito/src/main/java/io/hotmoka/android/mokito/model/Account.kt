@@ -11,18 +11,20 @@ import java.io.IOException
 import java.lang.IllegalStateException
 import java.math.BigInteger
 
-class Account {
+open class Account {
     val reference: StorageReference
-    private val name: String
+    val name: String
     private val entropy: ByteArray
+    val balance: BigInteger
 
-    constructor(reference: StorageReference, name: String, entropy: ByteArray) {
+    constructor(reference: StorageReference, name: String, entropy: ByteArray, balance: BigInteger) {
         this.reference = reference
         this.name = name
         this.entropy = entropy
+        this.balance = balance
     }
 
-    constructor(parser: XmlPullParser) {
+    constructor(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger) {
         parser.require(XmlPullParser.START_TAG, null, "account")
 
         var reference: StorageReference? = null
@@ -55,6 +57,8 @@ class Account {
             this.entropy = entropy
         else
             throw IllegalStateException("missing entropy tag in account")
+
+        this.balance = getBalance(reference)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)

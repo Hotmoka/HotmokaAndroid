@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.view
 
+import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 
@@ -25,5 +26,5 @@ interface View {
      */
     fun onStateChanged(reference: StorageReference, state: Array<Update>)
 
-    fun onAccountCreated(account: StorageReference)
+    fun onAccountsChanged(accounts: Accounts)
 }

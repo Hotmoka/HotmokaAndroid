@@ -3,16 +3,17 @@ package io.hotmoka.android.mokito.model
 import android.content.Context
 import android.util.Log
 import android.util.Xml
+import io.hotmoka.android.mokito.MVC
 import io.hotmoka.beans.values.StorageReference
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.IllegalStateException
+import java.math.BigInteger
 import java.util.*
 
-class Accounts(context: Context) {
+class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReference) -> BigInteger) {
 
     /**
      * The name of the file where the accounts are stored, in the internal storage of the app.
@@ -27,22 +28,25 @@ class Accounts(context: Context) {
 
     init {
         try {
-            context.openFileInput(accountsFilename).use {
+            mvc.openFileInput(accountsFilename).use {
                 val parser = Xml.newPullParser()
                 parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
                 parser.setInput(it, null)
                 parser.nextTag()
-                readAccounts(parser)
+                readAccounts(parser, getBalance)
+                faucet?.let {
+                    add(Faucet(faucet, getBalance(faucet)))
+                }
             }
         }
         catch (e: FileNotFoundException) {
             // this is fine: initially the file of the accounts is missing
-            Log.d("Accounts", "no ${accountsFilename}")
+            Log.d("Accounts", "no $accountsFilename")
         }
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
-    private fun readAccounts(parser: XmlPullParser) {
+    private fun readAccounts(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger) {
         parser.require(XmlPullParser.START_TAG, null, "accounts")
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -50,7 +54,7 @@ class Accounts(context: Context) {
 
             // starts by looking for the account tag
             if (parser.name == "account")
-                add(Account(parser))
+                add(Account(parser, getBalance))
             else
                 skip(parser)
         }

@@ -19,6 +19,7 @@
     <string name="jar_description">"from jar at %1$s"</string>
     <string name="field_description">"%1$s: %2$s"</string>
     <string name="field_inherited_description">"%1$s: %2$s (inherited from %3$s)"</string>
+    <string name="balance_description">"balance: %1$s"</string>
     <string name="connected">"Connected to %1$s"</string>
     <string name="state_of_object">State of object</string>
     <string name="manifest">Manifest</string>

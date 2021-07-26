@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 class Model(private val mvc: MVC) {
 
     private val mainScope = CoroutineScope(Dispatchers.Main)
@@ -17,6 +16,11 @@ class Model(private val mvc: MVC) {
      * The manifest of the Hotmoka node.
      */
     private var manifest: StorageReference? = null
+
+    /**
+     * The accounts of the user.
+     */
+    private var accounts: Accounts? = null
 
     /**
      * A map from a storage reference to its state, if has been already
@@ -32,6 +36,7 @@ class Model(private val mvc: MVC) {
     fun clear() {
         Log.d("Model", "cleaning everything")
         manifest = null
+        accounts = null
         states.clear()
     }
 
@@ -42,6 +47,23 @@ class Model(private val mvc: MVC) {
 
         mainScope.launch {
             mvc.view?.onManifestChanged(manifest)
+        }
+    }
+
+    fun getAccounts(): Accounts? = accounts
+
+    fun setAccounts(accounts: Accounts) {
+        this.accounts = accounts
+
+        /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
+            val all = lines.fold("") { some, text ->
+                "$some\n$text"
+            }
+            Log.d("Model", all)
+        }*/
+
+        mainScope.launch {
+            mvc.view?.onAccountsChanged(accounts)
         }
     }
 
@@ -69,23 +91,6 @@ class Model(private val mvc: MVC) {
 
         mainScope.launch {
             mvc.view?.onStateChanged(reference, state)
-        }
-    }
-
-    fun addAccount(account: StorageReference, entropy: ByteArray) {
-        val accounts = Accounts(mvc)
-        accounts.add(Account(account, "NO NAME", entropy))
-        accounts.writeIntoInternalStorage(mvc)
-
-        /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
-            val all = lines.fold("") { some, text ->
-                "$some\n$text"
-            }
-            Log.d("Model", all)
-        }*/
-
-        mainScope.launch {
-            mvc.view?.onAccountCreated(account)
         }
     }
 }

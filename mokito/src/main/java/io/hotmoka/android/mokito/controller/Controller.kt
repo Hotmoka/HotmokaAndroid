@@ -5,8 +5,15 @@ import android.widget.Toast
 import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
+import io.hotmoka.android.mokito.model.Account
+import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.remote.AndroidRemoteNode
+import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
+import io.hotmoka.beans.signatures.MethodSignature
 import io.hotmoka.beans.updates.Update
+import io.hotmoka.beans.values.BigIntegerValue
+import io.hotmoka.beans.values.BooleanValue
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.crypto.internal.ED25519
@@ -15,14 +22,13 @@ import io.hotmoka.views.AccountCreationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.bouncycastle.util.encoders.Hex
 import java.lang.IllegalStateException
 import java.math.BigInteger
-import java.security.MessageDigest
 import java.security.SecureRandom
 
 class Controller(private val mvc: MVC) {
     private var node: AndroidRemoteNode = AndroidRemoteNode()
+    private var takamakaCode: TransactionReference? = null
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519() as ED25519
@@ -45,6 +51,7 @@ class Controller(private val mvc: MVC) {
             .build()
 
         node.connect(config)
+        takamakaCode = node.takamakaCode
 
         mainScope.launch {
             mvc.view?.getContext()?.let {
@@ -87,6 +94,13 @@ class Controller(private val mvc: MVC) {
         return entropy
     }
 
+    fun requestAccounts() {
+        safeRunAsIO {
+            ensureConnected()
+            mvc.model.setAccounts(Accounts(mvc, getFaucet(), this::getBalance))
+        }
+    }
+
     fun requestNewAccountFromFaucet(password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()
@@ -113,8 +127,20 @@ class Controller(private val mvc: MVC) {
 
             Log.d("Controller", "created new account $account")
 
-            mvc.model.addAccount(account, entropy)
+            val accounts = Accounts(mvc, getFaucet(), this::getBalance)
+            accounts.add(Account(account, "NO NAME", entropy, getBalance(account)))
+            accounts.writeIntoInternalStorage(mvc)
 
+            /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
+                val all = lines.fold("") { some, text ->
+                    "$some\n$text"
+                }
+                Log.d("Model", all)
+            }*/
+
+            mvc.model.setAccounts(accounts)
+
+            /*
             // the progressive number of the created account is always #0,
             // hence we do not consider it
             val digest = MessageDigest.getInstance("SHA-256")
@@ -133,7 +159,31 @@ class Controller(private val mvc: MVC) {
                 "Controller",
                 "Length to store is ${total.length * 4} bits ie ${total.length * 4 / 11} words"
             )
+
+             */
         }
+    }
+
+    private fun getFaucet(): StorageReference? {
+        val manifest = getManifestCached()
+        val hasFaucet = (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
+            manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.ALLOWS_UNSIGNED_FAUCET, manifest
+        )) as BooleanValue).value
+
+        if (hasFaucet)
+            return node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
+                manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_GAMETE, manifest
+            )) as StorageReference
+        else
+            return null
+    }
+
+    private fun getBalance(reference: StorageReference): BigInteger {
+        return (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                reference, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.BALANCE, reference
+            )
+        ) as BigIntegerValue).value
     }
 
     private fun safeRunAsIO(task: () -> Unit) {

@@ -128,19 +128,19 @@ open class ShowStateFragment : AbstractFragment() {
         _binding = null
     }
 
-    inner class RecyclerAdapter(var tag: ClassTag?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+    private inner class RecyclerAdapter(var tag: ClassTag?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         var state = emptyArray<Update>()
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val itemDescription: TextView = itemView.findViewById(R.id.item_description)
             val itemValue: TextView = itemView.findViewById(R.id.item_value)
             val itemArrow: ImageView = itemView.findViewById(R.id.item_arrow)
-            val card: CardView = itemView.findViewById(R.id.card_view)
+            val card: CardView = itemView.findViewById(R.id.update_card_view)
         }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
             val v = LayoutInflater.from(viewGroup.context)
-                .inflate(layout.card_layout, viewGroup, false)
+                .inflate(layout.update_card_layout, viewGroup, false)
 
             return ViewHolder(v)
         }
