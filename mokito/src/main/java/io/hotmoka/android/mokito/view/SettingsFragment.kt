@@ -38,6 +38,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun askForConfirmationOfDeleting(account: Account) {
     }
 
+    override fun askForEdit(account: Account) {
+    }
+
     private fun clearSubtitle() {
         context.supportActionBar!!.subtitle = ""
     }

@@ -35,4 +35,11 @@ interface View {
      * @param account the account to delete
      */
     fun askForConfirmationOfDeleting(account: Account)
+
+    /**
+     * The view must open a dialog that allows one to edit the properties of the given account.
+     *
+     * @param account the account to edit
+     */
+    fun askForEdit(account: Account)
 }

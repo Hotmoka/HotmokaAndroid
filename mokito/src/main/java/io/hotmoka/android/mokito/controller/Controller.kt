@@ -115,6 +115,21 @@ class Controller(private val mvc: MVC) {
         }
     }
 
+    fun requestEdit(account: Account) {
+        mvc.view?.askForEdit(account)
+    }
+
+    fun requestReplace(old: Account, new: Account) {
+        safeRunAsIO {
+            ensureConnected()
+            val accounts = Accounts(mvc, getFaucet(), this::getBalance)
+            accounts.delete(old)
+            accounts.add(new)
+            accounts.writeIntoInternalStorage(mvc)
+            mvc.model.setAccounts(accounts)
+        }
+    }
+
     fun requestNewAccountFromFaucet(password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()

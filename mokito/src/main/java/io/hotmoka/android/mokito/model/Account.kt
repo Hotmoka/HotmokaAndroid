@@ -46,7 +46,7 @@ open class Account: Comparable<Account>, Parcelable {
      */
     private val entropy: ByteArray
 
-    constructor(reference: StorageReference, name: String, entropy: ByteArray, balance: BigInteger) {
+    constructor(reference: StorageReference?, name: String, entropy: ByteArray, balance: BigInteger) {
         this.reference = reference
         this.name = name
         this.entropy = entropy
@@ -125,6 +125,10 @@ open class Account: Comparable<Account>, Parcelable {
                 return arrayOfNulls(size)
             }
         }
+    }
+
+    fun setName(newName: String): Account {
+        return Account(reference, newName, entropy.clone(), balance)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)

@@ -55,6 +55,10 @@ class AccountsFragment : AbstractFragment() {
         DeleteAccountConfirmationDialogFragment.show(this, account)
     }
 
+    override fun askForEdit(account: Account) {
+        AccountSettingsDialogFragment.show(this, account)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -112,6 +116,9 @@ class AccountsFragment : AbstractFragment() {
                 viewHolder.deleteIcon.setOnClickListener { getController().requestDelete(account) }
                 viewHolder.sendIcon.visibility = View.VISIBLE
                 viewHolder.settingsIcon.visibility = View.VISIBLE
+                viewHolder.settingsIcon.setOnClickListener {
+                    getController().requestEdit(account)
+                }
             }
 
             viewHolder.newIcon.setOnClickListener {

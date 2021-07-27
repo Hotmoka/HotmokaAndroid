@@ -28,6 +28,10 @@
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
     <string name="delete_confirmation">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
     <string name="delete_question">Delete?</string>
+    <string name="account_settings">Account settings</string>
     <string name="keep">Keep</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="account_name">Account name</string>
 </resources>
