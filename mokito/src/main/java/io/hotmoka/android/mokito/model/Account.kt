@@ -11,11 +11,38 @@ import java.io.IOException
 import java.lang.IllegalStateException
 import java.math.BigInteger
 
-open class Account {
-    val reference: StorageReference
+/**
+ * An account of the user of the application.
+ */
+open class Account: Comparable<Account> {
+
+    /**
+     * The reference of the account in the store of the Hotmoka node.
+     * This might be missing if we are waiting for somebody else
+     * to create the account and store it in the accounts ledger of the manifest of the node.
+     */
+    val reference: StorageReference?
+
+    /**
+     * The name given to the account. This is not contained in the store of the Hotmoka
+     * node, but only maintained locally, in the internal storage of the mobile application,
+     * for ease of reference to the account.
+     */
     val name: String
-    private val entropy: ByteArray
+
+    /**
+     * The account of the account in the storage of the Hotmoka node.
+     */
     val balance: BigInteger
+
+    /**
+     * The entropy that was used to generate the key pair of the account. Only the
+     * public key of the key pair is stored in the Hotmoka node. Note that this entropy
+     * is useless if the associated password is not known, that, merged with this entropy,
+     * allows one to reconstruct the key pair. The password is not stored anywhere, it should
+     * be remembered by the user.
+     */
+    private val entropy: ByteArray
 
     constructor(reference: StorageReference, name: String, entropy: ByteArray, balance: BigInteger) {
         this.reference = reference
@@ -43,10 +70,14 @@ open class Account {
             }
         }
 
-        if (reference != null)
+        if (reference != null) {
             this.reference = reference
-        else
-            throw IllegalStateException("missing reference tag in account")
+            this.balance = getBalance(reference)
+        }
+        else {
+            this.reference = null
+            this.balance = BigInteger.ZERO
+        }
 
         if (name != null)
             this.name = name
@@ -57,8 +88,6 @@ open class Account {
             this.entropy = entropy
         else
             throw IllegalStateException("missing entropy tag in account")
-
-        this.balance = getBalance(reference)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -144,17 +173,19 @@ open class Account {
         }
     }
 
-    fun writeWith(serializer: XmlSerializer) {
+    open fun writeWith(serializer: XmlSerializer) {
         serializer.startTag(null, "account")
 
-        serializer.startTag(null, "reference")
-        serializer.startTag(null, "transaction")
-        serializer.text(Hex.toHexString(reference.transaction.hashAsBytes))
-        serializer.endTag(null, "transaction")
-        serializer.startTag(null, "progressive")
-        serializer.text(reference.progressive.toString())
-        serializer.endTag(null, "progressive")
-        serializer.endTag(null, "reference")
+        reference?.let {
+            serializer.startTag(null, "reference")
+            serializer.startTag(null, "transaction")
+            serializer.text(Hex.toHexString(reference.transaction.hashAsBytes))
+            serializer.endTag(null, "transaction")
+            serializer.startTag(null, "progressive")
+            serializer.text(reference.progressive.toString())
+            serializer.endTag(null, "progressive")
+            serializer.endTag(null, "reference")
+        }
 
         serializer.startTag(null, "name")
         serializer.text(name)
@@ -165,5 +196,39 @@ open class Account {
         serializer.endTag(null, "entropy")
 
         serializer.endTag(null, "account")
+    }
+
+    override fun compareTo(other: Account): Int {
+        val diff = compareEntropies(entropy, other.entropy)
+        if (diff == 0)
+            return 0
+
+        val diff2 = name.compareTo(other.name)
+        if (diff2 != 0)
+            return diff2
+        else
+            return diff
+    }
+
+    private fun compareEntropies(entropy1: ByteArray, entropy2: ByteArray): Int {
+        var diff: Int = entropy1.size - entropy2.size
+        if (diff != 0)
+            return diff
+
+        for (pos in entropy1.indices) {
+           diff = entropy1[pos] - entropy2[pos]
+           if (diff != 0)
+               return diff
+        }
+
+        return 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is Account && entropy.contentEquals(other.entropy)
+    }
+
+    override fun hashCode(): Int {
+        return entropy.contentHashCode()
     }
 }

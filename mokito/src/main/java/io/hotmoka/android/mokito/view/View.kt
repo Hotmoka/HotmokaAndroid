@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.view
 
+import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
@@ -27,4 +28,11 @@ interface View {
     fun onStateChanged(reference: StorageReference, state: Array<Update>)
 
     fun onAccountsChanged(accounts: Accounts)
+
+    /**
+     * The view must ask to the user if she really wants to delete the given account.
+     *
+     * @param account the account to delete
+     */
+    fun askForConfirmationOfDeleting(account: Account)
 }

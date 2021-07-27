@@ -101,6 +101,20 @@ class Controller(private val mvc: MVC) {
         }
     }
 
+    fun requestDelete(account: Account) {
+        mvc.view?.askForConfirmationOfDeleting(account)
+    }
+
+    fun requestConfirmedDelete(account: Account) {
+        safeRunAsIO {
+            ensureConnected()
+            val accounts = Accounts(mvc, getFaucet(), this::getBalance)
+            accounts.delete(account)
+            accounts.writeIntoInternalStorage(mvc)
+            mvc.model.setAccounts(accounts)
+        }
+    }
+
     fun requestNewAccountFromFaucet(password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()
@@ -128,7 +142,7 @@ class Controller(private val mvc: MVC) {
             Log.d("Controller", "created new account $account")
 
             val accounts = Accounts(mvc, getFaucet(), this::getBalance)
-            accounts.add(Account(account, "NO NAME", entropy, getBalance(account)))
+            accounts.add(Account(account, "NO NAME", entropy, balance))
             accounts.writeIntoInternalStorage(mvc)
 
             /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
@@ -164,6 +178,11 @@ class Controller(private val mvc: MVC) {
         }
     }
 
+    /**
+     * Yields the faucet of the HOtmoka node, if the node allows it.
+     *
+     * @return the faucet, if any
+     */
     private fun getFaucet(): StorageReference? {
         val manifest = getManifestCached()
         val hasFaucet = (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(

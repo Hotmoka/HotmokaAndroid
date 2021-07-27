@@ -12,6 +12,7 @@ import java.io.IOException
 import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.util.*
+import java.util.stream.Stream
 
 class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReference) -> BigInteger) {
 
@@ -21,10 +22,9 @@ class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReferenc
     private val accountsFilename = "accounts.txt"
 
     /**
-     * The accounts in this container, bound to their storage reference
-     * for simplifying their look-up.
+     * The accounts in this container.
      */
-    private val accounts = HashMap<StorageReference, Account>()
+    private val accounts = TreeSet<Account>()
 
     init {
         try {
@@ -74,15 +74,31 @@ class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReferenc
         }
     }
 
+    /**
+     * Adds the given account from this object.
+     *
+     * @param account the account to add
+     */
     fun add(account: Account) {
-        if (accounts.containsKey(account.reference))
-            throw IllegalStateException("account already existing")
-
-        accounts[account.reference] = account
+        accounts.add(account)
     }
 
-    fun getAll(): Collection<Account> {
-        return accounts.values
+    /**
+     * Removes the given account from this object.
+     *
+     * @param account the account to remove
+     */
+    fun delete(account: Account) {
+        accounts.remove(account)
+    }
+
+    /**
+     * Yields the accounts in this container, in increasing order.
+     *
+     * @return the accounts, in increasing order
+     */
+    fun getAll(): Stream<Account> {
+        return accounts.stream()
     }
 
     fun writeIntoInternalStorage(context: Context) {
@@ -96,7 +112,7 @@ class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReferenc
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true)
 
             serializer.startTag(null, "accounts")
-            accounts.values.forEach { it.writeWith(serializer) }
+            accounts.forEach { it.writeWith(serializer) }
             serializer.endTag(null, "accounts")
 
             serializer.endDocument()
