@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.InsertReferenceFragment">
+    tools:context=".view.state.InsertReferenceFragment">
 
     <Button
         android:id="@+id/showState"
@@ -20,8 +20,10 @@
 
     <EditText
         android:id="@+id/reference"
-        android:layout_width="395dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:inputType="text"
         android:text=""
         app:layout_constraintBottom_toTopOf="@+id/showState"

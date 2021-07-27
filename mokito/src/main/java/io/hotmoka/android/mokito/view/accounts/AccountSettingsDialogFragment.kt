@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.view
+package io.hotmoka.android.mokito.view.accounts
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -7,6 +7,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
+import io.hotmoka.android.mokito.view.AbstractDialogFragment
 
 class AccountSettingsDialogFragment: AbstractDialogFragment() {
     private var account: Account? = null

@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.view
+package io.hotmoka.android.mokito.view.state
 
 import android.os.Bundle
 import android.view.*
@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.R.*
 import io.hotmoka.android.mokito.databinding.FragmentShowStateBinding
-import io.hotmoka.android.mokito.model.Accounts
+import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.beans.updates.*
 import io.hotmoka.beans.values.StorageReference
 import java.lang.IllegalStateException
@@ -168,8 +168,7 @@ open class ShowStateFragment : AbstractFragment() {
                         viewHolder.card.isClickable = true
                         viewHolder.itemArrow.visibility = View.VISIBLE
                         viewHolder.card.setOnClickListener {
-                            val action: ShowStateFragmentDirections.ActionShowStateSelf =
-                                ShowStateFragmentDirections.actionShowStateSelf()
+                            val action = ShowStateFragmentDirections.actionShowStateSelf()
                             action.reference = update.value.toString()
                             Navigation.findNavController(it).navigate(action)
                         }
@@ -190,8 +189,7 @@ open class ShowStateFragment : AbstractFragment() {
                         viewHolder.card.isClickable = true
                         viewHolder.itemArrow.visibility = View.VISIBLE
                         viewHolder.card.setOnClickListener {
-                            val action: ShowStateFragmentDirections.ActionShowStateSelf =
-                                ShowStateFragmentDirections.actionShowStateSelf()
+                            val action = ShowStateFragmentDirections.actionShowStateSelf()
                             action.reference = update.value.toString()
                             Navigation.findNavController(it).navigate(action)
                         }

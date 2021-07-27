@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.view
+package io.hotmoka.android.mokito.view.settings
 
 import android.os.Bundle
 import androidx.preference.Preference
@@ -6,6 +6,8 @@ import androidx.preference.PreferenceFragmentCompat
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
+import io.hotmoka.android.mokito.view.Mokito
+import io.hotmoka.android.mokito.view.View
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 

@@ -1,5 +1,6 @@
-package io.hotmoka.android.mokito.view
+package io.hotmoka.android.mokito.view.manifest
 
+import io.hotmoka.android.mokito.view.state.ShowStateFragment
 import io.hotmoka.beans.values.StorageReference
 
 /**

@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.view
+package io.hotmoka.android.mokito.view.state
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.Navigation
 import io.hotmoka.android.mokito.databinding.FragmentInsertReferenceBinding
+import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.beans.values.StorageReference
 
 /**
@@ -31,9 +32,7 @@ class InsertReferenceFragment : AbstractFragment() {
                 return@setOnClickListener
             }
 
-            val action: InsertReferenceFragmentDirections.ActionInsertReferenceToShowState =
-                InsertReferenceFragmentDirections.actionInsertReferenceToShowState()
-
+            val action = InsertReferenceFragmentDirections.actionInsertReferenceToShowState()
             action.reference = input
             Navigation.findNavController(it).navigate(action)
         }

@@ -1,4 +1,4 @@
-package io.hotmoka.android.mokito.view
+package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
 import android.view.*
@@ -13,6 +13,7 @@ import io.hotmoka.android.mokito.databinding.FragmentAccountsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
+import io.hotmoka.android.mokito.view.AbstractFragment
 import java.math.BigInteger
 
 class AccountsFragment : AbstractFragment() {
