@@ -34,15 +34,14 @@ class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReferenc
                 parser.setInput(it, null)
                 parser.nextTag()
                 readAccounts(parser, getBalance)
-                faucet?.let {
-                    add(Faucet(faucet, getBalance(faucet)))
-                }
             }
         }
         catch (e: FileNotFoundException) {
             // this is fine: initially the file of the accounts is missing
             Log.d("Accounts", "no $accountsFilename")
         }
+
+        faucet?.let { add(Faucet(faucet, getBalance(faucet))) }
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
