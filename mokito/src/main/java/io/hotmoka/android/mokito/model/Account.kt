@@ -1,5 +1,7 @@
 package io.hotmoka.android.mokito.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.values.StorageReference
@@ -14,7 +16,7 @@ import java.math.BigInteger
 /**
  * An account of the user of the application.
  */
-open class Account: Comparable<Account> {
+open class Account: Comparable<Account>, Parcelable {
 
     /**
      * The reference of the account in the store of the Hotmoka node.
@@ -88,6 +90,41 @@ open class Account: Comparable<Account> {
             this.entropy = entropy
         else
             throw IllegalStateException("missing entropy tag in account")
+    }
+
+    private constructor(parcel: Parcel) {
+        this.reference = parcel.readSerializable() as StorageReference
+        this.name = parcel.readString()!!
+        this.balance = parcel.readSerializable() as BigInteger
+        this.entropy = ByteArray(parcel.readInt())
+        parcel.readByteArray(this.entropy)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    override fun writeToParcel(out: Parcel, flags: Int) {
+        out.writeSerializable(reference)
+        out.writeString(name)
+        out.writeSerializable(balance)
+        out.writeInt(entropy.size)
+        out.writeByteArray(entropy)
+    }
+
+    companion object {
+
+        @Suppress("unused") @JvmField
+        val CREATOR = object : Parcelable.Creator<Account?> {
+
+            override fun createFromParcel(parcel: Parcel): Account {
+                return Account(parcel)
+            }
+
+            override fun newArray(size: Int): Array<Account?> {
+                return arrayOfNulls(size)
+            }
+        }
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -204,10 +241,10 @@ open class Account: Comparable<Account> {
             return 0
 
         val diff2 = name.compareTo(other.name)
-        if (diff2 != 0)
-            return diff2
+        return if (diff2 != 0)
+            diff2
         else
-            return diff
+            diff
     }
 
     private fun compareEntropies(entropy1: ByteArray, entropy2: ByteArray): Int {

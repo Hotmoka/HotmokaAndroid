@@ -21,6 +21,8 @@ import java.util.stream.Stream
 class AndroidRemoteNode : Node {
     private var node: Node? = null
     private var config: RemoteNodeConfig? = null
+    private var manifest: StorageReference? = null
+    private var takamakaCode: TransactionReference? = null
 
     companion object {
         private const val TAG = "AndroidRemoteNode"
@@ -48,15 +50,29 @@ class AndroidRemoteNode : Node {
     override fun close() {
         val node = this.node
         this.node = null
+        this.manifest = null
+        this.takamakaCode = null
         node?.close()
     }
 
     override fun getTakamakaCode(): TransactionReference {
-        return callSafely(Node::getTakamakaCode, "getTakamakaCode")
+        var takamakaCode: TransactionReference? = this.takamakaCode
+        if (takamakaCode == null) {
+            takamakaCode = callSafely(Node::getTakamakaCode, "getTakamakaCode")
+            this.takamakaCode = takamakaCode
+        }
+
+        return takamakaCode!!
     }
 
     override fun getManifest(): StorageReference {
-        return callSafely(Node::getManifest, "getManifest")
+        var manifest: StorageReference? = this.manifest
+        if (manifest == null) {
+            manifest = callSafely(Node::getManifest, "getManifest")
+            this.manifest = manifest
+        }
+
+        return manifest!!
     }
 
     override fun getNameOfSignatureAlgorithmForRequests(): String {

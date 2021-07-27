@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,12 +16,15 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import java.math.BigInteger
 
-
 class AccountsFragment : AbstractFragment() {
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
     private var adapter: RecyclerAdapter? = null
-    private var dialog: AlertDialog? = null
+
+    companion object {
+        @Suppress("ObjectPropertyName")
+        private val _10exp21 = BigInteger.TEN.pow(21)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAccountsBinding.inflate(inflater, container, false)
@@ -50,28 +52,7 @@ class AccountsFragment : AbstractFragment() {
     }
 
     override fun askForConfirmationOfDeleting(account: Account) {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-        builder.setTitle(R.string.delete_question)
-        builder.setMessage(getString(R.string.delete_confirmation, account.name))
-        builder.setIcon(R.drawable.ic_hand)
-        builder.setPositiveButton(R.string.delete) { _, _ ->
-            dismissDialog()
-            getController().requestConfirmedDelete(account)
-        }
-        builder.setNegativeButton(R.string.keep) { _, _ -> dismissDialog() }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
-        this.dialog = dialog
-    }
-
-    private fun dismissDialog() {
-        dialog?.dismiss()
-        dialog = null
-    }
-
-    override fun onPause() {
-        super.onPause()
-        dismissDialog()
+        DeleteAccountConfirmationDialogFragment.show(this, account)
     }
 
     override fun onDestroyView() {
@@ -110,7 +91,15 @@ class AccountsFragment : AbstractFragment() {
             val account = accounts[i]
             viewHolder.itemName.text = account.name
             viewHolder.itemReference.text = account.reference.toString()
-            viewHolder.itemBalance.text = resources.getString(R.string.balance_description, account.balance.toString())
+            val balance = account.balance
+            val split = balance.divideAndRemainder(_10exp21)
+            val mokas = split[0]
+            val fraction = split[1]
+            var fractionWithZeros = fraction.toString()
+            while (fractionWithZeros.length < 21)
+                fractionWithZeros = "0$fractionWithZeros"
+
+            viewHolder.itemBalance.text = resources.getString(R.string.balance_description, mokas, fractionWithZeros)
 
             if (account is Faucet) {
                 // the faucet cannot be edited, nor removed, nor used to send money

@@ -98,6 +98,7 @@
             android:id="@+id/item_balance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:textSize="14sp"
             android:textStyle="normal"
             app:layout_constraintBottom_toTopOf="@+id/item_send"

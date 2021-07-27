@@ -12,8 +12,10 @@ import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.R.*
 import io.hotmoka.android.mokito.databinding.FragmentShowStateBinding
+import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.beans.updates.*
 import io.hotmoka.beans.values.StorageReference
+import java.lang.IllegalStateException
 import kotlin.Comparator
 
 /**
@@ -22,6 +24,7 @@ import kotlin.Comparator
 open class ShowStateFragment : AbstractFragment() {
     private var _binding: FragmentShowStateBinding? = null
     private val binding get() = _binding!!
+    private var adapter: RecyclerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +33,9 @@ open class ShowStateFragment : AbstractFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentShowStateBinding.inflate(inflater, container, false)
+        adapter = RecyclerAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = RecyclerAdapter(null)
+        binding.recyclerView.adapter = adapter
         return binding.root
     }
 
@@ -55,9 +59,7 @@ open class ShowStateFragment : AbstractFragment() {
     }
 
     protected open fun showOrRequestState() {
-        getShownReference()?.let {
-            showOrRequestStateOf(it)
-        }
+        getShownReference()?.let { showOrRequestStateOf(it) }
     }
 
     protected open fun getShownReference(): StorageReference? {
@@ -71,23 +73,16 @@ open class ShowStateFragment : AbstractFragment() {
 
     protected fun showOrRequestStateOf(reference: StorageReference) {
         val state = getModel().getState(reference)
-        if (state != null) {
+        if (state != null)
             onStateChanged(reference, state)
-        }
-        else {
-            binding.recyclerView.adapter?.let {
-                (it as RecyclerAdapter).state = emptyArray()
-                it.notifyDataSetChanged()
-            }
-
+        else
             getController().requestStateOf(reference)
-        }
     }
 
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
         if (reference == getShownReference()) {
             setSubtitle(reference.toString())
-            showState(state)
+            adapter?.setUpdates(state)
         }
     }
 
@@ -113,25 +108,29 @@ open class ShowStateFragment : AbstractFragment() {
         }
     }
 
-    private fun showState(state: Array<Update>) {
-        val tag = state.filterIsInstance<ClassTag>().first()
-        state.sortWith(UpdateComparator(tag))
-        binding.recyclerView.adapter?.let {
-            (it as RecyclerAdapter).state = state
-            it.tag = tag
-            it.notifyDataSetChanged()
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private inner class RecyclerAdapter(var tag: ClassTag?) : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
-        var state = emptyArray<Update>()
+    private inner class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+        private var tag: ClassTag? = null
+        private var state = emptyArray<Update>()
 
-        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun setUpdates(state: Array<Update>) {
+            try {
+                val tag = state.filterIsInstance<ClassTag>().first()
+                state.sortWith(UpdateComparator(tag))
+                this.state = state
+                this.tag = tag
+                notifyDataSetChanged()
+            }
+            catch (e: NoSuchElementException) {
+                throw IllegalStateException("The server answered with a state missing a class tag")
+            }
+        }
+
+        private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val itemDescription: TextView = itemView.findViewById(R.id.item_description)
             val itemValue: TextView = itemView.findViewById(R.id.item_value)
             val itemArrow: ImageView = itemView.findViewById(R.id.item_arrow)
