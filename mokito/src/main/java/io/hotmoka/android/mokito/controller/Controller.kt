@@ -108,7 +108,7 @@ class Controller(private val mvc: MVC) {
     fun requestConfirmedDelete(account: Account) {
         safeRunAsIO {
             ensureConnected()
-            val accounts = Accounts(mvc, getFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
             accounts.delete(account)
             accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
@@ -122,7 +122,7 @@ class Controller(private val mvc: MVC) {
     fun requestReplace(old: Account, new: Account) {
         safeRunAsIO {
             ensureConnected()
-            val accounts = Accounts(mvc, getFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
             accounts.delete(old)
             accounts.add(new)
             accounts.writeIntoInternalStorage(mvc)
@@ -156,7 +156,7 @@ class Controller(private val mvc: MVC) {
 
             Log.d("Controller", "created new account $account")
 
-            val accounts = Accounts(mvc, getFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
             accounts.add(Account(account, "NO NAME", entropy, balance))
             accounts.writeIntoInternalStorage(mvc)
 

@@ -6,6 +6,6 @@
         android:orderInCategory="100"
         android:icon="@drawable/ic_refresh"
         android:title="@string/action_reload"
-        android:tooltipText="@string/action_reload_state_tooltip"
+        android:tooltipText="@string/action_reload_accounts_tooltip"
         app:showAsAction="ifRoom" />
 </menu>

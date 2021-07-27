@@ -1,9 +1,8 @@
 package io.hotmoka.android.mokito.view
 
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.view.*
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -26,12 +25,31 @@ class AccountsFragment : AbstractFragment() {
         private val _10exp21 = BigInteger.TEN.pow(21)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAccountsBinding.inflate(inflater, container, false)
         adapter = RecyclerAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.accounts, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_reload) {
+            getController().requestAccounts()
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onStart() {

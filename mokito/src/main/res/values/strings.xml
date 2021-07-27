@@ -7,7 +7,8 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_reload">Reload</string>
-    <string name="action_reload_tooltip">Reload this object from the node</string>
+    <string name="action_reload_state_tooltip">Reload this object from the node</string>
+    <string name="action_reload_accounts_tooltip">Reload the accounts information from the node</string>
     <string name="menu_accounts">Accounts</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
