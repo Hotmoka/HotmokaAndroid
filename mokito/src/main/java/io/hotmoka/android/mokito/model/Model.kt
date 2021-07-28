@@ -18,6 +18,11 @@ class Model(private val mvc: MVC) {
     private var manifest: StorageReference? = null
 
     /**
+     * The gamete of the Hotmoka node.
+     */
+    private var gamete: StorageReference? = null
+
+    /**
      * The accounts of the user.
      */
     private var accounts: Accounts? = null
@@ -36,6 +41,7 @@ class Model(private val mvc: MVC) {
     fun clear() {
         Log.d("Model", "cleaning everything")
         manifest = null
+        gamete = null
         accounts = null
         states.clear()
     }
@@ -48,6 +54,12 @@ class Model(private val mvc: MVC) {
         mainScope.launch {
             mvc.view?.onManifestChanged(manifest)
         }
+    }
+
+    fun getGamete(): StorageReference? = gamete
+
+    fun setGamete(gamete: StorageReference) {
+        this.gamete = gamete
     }
 
     fun getAccounts(): Accounts? = accounts

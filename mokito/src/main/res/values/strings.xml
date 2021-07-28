@@ -28,7 +28,7 @@
     <string name="settings">Settings</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
-    <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for the gas for the creation. Keep note of the new account password, since there is no way to recover it later.</string>
+    <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="delete_question">Delete?</string>
     <string name="account_settings">Account settings</string>
     <string name="account_creation">Account creation</string>
@@ -38,7 +38,7 @@
     <string name="delete">Delete</string>
     <string name="account_name">Account name</string>
     <string name="new_account_name">New account name</string>
-    <string name="new_account_balance">New account balance</string>
+    <string name="new_account_balance">New account balance (max %1$s)</string>
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
 </resources>

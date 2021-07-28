@@ -92,7 +92,7 @@ open class Account: Comparable<Account>, Parcelable {
             throw IllegalStateException("missing entropy tag in account")
     }
 
-    private constructor(parcel: Parcel) {
+    protected constructor(parcel: Parcel) {
         this.reference = parcel.readSerializable() as StorageReference
         this.name = parcel.readString()!!
         this.balance = parcel.readSerializable() as BigInteger
@@ -105,6 +105,11 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     override fun writeToParcel(out: Parcel, flags: Int) {
+        out.writeByte(0)
+        writeToParcelInternal(out, flags)
+    }
+
+    protected fun writeToParcelInternal(out: Parcel, flags: Int) {
         out.writeSerializable(reference)
         out.writeString(name)
         out.writeSerializable(balance)
@@ -118,7 +123,11 @@ open class Account: Comparable<Account>, Parcelable {
         val CREATOR = object : Parcelable.Creator<Account?> {
 
             override fun createFromParcel(parcel: Parcel): Account {
-                return Account(parcel)
+                val start = parcel.readByte()
+                if (start == 0.toByte())
+                    return Account(parcel)
+                else
+                    return Faucet(parcel)
             }
 
             override fun newArray(size: Int): Array<Account?> {

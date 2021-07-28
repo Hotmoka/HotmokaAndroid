@@ -97,14 +97,14 @@ class Controller(private val mvc: MVC) {
     fun requestAccounts() {
         safeRunAsIO {
             ensureConnected()
-            mvc.model.setAccounts(Accounts(mvc, getFaucet(), this::getBalance))
+            mvc.model.setAccounts(Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance))
         }
     }
 
     fun requestDelete(account: Account) {
         safeRunAsIO {
             ensureConnected()
-            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
             accounts.delete(account)
             accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
@@ -114,7 +114,7 @@ class Controller(private val mvc: MVC) {
     fun requestReplace(old: Account, new: Account) {
         safeRunAsIO {
             ensureConnected()
-            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
             accounts.delete(old)
             accounts.add(new)
             accounts.writeIntoInternalStorage(mvc)
@@ -122,7 +122,7 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestNewAccountFromFaucet(password: String, balance: BigInteger) {
+    fun requestNewAccountFromFaucet(name: String, password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()
 
@@ -133,7 +133,7 @@ class Controller(private val mvc: MVC) {
             val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, password)
 
             // create an account with the public key, let the faucet pay for that
-            val account = AccountCreationHelper(node)
+            val reference = AccountCreationHelper(node)
                 .fromFaucet(
                     signatureAlgorithmOfNewAccounts,
                     keys.public,
@@ -143,13 +143,15 @@ class Controller(private val mvc: MVC) {
 
             // currently, the progressive number of the created account will be #0,
             // but we better check against future unexpected changes in the server's behavior
-            if (account.progressive.signum() != 0)
+            if (reference.progressive.signum() != 0)
                 throw IllegalStateException("I can only deal with new accounts whose progressive number is 0")
 
-            Log.d("Controller", "created new account $account")
+            Log.d("Controller", "created new account $reference")
 
-            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
-            accounts.add(Account(account, "NO NAME", entropy, balance))
+            // we force a reload of the accounts, so that their balances reflect the changes;
+            // this is important, in particular, to update the balance of the payer
+            val accounts = Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
+            accounts.add(Account(reference, name, entropy, balance))
             accounts.writeIntoInternalStorage(mvc)
 
             /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
@@ -197,11 +199,16 @@ class Controller(private val mvc: MVC) {
         )) as BooleanValue).value
 
         return if (hasFaucet)
-            node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-                manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_GAMETE, manifest
-            )) as StorageReference
+            getGameteCached()
         else
             null
+    }
+
+    private fun getMaxFaucet(): BigInteger {
+        val manifest = getManifestCached()
+        return (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
+            manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_MAX_FAUCET, getGameteCached()
+        )) as BigIntegerValue).value
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
@@ -236,5 +243,19 @@ class Controller(private val mvc: MVC) {
         val manifest = node.manifest
         mvc.model.setManifest(manifest)
         return manifest
+    }
+
+    private fun getGameteCached(): StorageReference {
+        mvc.model.getGamete()?.let {
+            return it
+        }
+
+        val manifest = getManifestCached()
+        val gamete = node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
+            manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_GAMETE, manifest
+        )) as StorageReference
+
+        mvc.model.setGamete(gamete)
+        return gamete
     }
 }

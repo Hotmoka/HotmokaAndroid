@@ -14,7 +14,7 @@ import java.math.BigInteger
 import java.util.*
 import java.util.stream.Stream
 
-class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReference) -> BigInteger) {
+class Accounts(mvc: MVC, faucet: StorageReference?, maxFaucet: BigInteger, getBalance: (StorageReference) -> BigInteger) {
 
     /**
      * The name of the file where the accounts are stored, in the internal storage of the app.
@@ -41,7 +41,7 @@ class Accounts(mvc: MVC, faucet: StorageReference?, getBalance: (StorageReferenc
             Log.d("Accounts", "no $accountsFilename")
         }
 
-        faucet?.let { add(Faucet(faucet, getBalance(faucet))) }
+        faucet?.let { add(Faucet(faucet, maxFaucet, getBalance(faucet))) }
     }
 
     @Throws(XmlPullParserException::class, IOException::class)

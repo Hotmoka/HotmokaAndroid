@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.controller.Controller
@@ -9,6 +10,10 @@ import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 
 abstract class AbstractFragment : Fragment(), View {
+
+    companion object {
+        const val TAG = "AbstractFragment"
+    }
 
     override fun onStart() {
         super.onStart()
@@ -47,10 +52,12 @@ abstract class AbstractFragment : Fragment(), View {
     }
 
     protected fun notifyException(t: Throwable) {
-        notifyProblem(t.toString())
+        Log.d(TAG, "action failed with the following exception", t)
+        Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
     }
 
     protected fun notifyProblem(message: String) {
+        Log.d(TAG, message)
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 }
