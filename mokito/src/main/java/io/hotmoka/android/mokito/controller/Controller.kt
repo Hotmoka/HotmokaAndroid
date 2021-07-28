@@ -54,9 +54,7 @@ class Controller(private val mvc: MVC) {
         takamakaCode = node.takamakaCode
 
         mainScope.launch {
-            mvc.view?.getContext()?.let {
-                Toast.makeText(it, it.getString(R.string.connected, config.url), Toast.LENGTH_SHORT).show()
-            }
+            mvc.view?.notifyUser(mvc.getString(R.string.connected, config.url))
         }
     }
 
@@ -151,7 +149,8 @@ class Controller(private val mvc: MVC) {
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
             val accounts = Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
-            accounts.add(Account(reference, name, entropy, balance))
+            val newAccount = Account(reference, name, entropy, balance)
+            accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
 
             /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
@@ -161,6 +160,9 @@ class Controller(private val mvc: MVC) {
                 Log.d("Model", all)
             }*/
 
+            mainScope.launch {
+                mvc.view?.onAccountCreated(newAccount)
+            }
             mvc.model.setAccounts(accounts)
 
             /*
@@ -227,9 +229,7 @@ class Controller(private val mvc: MVC) {
             catch (t: Throwable) {
                 // if something goes wrong, we inform the user
                 mainScope.launch {
-                    mvc.view?.let {
-                        Toast.makeText(it.getContext(), t.toString(), Toast.LENGTH_LONG).show()
-                    }
+                    mvc.view?.notifyUser(t.toString())
                 }
             }
         }

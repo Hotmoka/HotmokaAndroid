@@ -4,6 +4,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.controller.Controller
+import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.beans.updates.Update
@@ -51,12 +52,15 @@ abstract class AbstractFragment : Fragment(), View {
     override fun onAccountsChanged(accounts: Accounts) {
     }
 
+    override fun onAccountCreated(account: Account) {
+    }
+
     protected fun notifyException(t: Throwable) {
         Log.d(TAG, "action failed with the following exception", t)
         Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
     }
 
-    protected fun notifyProblem(message: String) {
+    override fun notifyUser(message: String) {
         Log.d(TAG, message)
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }

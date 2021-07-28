@@ -1,9 +1,12 @@
 package io.hotmoka.android.mokito.view.settings
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import io.hotmoka.android.mokito.R
+import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.view.View
@@ -11,6 +14,10 @@ import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, View {
+
+    companion object {
+        const val TAG = "SettingsFragment"
+    }
 
     override fun onStart() {
         super.onStart()
@@ -34,6 +41,14 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     }
 
     override fun onAccountsChanged(accounts: Accounts) {
+    }
+
+    override fun onAccountCreated(account: Account) {
+    }
+
+    override fun notifyUser(message: String) {
+        Log.d(TAG, message)
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     private fun clearSubtitle() {

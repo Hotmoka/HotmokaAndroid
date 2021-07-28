@@ -27,5 +27,19 @@ interface View {
      */
     fun onStateChanged(reference: StorageReference, state: Array<Update>)
 
+    /**
+     * Called when the set of accounts has changed.
+     *
+     * @param accounts the updated set of accounts
+     */
     fun onAccountsChanged(accounts: Accounts)
+
+    /**
+     * Called when a new account has been created.
+     *
+     * @param account the new account
+     */
+    fun onAccountCreated(account: Account)
+
+    fun notifyUser(message: String)
 }

@@ -28,7 +28,7 @@ class InsertReferenceFragment : AbstractFragment() {
                 StorageReference(input)
             }
             catch (t: Throwable) {
-                notifyProblem("A storage reference should consist of 64 hex digits followed by # and by a progressive number")
+                notifyUser("A storage reference should consist of 64 hex digits followed by # and by a progressive number")
                 return@setOnClickListener
             }
 
