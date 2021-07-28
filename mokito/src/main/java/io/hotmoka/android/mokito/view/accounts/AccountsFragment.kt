@@ -19,7 +19,7 @@ import java.math.BigInteger
 class AccountsFragment : AbstractFragment() {
     private var _binding: FragmentAccountsBinding? = null
     private val binding get() = _binding!!
-    private var adapter: RecyclerAdapter? = null
+    private lateinit var adapter: RecyclerAdapter
 
     companion object {
         @Suppress("ObjectPropertyName")
@@ -67,15 +67,7 @@ class AccountsFragment : AbstractFragment() {
     }
 
     override fun onAccountsChanged(accounts: Accounts) {
-        adapter?.setAccounts(accounts)
-    }
-
-    override fun askForConfirmationOfDeleting(account: Account) {
-        DeleteAccountConfirmationDialogFragment.show(this, account)
-    }
-
-    override fun askForEdit(account: Account) {
-        AccountSettingsDialogFragment.show(this, account)
+        adapter.setAccounts(accounts)
     }
 
     override fun onDestroyView() {
@@ -132,16 +124,18 @@ class AccountsFragment : AbstractFragment() {
             }
             else {
                 viewHolder.deleteIcon.visibility = View.VISIBLE
-                viewHolder.deleteIcon.setOnClickListener { getController().requestDelete(account) }
+                viewHolder.deleteIcon.setOnClickListener {
+                    DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
+                }
                 viewHolder.sendIcon.visibility = View.VISIBLE
                 viewHolder.settingsIcon.visibility = View.VISIBLE
                 viewHolder.settingsIcon.setOnClickListener {
-                    getController().requestEdit(account)
+                    AccountSettingsDialogFragment.show(this@AccountsFragment, account)
                 }
             }
 
             viewHolder.newIcon.setOnClickListener {
-                getController().requestNewAccountFromFaucet("pippo", BigInteger.TEN)
+                CreateAccountDialogFragment.show(this@AccountsFragment, account)
             }
         }
 

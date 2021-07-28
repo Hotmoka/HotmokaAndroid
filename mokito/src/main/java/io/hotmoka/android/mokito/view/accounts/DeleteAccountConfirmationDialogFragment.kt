@@ -32,11 +32,11 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.delete_question)
-        builder.setIcon(R.drawable.ic_hand)
+        builder.setIcon(R.drawable.ic_delete)
 
         account?.let {
-            builder.setMessage(getString(R.string.delete_confirmation, it.name))
-            builder.setPositiveButton(R.string.delete) { _, _ -> getController().requestConfirmedDelete(it) }
+            builder.setMessage(getString(R.string.delete_confirmation_message, it.name))
+            builder.setPositiveButton(R.string.delete) { _, _ -> getController().requestDelete(it) }
         }
 
         builder.setNegativeButton(R.string.keep) { _,_ -> }

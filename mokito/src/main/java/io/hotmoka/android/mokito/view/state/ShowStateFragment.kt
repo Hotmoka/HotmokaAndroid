@@ -24,7 +24,7 @@ import kotlin.Comparator
 open class ShowStateFragment : AbstractFragment() {
     private var _binding: FragmentShowStateBinding? = null
     private val binding get() = _binding!!
-    private var adapter: RecyclerAdapter? = null
+    private lateinit var adapter: RecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +82,7 @@ open class ShowStateFragment : AbstractFragment() {
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
         if (reference == getShownReference()) {
             setSubtitle(reference.toString())
-            adapter?.setUpdates(state)
+            adapter.setUpdates(state)
         }
     }
 

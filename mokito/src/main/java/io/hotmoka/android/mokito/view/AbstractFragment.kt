@@ -3,7 +3,6 @@ package io.hotmoka.android.mokito.view
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.controller.Controller
-import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.beans.updates.Update
@@ -45,12 +44,6 @@ abstract class AbstractFragment : Fragment(), View {
     }
 
     override fun onAccountsChanged(accounts: Accounts) {
-    }
-
-    override fun askForConfirmationOfDeleting(account: Account) {
-    }
-
-    override fun askForEdit(account: Account) {
     }
 
     protected fun notifyException(t: Throwable) {

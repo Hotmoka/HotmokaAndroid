@@ -102,10 +102,6 @@ class Controller(private val mvc: MVC) {
     }
 
     fun requestDelete(account: Account) {
-        mvc.view?.askForConfirmationOfDeleting(account)
-    }
-
-    fun requestConfirmedDelete(account: Account) {
         safeRunAsIO {
             ensureConnected()
             val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), this::getBalance)
@@ -113,10 +109,6 @@ class Controller(private val mvc: MVC) {
             accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
         }
-    }
-
-    fun requestEdit(account: Account) {
-        mvc.view?.askForEdit(account)
     }
 
     fun requestReplace(old: Account, new: Account) {
@@ -194,7 +186,7 @@ class Controller(private val mvc: MVC) {
     }
 
     /**
-     * Yields the faucet of the HOtmoka node, if the node allows it.
+     * Yields the faucet of the Hotmoka node, if the node allows it.
      *
      * @return the faucet, if any
      */
@@ -204,12 +196,12 @@ class Controller(private val mvc: MVC) {
             manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.ALLOWS_UNSIGNED_FAUCET, manifest
         )) as BooleanValue).value
 
-        if (hasFaucet)
-            return node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
+        return if (hasFaucet)
+            node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
                 manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_GAMETE, manifest
             )) as StorageReference
         else
-            return null
+            null
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
