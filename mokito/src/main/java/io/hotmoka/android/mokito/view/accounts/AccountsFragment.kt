@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
@@ -68,6 +69,10 @@ class AccountsFragment : AbstractFragment() {
 
     override fun onAccountsChanged(accounts: Accounts) {
         adapter.setAccounts(accounts)
+    }
+
+    override fun onAccountCreated(account: Account) {
+        findNavController().navigate(AccountsFragmentDirections.actionShowCreatedAccount(account))
     }
 
     override fun onDestroyView() {

@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
@@ -24,11 +24,17 @@ import kotlin.Comparator
 open class ShowStateFragment : AbstractFragment() {
     private var _binding: FragmentShowStateBinding? = null
     private val binding get() = _binding!!
+    private var reference: StorageReference? = null
     private lateinit var adapter: RecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+
+        // the arguments might be missing if this fragment is actually a ShowManifestFragment;
+        // in that case, reference will be set later, when the stae of the manifest will be ready
+        if (arguments != null)
+            reference = ShowStateFragmentArgs.fromBundle(requireArguments()).reference
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -45,42 +51,42 @@ open class ShowStateFragment : AbstractFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_reload) {
-            getShownReference()?.let { getController().requestStateOf(it) }
-            return true
-        }
+        if (item.itemId == R.id.action_reload)
+            reference?.let {
+                getController().requestStateOf(it)
+                return true
+            }
 
         return super.onOptionsItemSelected(item)
     }
 
     override fun onStart() {
         super.onStart()
-        showOrRequestState()
+        showOrRequestStateOf(reference)
     }
 
-    protected open fun showOrRequestState() {
-        getShownReference()?.let { showOrRequestStateOf(it) }
-    }
-
-    protected open fun getShownReference(): StorageReference? {
-        arguments?.let {
-            val args = ShowStateFragmentArgs.fromBundle(it)
-            return StorageReference(args.reference)
+    protected open fun showOrRequestStateOf(reference: StorageReference?) {
+        if (reference == null) {
+            val manifest = getModel().getManifest()
+            if (manifest == null)
+                getController().requestStateOfManifest()
+            else
+                showOrRequestStateOf(manifest)
         }
-
-        return null
-    }
-
-    protected fun showOrRequestStateOf(reference: StorageReference) {
-        val state = getModel().getState(reference)
-        if (state != null)
-            onStateChanged(reference, state)
-        else
-            getController().requestStateOf(reference)
+        else {
+            val state = getModel().getState(reference)
+            if (state != null)
+                onStateChanged(reference, state)
+            else
+                getController().requestStateOf(reference)
+        }
     }
 
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
-        if (reference == getShownReference()) {
+        if (this.reference == null && reference == getModel().getManifest())
+            this.reference = reference
+
+        if (reference == this.reference) {
             setSubtitle(reference.toString())
             adapter.setUpdates(state)
         }
@@ -93,11 +99,8 @@ open class ShowStateFragment : AbstractFragment() {
             else if (update2 is ClassTag)
                 return 1  // there is at most a ClassTag in the state
 
-            val updateOfField1 = update1 as UpdateOfField
-            val updateOfField2 = update2 as UpdateOfField
-
-            val field1IsInherited = updateOfField1.field.definingClass != tag.clazz
-            val field2IsInherited = updateOfField2.field.definingClass != tag.clazz
+            val field1IsInherited = (update1 as UpdateOfField).field.definingClass != tag.clazz
+            val field2IsInherited = (update2 as UpdateOfField).field.definingClass != tag.clazz
 
             return if (!field1IsInherited && field2IsInherited)
                 -1
@@ -168,9 +171,8 @@ open class ShowStateFragment : AbstractFragment() {
                         viewHolder.card.isClickable = true
                         viewHolder.itemArrow.visibility = View.VISIBLE
                         viewHolder.card.setOnClickListener {
-                            val action = ShowStateFragmentDirections.actionShowStateSelf()
-                            action.reference = update.value.toString()
-                            Navigation.findNavController(it).navigate(action)
+                            val action = ShowStateFragmentDirections.actionShowStateSelf(update.value)
+                            findNavController().navigate(action)
                         }
                     }
                     else {
@@ -189,9 +191,8 @@ open class ShowStateFragment : AbstractFragment() {
                         viewHolder.card.isClickable = true
                         viewHolder.itemArrow.visibility = View.VISIBLE
                         viewHolder.card.setOnClickListener {
-                            val action = ShowStateFragmentDirections.actionShowStateSelf()
-                            action.reference = update.value.toString()
-                            Navigation.findNavController(it).navigate(action)
+                            val action = ShowStateFragmentDirections.actionShowStateSelf(update.value)
+                            findNavController().navigate(action)
                         }
                     }
                     else {

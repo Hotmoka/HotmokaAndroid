@@ -8,8 +8,12 @@
     <fragment
         android:id="@+id/nav_accounts"
         android:name="io.hotmoka.android.mokito.view.accounts.AccountsFragment"
-        android:label="@string/menu_accounts"
-        tools:layout="@layout/fragment_accounts" />
+        android:label="@string/accounts"
+        tools:layout="@layout/fragment_accounts" >
+        <action
+            android:id="@+id/action_show_created_account"
+            app:destination="@id/show_created_account" />
+    </fragment>
 
     <fragment
         android:id="@+id/insert_reference"
@@ -27,8 +31,7 @@
         android:label="@string/state_of_object" >
         <argument
             android:name="reference"
-            app:argType="string"
-            android:defaultValue="" />
+            app:argType="io.hotmoka.beans.values.StorageReference" />
         <action
             android:id="@+id/action_show_state_self"
             app:destination="@id/show_state" />
@@ -47,5 +50,14 @@
         android:id="@+id/settings"
         android:name="io.hotmoka.android.mokito.view.settings.SettingsFragment"
         android:label="@string/settings" />
+
+    <fragment
+        android:id="@+id/show_created_account"
+        android:name="io.hotmoka.android.mokito.view.accounts.AccountCreatedFragment"
+        android:label="AccountCreatedFragment" >
+        <argument
+            android:name="newAccount"
+            app:argType="io.hotmoka.android.mokito.model.Account" />
+    </fragment>
 
 </navigation>

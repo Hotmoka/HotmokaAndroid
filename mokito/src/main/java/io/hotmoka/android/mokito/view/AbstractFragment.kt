@@ -1,6 +1,8 @@
 package io.hotmoka.android.mokito.view
 
+import android.app.Activity
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.controller.Controller
@@ -9,6 +11,7 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
+
 
 abstract class AbstractFragment : Fragment(), View {
 
@@ -24,6 +27,13 @@ abstract class AbstractFragment : Fragment(), View {
 
     override fun onStop() {
         context.applicationContext.view = null
+
+        val inputMethodManager: InputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (inputMethodManager.isAcceptingText)
+            context.currentFocus?.let {
+                inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
+            }
+
         super.onStop()
     }
 
