@@ -7,7 +7,6 @@ import io.hotmoka.android.mokito.view.View
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.Security
 
-
 class MVC: Application() {
     val model = Model(this)
     var view: View? = null // dynamically set to the current fragment

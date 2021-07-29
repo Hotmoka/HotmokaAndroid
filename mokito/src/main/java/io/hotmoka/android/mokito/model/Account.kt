@@ -281,4 +281,8 @@ open class Account: Comparable<Account>, Parcelable {
     override fun hashCode(): Int {
         return entropy.contentHashCode()
     }
+
+    fun getEntropy(): ByteArray {
+        return entropy.clone()
+    }
 }

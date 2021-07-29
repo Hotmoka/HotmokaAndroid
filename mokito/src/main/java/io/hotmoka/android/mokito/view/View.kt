@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.view
 
+import io.hotmoka.android.mokito.controller.Bip39
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.beans.updates.Update
@@ -40,6 +41,15 @@ interface View {
      * @param account the new account
      */
     fun onAccountCreated(account: Account)
+
+    /**
+     * Called when the computation of the BIP39 words for an account
+     * has been completed.
+     *
+     * @param account the account
+     * @param bip39 the words computed for {@code account}
+     */
+    fun onBip39Available(account: Account, bip39: Bip39)
 
     fun notifyUser(message: String)
 }

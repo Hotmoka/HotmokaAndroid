@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import io.hotmoka.android.mokito.R
+import io.hotmoka.android.mokito.controller.Bip39
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.view.Mokito
@@ -44,6 +45,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     }
 
     override fun onAccountCreated(account: Account) {
+    }
+
+    override fun onBip39Available(account: Account, bip39: Bip39) {
     }
 
     override fun notifyUser(message: String) {

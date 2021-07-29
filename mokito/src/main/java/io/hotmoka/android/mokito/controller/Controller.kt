@@ -1,7 +1,6 @@
 package io.hotmoka.android.mokito.controller
 
 import android.util.Log
-import android.widget.Toast
 import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
@@ -30,6 +29,7 @@ class Controller(private val mvc: MVC) {
     private var node: AndroidRemoteNode = AndroidRemoteNode()
     private var takamakaCode: TransactionReference? = null
     private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val backgroundScope = CoroutineScope(Dispatchers.Default)
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519() as ED25519
     private val random = SecureRandom()
@@ -164,28 +164,16 @@ class Controller(private val mvc: MVC) {
                 mvc.view?.onAccountCreated(newAccount)
             }
             mvc.model.setAccounts(accounts)
+        }
+    }
 
-            /*
-            // the progressive number of the created account is always #0,
-            // hence we do not consider it
-            val digest = MessageDigest.getInstance("SHA-256")
-            var data = entropy + account.transaction.hashAsBytes
-            val sha256 = digest.digest(data)
+    fun requestBip39Words(account: Account) {
+        safeRunAsBackground {
+            val bip39 = Bip39(account, mvc)
 
-            // we add a checksum
-            data = data + sha256[0] + sha256[1]
-            var total = Hex.toHexString(data)
-
-            // the last four bits of sha256[1] are not considered
-            total = total.substring(0, total.length - 1)
-
-            Log.d("Controller", "In total: $total")
-            Log.d(
-                "Controller",
-                "Length to store is ${total.length * 4} bits ie ${total.length * 4 / 11} words"
-            )
-
-             */
+            mainScope.launch {
+                mvc.view?.onBip39Available(account, bip39)
+            }
         }
     }
 
@@ -223,6 +211,20 @@ class Controller(private val mvc: MVC) {
 
     private fun safeRunAsIO(task: () -> Unit) {
         ioScope.launch {
+            try {
+                task.invoke()
+            }
+            catch (t: Throwable) {
+                // if something goes wrong, we inform the user
+                mainScope.launch {
+                    mvc.view?.notifyUser(t.toString())
+                }
+            }
+        }
+    }
+
+    private fun safeRunAsBackground(task: () -> Unit) {
+        backgroundScope.launch {
             try {
                 task.invoke()
             }

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import io.hotmoka.android.mokito.controller.Bip39
 import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
@@ -63,6 +64,9 @@ abstract class AbstractFragment : Fragment(), View {
     }
 
     override fun onAccountCreated(account: Account) {
+    }
+
+    override fun onBip39Available(account: Account, bip39: Bip39) {
     }
 
     protected fun notifyException(t: Throwable) {
