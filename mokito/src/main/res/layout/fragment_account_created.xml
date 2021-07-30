@@ -11,88 +11,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:layout_marginBottom="24dp"
         android:text="@string/dismiss"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/words" />
 
     <TableLayout
         android:id="@+id/words"
-        android:layout_width="0dp"
+        android:layout_width="395dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         android:stretchColumns="*"
         app:layout_constraintBottom_toTopOf="@+id/dismiss"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_name">
-
-        <TableRow android:layout_width="0dp">
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="@string/cancel" />
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="@string/app_name" />
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="tu" />
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="@string/app_name" />
-        </TableRow>
-
-        <TableRow android:layout_width="0dp">
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="@string/app_name" />
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="io" />
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="tè" />
-
-            <TextView
-                android:gravity="center"
-                android:padding="3dp"
-                android:text="Urca!" />
-        </TableRow>
+        app:layout_constraintTop_toBottomOf="@+id/warning">
 
     </TableLayout>
-
-    <TextView
-        android:id="@+id/account_name_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/new_account_name"
-        app:layout_constraintBottom_toTopOf="@+id/account_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/account_name"
@@ -101,10 +39,24 @@
         android:layout_marginTop="8dp"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/warning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Juliette" />
+
+    <TextView
+        android:id="@+id/warning"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/warning_about_words"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/words"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/account_name_label"
-        tools:text="Juliette" />
+        app:layout_constraintTop_toBottomOf="@+id/account_name" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -54,7 +54,7 @@
     <fragment
         android:id="@+id/show_created_account"
         android:name="io.hotmoka.android.mokito.view.accounts.AccountCreatedFragment"
-        android:label="AccountCreatedFragment" >
+        android:label="@string/new_account" >
         <argument
             android:name="newAccount"
             app:argType="io.hotmoka.android.mokito.model.Account" />

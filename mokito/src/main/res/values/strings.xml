@@ -22,11 +22,12 @@
     <string name="field_inherited_description">"%1$s: %2$s (inherited from %3$s)"</string>
     <string name="balance_description">"%1$s,%2$s Mokas"</string>
     <string name="connected">"Connected to %1$s"</string>
-    <string name="state_of_object">State of object</string>
+    <string name="state_of_object">State of Object</string>
     <string name="manifest">Manifest</string>
     <string name="show_state">Show State</string>
     <string name="settings">Settings</string>
     <string name="accounts">Accounts</string>
+    <string name="new_account">New Account</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
@@ -43,4 +44,5 @@
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
     <string name="dismiss">dismiss</string>
+    <string name="warning_about_words">Please write down the following words on paper, in their sequential order. You will need them if you want to reinstall the account in this application (after deletion) or if you want to add it to another application. If you lose these words, you will lose this account and its balance for ever!</string>
 </resources>
