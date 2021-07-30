@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_show_created_account"
             app:destination="@id/show_created_account" />
+        <action
+            android:id="@+id/action_insert_account"
+            app:destination="@id/import_account" />
     </fragment>
 
     <fragment
@@ -59,5 +62,10 @@
             android:name="newAccount"
             app:argType="io.hotmoka.android.mokito.model.Account" />
     </fragment>
+
+    <fragment
+        android:id="@+id/import_account"
+        android:name="io.hotmoka.android.mokito.view.accounts.ImportAccountFragment"
+        android:label="@string/import_account" />
 
 </navigation>

@@ -7,6 +7,7 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.remote.AndroidRemoteNode
+import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.signatures.MethodSignature
@@ -33,6 +34,7 @@ class Controller(private val mvc: MVC) {
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519() as ED25519
     private val random = SecureRandom()
+    private var bip39Dictionary: Bip39Dictionary? = null
 
     private fun ensureConnected() {
         if (!node.isConnected())
@@ -95,14 +97,18 @@ class Controller(private val mvc: MVC) {
     fun requestAccounts() {
         safeRunAsIO {
             ensureConnected()
-            mvc.model.setAccounts(Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance))
+            mvc.model.setAccounts(reloadAccounts())
         }
+    }
+
+    private fun reloadAccounts(): Accounts {
+        return Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
     }
 
     fun requestDelete(account: Account) {
         safeRunAsIO {
             ensureConnected()
-            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(account)
             accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
@@ -112,7 +118,7 @@ class Controller(private val mvc: MVC) {
     fun requestReplace(old: Account, new: Account) {
         safeRunAsIO {
             ensureConnected()
-            val accounts = mvc.model.getAccounts() ?: Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
+            val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(old)
             accounts.add(new)
             accounts.writeIntoInternalStorage(mvc)
@@ -148,7 +154,7 @@ class Controller(private val mvc: MVC) {
 
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
-            val accounts = Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
+            val accounts = reloadAccounts()
             val newAccount = Account(reference, name, entropy, balance)
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
@@ -157,7 +163,7 @@ class Controller(private val mvc: MVC) {
                 val all = lines.fold("") { some, text ->
                     "$some\n$text"
                 }
-                Log.d("Model", all)
+                Log.d("Controller", all)
             }*/
 
             mainScope.launch {
@@ -168,12 +174,47 @@ class Controller(private val mvc: MVC) {
     }
 
     fun requestBip39Words(account: Account) {
-        safeRunAsBackground {
-            val bip39 = Bip39(account, mvc)
+        safeRunAsIO {
+            val bip39 = Bip39(account, bip39DictionaryCached())
 
             mainScope.launch {
                 mvc.view?.onBip39Available(account, bip39)
             }
+        }
+    }
+
+    fun requestBip39Dictionary() {
+        safeRunAsIO {
+            val dictionary = bip39DictionaryCached()
+
+            mainScope.launch {
+                mvc.view?.onBip39DictionaryAvailable(dictionary)
+            }
+        }
+    }
+
+    private fun bip39DictionaryCached(): Bip39Dictionary {
+        bip39Dictionary?.let {
+            return it
+        }
+
+        val bip39Dictionary = Bip39Dictionary(mvc)
+        this.bip39Dictionary = bip39Dictionary
+
+        return bip39Dictionary
+    }
+
+    fun requestImportAccountFromBip39Words(name: String, words: Array<String>) {
+        safeRunAsIO {
+            val bip39Words = bip39DictionaryCached()
+            val reference = StorageReference(LocalTransactionReference(""), BigInteger.ZERO)
+            val entropy: ByteArray = ByteArray(0)
+
+            ensureConnected()
+            val importedAccount = Account(reference, name, entropy, getBalance(reference))
+            val accounts = mvc.model.getAccounts() ?: reloadAccounts()
+            accounts.add(importedAccount)
+            mvc.model.setAccounts(accounts)
         }
     }
 

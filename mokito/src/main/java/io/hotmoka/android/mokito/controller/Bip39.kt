@@ -1,25 +1,23 @@
 package io.hotmoka.android.mokito.controller
 
-import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.beans.references.TransactionReference
-import java.lang.IllegalArgumentException
 import java.security.MessageDigest
 import java.util.*
 
-class Bip39(account: Account, mvc: MVC) {
+class Bip39(account: Account, dictionary: Bip39Dictionary) {
     private val digest = MessageDigest.getInstance("SHA-256")
     private val words: MutableList<String> = mutableListOf()
 
     init {
-        words(account, Bip39Words(mvc))
+        words(account, dictionary)
     }
 
     fun getWords(): List<String> {
         return words
     }
 
-    private fun words(account: Account, dictionary: Bip39Words) {
+    private fun words(account: Account, dictionary: Bip39Dictionary) {
         val reference = account.reference
         if (reference != null) {
             if (reference.progressive.signum() != 0)
@@ -30,23 +28,21 @@ class Bip39(account: Account, mvc: MVC) {
             words(account.getEntropy(), dictionary)
     }
 
-    private fun words(entropy: ByteArray, transaction: TransactionReference, dictionary: Bip39Words) {
+    private fun words(entropy: ByteArray, transaction: TransactionReference, dictionary: Bip39Dictionary) {
         var data = entropy + transaction.hashAsBytes
         val sha256 = digest.digest(data)
         data = data + sha256[0] + sha256[1] // add checksum
         selectWordsFor(data, dictionary)
     }
 
-    private fun words(entropy: ByteArray, dictionary: Bip39Words) {
+    private fun words(entropy: ByteArray, dictionary: Bip39Dictionary) {
         var data = entropy
         val sha256 = digest.digest(data)
         data += sha256[0] // add checksum
         selectWordsFor(data, dictionary)
     }
 
-    private fun selectWordsFor(data: ByteArray, dictionary: Bip39Words) {
-        val allWords = dictionary.getWords()
-
+    private fun selectWordsFor(data: ByteArray, dictionary: Bip39Dictionary) {
         // we transform the byte array into a sequence of bits
         val dataAsBits = BitSet.valueOf(data)
 
@@ -55,10 +51,10 @@ class Bip39(account: Account, mvc: MVC) {
         for (pos in 0..last step 11) {
             // we select bits from pos (inclusive) to pos + 11 (exclusive)
             val window = dataAsBits.get(pos, pos + 11)
-            // we interpret the selection as the index inside the dictionary
+            // we interpret the 11 bits selection as the index inside the dictionary
             val index = window.toLongArray()[0].toInt()
             // we add the index-th word from the dictionary
-            words.add(allWords[index])
+            words.add(dictionary.getWord(index))
         }
     }
 }

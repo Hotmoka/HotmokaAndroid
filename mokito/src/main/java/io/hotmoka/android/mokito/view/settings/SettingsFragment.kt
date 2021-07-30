@@ -7,6 +7,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Bip39
+import io.hotmoka.android.mokito.controller.Bip39Dictionary
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.view.Mokito
@@ -48,6 +49,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     }
 
     override fun onBip39Available(account: Account, bip39: Bip39) {
+    }
+
+    override fun onBip39DictionaryAvailable(dictionary: Bip39Dictionary) {
     }
 
     override fun notifyUser(message: String) {

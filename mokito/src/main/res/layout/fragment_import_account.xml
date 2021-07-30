@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.state.InsertReferenceFragment">
+
+    <Button
+        android:id="@+id/dismiss"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/dismiss"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/words" />
+
+    <TableLayout
+        android:id="@+id/words"
+        android:layout_width="395dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:stretchColumns="*"
+        app:layout_constraintBottom_toTopOf="@+id/dismiss"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/insert_words_description">
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word1"
+                android:gravity="center"
+                android:hint="@string/word1"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word2"
+                android:gravity="center"
+                android:hint="@string/word2"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word3"
+                android:gravity="center"
+                android:hint="@string/word3"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word4"
+                android:gravity="center"
+                android:hint="@string/word4"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word5"
+                android:gravity="center"
+                android:hint="@string/word5"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word6"
+                android:gravity="center"
+                android:hint="@string/word6"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word7"
+                android:gravity="center"
+                android:hint="@string/word7"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word8"
+                android:gravity="center"
+                android:hint="@string/word8"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word9"
+                android:gravity="center"
+                android:hint="@string/word9"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word10"
+                android:gravity="center"
+                android:hint="@string/word10"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word11"
+                android:gravity="center"
+                android:hint="@string/word11"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word12"
+                android:gravity="center"
+                android:hint="@string/word12"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word13"
+                android:gravity="center"
+                android:hint="@string/word13"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word14"
+                android:gravity="center"
+                android:hint="@string/word14"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word15"
+                android:gravity="center"
+                android:hint="@string/word15"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word16"
+                android:gravity="center"
+                android:hint="@string/word16"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word17"
+                android:gravity="center"
+                android:hint="@string/word17"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word18"
+                android:gravity="center"
+                android:hint="@string/word18"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word19"
+                android:gravity="center"
+                android:hint="@string/word19"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word20"
+                android:gravity="center"
+                android:hint="@string/word20"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word21"
+                android:gravity="center"
+                android:hint="@string/word21"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word22"
+                android:gravity="center"
+                android:hint="@string/word22"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word23"
+                android:gravity="center"
+                android:hint="@string/word23"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word24"
+                android:gravity="center"
+                android:hint="@string/word24"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word25"
+                android:gravity="center"
+                android:hint="@string/word25"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word26"
+                android:gravity="center"
+                android:hint="@string/word26"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word27"
+                android:gravity="center"
+                android:hint="@string/word27"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word28"
+                android:gravity="center"
+                android:hint="@string/word28"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word29"
+                android:gravity="center"
+                android:hint="@string/word29"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word30"
+                android:gravity="center"
+                android:hint="@string/word30"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word31"
+                android:gravity="center"
+                android:hint="@string/word31"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word32"
+                android:gravity="center"
+                android:hint="@string/word32"
+                android:padding="3dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/word33"
+                android:gravity="center"
+                android:hint="@string/word33"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word34"
+                android:gravity="center"
+                android:hint="@string/word34"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word35"
+                android:gravity="center"
+                android:hint="@string/word35"
+                android:padding="3dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/word36"
+                android:gravity="center"
+                android:hint="@string/word36"
+                android:padding="3dp" />
+        </TableRow>
+
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/insert_words_description"
+        android:layout_width="363dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/description_about_words_to_insert"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/words"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

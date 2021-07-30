@@ -1,6 +1,7 @@
 package io.hotmoka.android.mokito.view
 
 import io.hotmoka.android.mokito.controller.Bip39
+import io.hotmoka.android.mokito.controller.Bip39Dictionary
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.beans.updates.Update
@@ -50,6 +51,13 @@ interface View {
      * @param bip39 the words computed for {@code account}
      */
     fun onBip39Available(account: Account, bip39: Bip39)
+
+    /**
+     * Called when the computation of the BIP39 dictionary has been completed.
+     *
+     * @param dictionary the dictionary of the BIP39 words
+     */
+    fun onBip39DictionaryAvailable(dictionary: Bip39Dictionary)
 
     fun notifyUser(message: String)
 }

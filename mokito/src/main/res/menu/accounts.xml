@@ -8,4 +8,13 @@
         android:title="@string/action_reload"
         android:tooltipText="@string/action_reload_accounts_tooltip"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_import"
+        android:orderInCategory="101"
+        android:icon="@drawable/ic_import"
+        android:title="@string/action_import"
+        android:tooltipText="@string/action_import_account_tooltip"
+        app:showAsAction="never" />
+
 </menu>
