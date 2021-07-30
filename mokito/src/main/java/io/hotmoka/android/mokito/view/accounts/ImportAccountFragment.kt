@@ -2,11 +2,11 @@ package io.hotmoka.android.mokito.view.accounts
 
 import android.R
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.navigation.fragment.findNavController
 import io.hotmoka.android.mokito.controller.Bip39Dictionary
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
@@ -15,11 +15,23 @@ import io.hotmoka.android.mokito.view.AbstractFragment
 class ImportAccountFragment : AbstractFragment() {
     private var _binding: FragmentImportAccountBinding? = null
     private val binding get() = _binding!!
+    private lateinit var inputWords: Array<AutoCompleteTextView>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentImportAccountBinding.inflate(inflater, container, false)
         getController().requestBip39Dictionary()
-        binding.dismiss.setOnClickListener { findNavController().popBackStack() }
+        binding.importAccount.setOnClickListener { }
+        inputWords = arrayOf(
+            binding.word1, binding.word2, binding.word3, binding.word4,
+            binding.word5, binding.word6, binding.word7, binding.word8,
+            binding.word9, binding.word10, binding.word11, binding.word12,
+            binding.word13, binding.word14, binding.word15, binding.word16,
+            binding.word17, binding.word18, binding.word19, binding.word20,
+            binding.word21, binding.word22, binding.word23, binding.word24,
+            binding.word25, binding.word26, binding.word27, binding.word28,
+            binding.word29, binding.word30, binding.word31, binding.word32,
+            binding.word33, binding.word34, binding.word35, binding.word36
+        )
         return binding.root
     }
 
@@ -29,43 +41,8 @@ class ImportAccountFragment : AbstractFragment() {
     }
 
     override fun onBip39DictionaryAvailable(dictionary: Bip39Dictionary) {
-        Log.d("InsertAccount", "dictionary computed!")
         val adapter = ArrayAdapter<String>(context, R.layout.simple_list_item_1, dictionary.getAllWords())
-        binding.word1.setAdapter(adapter)
-        binding.word2.setAdapter(adapter)
-        binding.word3.setAdapter(adapter)
-        binding.word4.setAdapter(adapter)
-        binding.word5.setAdapter(adapter)
-        binding.word6.setAdapter(adapter)
-        binding.word7.setAdapter(adapter)
-        binding.word8.setAdapter(adapter)
-        binding.word9.setAdapter(adapter)
-        binding.word10.setAdapter(adapter)
-        binding.word11.setAdapter(adapter)
-        binding.word12.setAdapter(adapter)
-        binding.word13.setAdapter(adapter)
-        binding.word14.setAdapter(adapter)
-        binding.word15.setAdapter(adapter)
-        binding.word16.setAdapter(adapter)
-        binding.word17.setAdapter(adapter)
-        binding.word18.setAdapter(adapter)
-        binding.word19.setAdapter(adapter)
-        binding.word20.setAdapter(adapter)
-        binding.word21.setAdapter(adapter)
-        binding.word22.setAdapter(adapter)
-        binding.word23.setAdapter(adapter)
-        binding.word24.setAdapter(adapter)
-        binding.word25.setAdapter(adapter)
-        binding.word26.setAdapter(adapter)
-        binding.word27.setAdapter(adapter)
-        binding.word28.setAdapter(adapter)
-        binding.word29.setAdapter(adapter)
-        binding.word30.setAdapter(adapter)
-        binding.word31.setAdapter(adapter)
-        binding.word32.setAdapter(adapter)
-        binding.word33.setAdapter(adapter)
-        binding.word34.setAdapter(adapter)
-        binding.word35.setAdapter(adapter)
-        binding.word36.setAdapter(adapter)
+        for (inputWord in inputWords)
+            inputWord.setAdapter(adapter)
     }
 }

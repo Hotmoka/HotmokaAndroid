@@ -7,25 +7,39 @@
     tools:context=".view.state.InsertReferenceFragment">
 
     <Button
-        android:id="@+id/dismiss"
+        android:id="@+id/import_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="@string/dismiss"
+        android:text="@string/import_account"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/words" />
 
+    <EditText
+        android:id="@+id/account_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/account_name"
+        android:text=""
+        app:layout_constraintBottom_toTopOf="@+id/insert_words_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
     <TableLayout
         android:id="@+id/words"
-        android:layout_width="395dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
         android:stretchColumns="*"
-        app:layout_constraintBottom_toTopOf="@+id/dismiss"
+        app:layout_constraintBottom_toTopOf="@+id/import_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/insert_words_description">
@@ -277,16 +291,16 @@
 
     <TextView
         android:id="@+id/insert_words_description"
-        android:layout_width="363dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
         android:text="@string/description_about_words_to_insert"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/words"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintTop_toBottomOf="@+id/account_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
