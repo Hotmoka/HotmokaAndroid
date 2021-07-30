@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import androidx.navigation.fragment.findNavController
 import io.hotmoka.android.mokito.controller.Bip39Dictionary
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
@@ -15,13 +14,13 @@ import io.hotmoka.android.mokito.view.AbstractFragment
 class ImportAccountFragment : AbstractFragment() {
     private var _binding: FragmentImportAccountBinding? = null
     private val binding get() = _binding!!
-    private lateinit var inputWords: Array<AutoCompleteTextView>
+    private lateinit var viewsForWord: Array<AutoCompleteTextView>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentImportAccountBinding.inflate(inflater, container, false)
         getController().requestBip39Dictionary()
-        binding.importAccount.setOnClickListener { }
-        inputWords = arrayOf(
+        binding.importAccount.setOnClickListener { performImport() }
+        viewsForWord = arrayOf(
             binding.word1, binding.word2, binding.word3, binding.word4,
             binding.word5, binding.word6, binding.word7, binding.word8,
             binding.word9, binding.word10, binding.word11, binding.word12,
@@ -42,7 +41,12 @@ class ImportAccountFragment : AbstractFragment() {
 
     override fun onBip39DictionaryAvailable(dictionary: Bip39Dictionary) {
         val adapter = ArrayAdapter<String>(context, R.layout.simple_list_item_1, dictionary.getAllWords())
-        for (inputWord in inputWords)
-            inputWord.setAdapter(adapter)
+        for (viewForWord in viewsForWord)
+            viewForWord.setAdapter(adapter)
+    }
+
+    private fun performImport() {
+        val words = viewsForWord.map { textView -> textView.text.toString() }.toTypedArray()
+        getController().requestImportAccountFromBip39Words(binding.accountName.text.toString(), words)
     }
 }

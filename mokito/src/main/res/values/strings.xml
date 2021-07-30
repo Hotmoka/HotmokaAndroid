@@ -48,7 +48,7 @@
     <string name="action_import">Import account</string>
     <string name="action_import_account_tooltip">Import an account into this application</string>
     <string name="import_account">Import Account</string>
-    <string name="description_about_words_to_insert">Insert the 12 or 36 words that have been provided at time of creation of the account, in their order. Remember that you will also need the account password, later, in order to control the account.</string>
+    <string name="description_about_words_to_insert">Insert the 36 words that have been provided at time of creation of the account, in their order. Remember that you will also need the account password, later, in order to control the account.</string>
 
     <string name="word1">word 1</string>
     <string name="word2">word 2</string>

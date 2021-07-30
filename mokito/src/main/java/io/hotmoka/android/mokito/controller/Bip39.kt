@@ -6,7 +6,6 @@ import java.security.MessageDigest
 import java.util.*
 
 class Bip39(account: Account, dictionary: Bip39Dictionary) {
-    private val digest = MessageDigest.getInstance("SHA-256")
     private val words: MutableList<String> = mutableListOf()
 
     init {
@@ -29,13 +28,15 @@ class Bip39(account: Account, dictionary: Bip39Dictionary) {
     }
 
     private fun words(entropy: ByteArray, transaction: TransactionReference, dictionary: Bip39Dictionary) {
+        val digest = MessageDigest.getInstance("SHA-256")
         var data = entropy + transaction.hashAsBytes
         val sha256 = digest.digest(data)
-        data = data + sha256[0] + sha256[1] // add checksum
+        data = data + sha256[0] + sha256[1] // add checksum, the highest 4 bits will not be represented
         selectWordsFor(data, dictionary)
     }
 
     private fun words(entropy: ByteArray, dictionary: Bip39Dictionary) {
+        val digest = MessageDigest.getInstance("SHA-256")
         var data = entropy
         val sha256 = digest.digest(data)
         data += sha256[0] // add checksum

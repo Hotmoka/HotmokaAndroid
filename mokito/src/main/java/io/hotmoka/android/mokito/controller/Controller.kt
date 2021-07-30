@@ -7,7 +7,6 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.remote.AndroidRemoteNode
-import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.signatures.MethodSignature
@@ -34,7 +33,6 @@ class Controller(private val mvc: MVC) {
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519() as ED25519
     private val random = SecureRandom()
-    private var bip39Dictionary: Bip39Dictionary? = null
 
     private fun ensureConnected() {
         if (!node.isConnected())
@@ -175,7 +173,7 @@ class Controller(private val mvc: MVC) {
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
-            val bip39 = Bip39(account, bip39DictionaryCached())
+            val bip39 = Bip39(account, Bip39Dictionary(mvc))
 
             mainScope.launch {
                 mvc.view?.onBip39Available(account, bip39)
@@ -185,7 +183,7 @@ class Controller(private val mvc: MVC) {
 
     fun requestBip39Dictionary() {
         safeRunAsIO {
-            val dictionary = bip39DictionaryCached()
+            val dictionary = Bip39Dictionary(mvc)
 
             mainScope.launch {
                 mvc.view?.onBip39DictionaryAvailable(dictionary)
@@ -193,27 +191,13 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    private fun bip39DictionaryCached(): Bip39Dictionary {
-        bip39Dictionary?.let {
-            return it
-        }
-
-        val bip39Dictionary = Bip39Dictionary(mvc)
-        this.bip39Dictionary = bip39Dictionary
-
-        return bip39Dictionary
-    }
-
-    fun requestImportAccountFromBip39Words(name: String, words: Array<String>) {
+    fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>) {
         safeRunAsIO {
-            val bip39Words = bip39DictionaryCached()
-            val reference = StorageReference(LocalTransactionReference(""), BigInteger.ZERO)
-            val entropy: ByteArray = ByteArray(0)
-
+            val importedAccount = Bip39Dictionary(mvc).getAccount(name, mnemonic, this::getBalance)
             ensureConnected()
-            val importedAccount = Account(reference, name, entropy, getBalance(reference))
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(importedAccount)
+            accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
         }
     }
