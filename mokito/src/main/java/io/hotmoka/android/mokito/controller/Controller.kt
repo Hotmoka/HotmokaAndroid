@@ -14,6 +14,8 @@ import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.BigIntegerValue
 import io.hotmoka.beans.values.BooleanValue
 import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.crypto.BIP39Dictionary
+import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.crypto.internal.ED25519
 import io.hotmoka.remote.RemoteNodeConfig
@@ -21,7 +23,6 @@ import io.hotmoka.views.AccountCreationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.IllegalStateException
 import java.math.BigInteger
 import java.security.SecureRandom
 
@@ -132,7 +133,8 @@ class Controller(private val mvc: MVC) {
             val entropy = entropy(16)
 
             // compute the key pair for that entropy and the given password
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, password)
+            val bip39 = BIP39Words.of(entropy, BIP39Dictionary.ENGLISH_DICTIONARY)
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(bip39.stream(), password)
 
             // create an account with the public key, let the faucet pay for that
             val reference = AccountCreationHelper(node)
@@ -173,7 +175,8 @@ class Controller(private val mvc: MVC) {
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
-            val bip39 = Bip39(account, Bip39Dictionary(mvc))
+            val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference?.transaction)
+            val bip39 = BIP39Words.of(acc, BIP39Dictionary.ENGLISH_DICTIONARY)
 
             mainScope.launch {
                 mvc.view?.onBip39Available(account, bip39)
@@ -181,25 +184,33 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestBip39Dictionary() {
-        safeRunAsIO {
-            val dictionary = Bip39Dictionary(mvc)
-
-            mainScope.launch {
-                mvc.view?.onBip39DictionaryAvailable(dictionary)
-            }
-        }
-    }
-
     fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>) {
         safeRunAsIO {
-            val importedAccount = Bip39Dictionary(mvc).getAccount(name, mnemonic, this::getBalance)
+            val importedAccount = getAccount(name, mnemonic, this::getBalance)
             ensureConnected()
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(importedAccount)
             accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
         }
+    }
+
+    /**
+     * Yields the account reconstructed from the given mnemonic words.
+     *
+     * @param name the name of the account
+     * @param mnemonic the 36 mnemonic words
+     * @param getBalance a function that retrieves the balance of accounts
+     * @return the imported account
+     */
+    private fun getAccount(name: String, mnemonic: Array<String>, getBalance: (StorageReference) -> BigInteger): Account {
+        val bip39 = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY)
+        val acc = bip39.toAccount()
+
+        // the progressive is assumed to be 0 for accounts represented in BIP39
+        val reference = StorageReference(acc.transaction, BigInteger.ZERO)
+
+        return Account(reference, name, acc.entropy, getBalance(reference))
     }
 
     /**

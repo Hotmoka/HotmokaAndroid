@@ -50,9 +50,8 @@ class AccountsFragment : AbstractFragment() {
             getController().requestAccounts()
             return true
         }
-        else if (item.itemId == R.id.action_import) {
+        else if (item.itemId == R.id.action_import)
             findNavController().navigate(AccountsFragmentDirections.actionInsertAccount())
-        }
 
         return super.onOptionsItemSelected(item)
     }

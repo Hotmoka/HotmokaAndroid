@@ -17,7 +17,6 @@ import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractDialogFragment
 import java.math.BigInteger
 
-
 class CreateAccountDialogFragment: AbstractDialogFragment() {
     private var payer: Account? = null
     private var _binding: DialogFragmentCreateAccountBinding? = null

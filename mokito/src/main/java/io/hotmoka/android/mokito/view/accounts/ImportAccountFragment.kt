@@ -1,15 +1,14 @@
 package io.hotmoka.android.mokito.view.accounts
 
-import android.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import io.hotmoka.android.mokito.controller.Bip39Dictionary
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.crypto.BIP39Dictionary
 
 class ImportAccountFragment : AbstractFragment() {
     private var _binding: FragmentImportAccountBinding? = null
@@ -18,7 +17,6 @@ class ImportAccountFragment : AbstractFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentImportAccountBinding.inflate(inflater, container, false)
-        getController().requestBip39Dictionary()
         binding.importAccount.setOnClickListener { performImport() }
         viewsForWord = arrayOf(
             binding.word1, binding.word2, binding.word3, binding.word4,
@@ -31,18 +29,19 @@ class ImportAccountFragment : AbstractFragment() {
             binding.word29, binding.word30, binding.word31, binding.word32,
             binding.word33, binding.word34, binding.word35, binding.word36
         )
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
+            BIP39Dictionary.ENGLISH_DICTIONARY.allWords.toArray
+               { size -> Array(size) { "" } })
+
+        for (viewForWord in viewsForWord)
+            viewForWord.setAdapter(adapter)
+
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    override fun onBip39DictionaryAvailable(dictionary: Bip39Dictionary) {
-        val adapter = ArrayAdapter<String>(context, R.layout.simple_list_item_1, dictionary.getAllWords())
-        for (viewForWord in viewsForWord)
-            viewForWord.setAdapter(adapter)
     }
 
     private fun performImport() {

@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
-import io.hotmoka.android.mokito.controller.Bip39
 import io.hotmoka.android.mokito.databinding.FragmentAccountCreatedBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.crypto.BIP39Words
 
 class AccountCreatedFragment : AbstractFragment() {
     private var _binding: FragmentAccountCreatedBinding? = null
@@ -36,14 +36,14 @@ class AccountCreatedFragment : AbstractFragment() {
         _binding = null
     }
 
-    override fun onBip39Available(account: Account, bip39: Bip39) {
+    override fun onBip39Available(account: Account, bip39: BIP39Words) {
         if (account == newAccount) {
             binding.words.removeAllViews()
 
             var pos = 0
             var index = 0
             val wordsInRow = Array(4) { "" }
-            for (word in bip39.getWords()) {
+            for (word in bip39.stream()) {
                 wordsInRow[pos] = word
                 pos = (pos + 1) % 4
                 if (pos == 0) {
