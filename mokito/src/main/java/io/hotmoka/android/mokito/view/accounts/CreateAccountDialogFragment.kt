@@ -66,25 +66,34 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
         builder.setNegativeButton(R.string.cancel) { _, _ -> }
         builder.setView(binding.root)
 
-        payer?.let {
-            builder.setMessage(resources.getString(R.string.account_creation_message, it.name))
-            binding.payerPassword.hint = resources.getString(R.string.payer_account_password, it.name)
-            binding.accountBalance.hint = resources.getString(R.string.new_account_balance, maxAllowedForCreation().toString())
-            if (it is Faucet)
-                builder.setPositiveButton(R.string.done) { _, _ ->
+        payer?.let { payer ->
+            builder.setMessage(resources.getString(R.string.account_creation_message, payer.name))
+            binding.payerPassword.hint = resources.getString(R.string.payer_account_password, payer.name)
+            binding.accountBalance.hint = resources.getString(
+                R.string.new_account_balance,
+                maxAllowedForCreation().toString()
+            )
+            builder.setPositiveButton(R.string.done) { _, _ ->
+                if (payer is Faucet)
                     getController().requestNewAccountFromFaucet(
                         binding.accountName.text.toString(),
                         binding.accountPassword.text.toString(),
-                        BigInteger(binding.accountBalance.text.toString()))
-                }
-            else
-                builder.setPositiveButton(R.string.done) { _, _ ->
-                }
+                        BigInteger(binding.accountBalance.text.toString())
+                    )
+                else
+                    getController().requestNewAccountFromAnotherAccount(
+                        payer,
+                        binding.payerPassword.text.toString(),
+                        binding.accountName.text.toString(),
+                        binding.accountPassword.text.toString(),
+                        BigInteger(binding.accountBalance.text.toString())
+                    )
+            }
         }
 
         val dialog =  builder.create()
         dialog.setOnShowListener {
-            // we initially disable the OK button: only when input looks correct it will be enabled
+            // we initially disable the OK button: only when the input looks correct it will be enabled
             enableDoneIfOK()
         }
 

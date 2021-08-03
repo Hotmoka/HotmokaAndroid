@@ -23,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.math.BigInteger
+import java.security.PublicKey
 import java.security.SecureRandom
 
 class Controller(private val mvc: MVC) {
@@ -124,30 +125,54 @@ class Controller(private val mvc: MVC) {
     }
 
     fun requestNewAccountFromFaucet(name: String, password: String, balance: BigInteger) {
-        safeRunAsIO {
-            ensureConnected()
-
-            // generate 128 bits of entropy
-            val entropy = entropy(16)
-
-            // compute the key pair for that entropy and the given password
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
-
-            // create an account with the public key, let the faucet pay for that
-            val reference = AccountCreationHelper(node)
+        createNewAccount({ publicKey ->
+            AccountCreationHelper(node)
                 .fromFaucet(
                     signatureAlgorithmOfNewAccounts,
-                    keys.public,
+                    publicKey,
                     balance,
                     BigInteger.ZERO
                 ) { }
+        }, name, password, balance)
+    }
 
-            // currently, the progressive number of the created account will be #0,
+    fun requestNewAccountFromAnotherAccount(payer: Account, passwordOfPayer: String, name: String, password: String, balance: BigInteger) {
+        createNewAccount({ publicKey ->
+            val keysOfPayer = signatureAlgorithmOfNewAccounts.getKeyPair(
+                payer.getEntropy(),
+                BIP39Dictionary.ENGLISH_DICTIONARY,
+                passwordOfPayer
+            )
+
+            AccountCreationHelper(node)
+                .fromPayer(
+                    payer.reference,
+                    keysOfPayer,
+                    signatureAlgorithmOfNewAccounts,
+                    publicKey,
+                    balance,
+                    BigInteger.ZERO,
+                    false,
+                    {},
+                    {}
+                )
+        }, name, password, balance)
+    }
+
+    private fun createNewAccount(creator: (PublicKey) -> StorageReference, name: String, password: String, balance: BigInteger) {
+        safeRunAsIO {
+            ensureConnected()
+            val entropy = entropy(16) // 128 bits of entropy
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
+
+            // create an account with the public key
+            val reference = creator(keys.public)
+            Log.d("Controller", "created new account $reference")
+
+            // currently, the progressive number of the created accounts will be #0,
             // but we better check against future unexpected changes in the server's behavior
             if (reference.progressive.signum() != 0)
                 throw IllegalStateException("I can only deal with new accounts whose progressive number is 0")
-
-            Log.d("Controller", "created new account $reference")
 
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
@@ -156,17 +181,17 @@ class Controller(private val mvc: MVC) {
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
 
-            /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
-                val all = lines.fold("") { some, text ->
-                    "$some\n$text"
-                }
-                Log.d("Controller", all)
-            }*/
-
             mainScope.launch { mvc.view?.onAccountCreated(newAccount) }
             mvc.model.setAccounts(accounts)
         }
     }
+
+    /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
+    val all = lines.fold("") { some, text ->
+        "$some\n$text"
+    }
+    Log.d("Controller", all)
+    }*/
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
@@ -192,19 +217,6 @@ class Controller(private val mvc: MVC) {
             }
             mvc.model.setAccounts(accounts)
         }
-    }
-
-    /**
-     * Yields the account reconstructed from the given mnemonic words.
-     *
-     * @param name the name of the account
-     * @param mnemonic the 36 mnemonic words
-     * @param getBalance a function that retrieves the balance of accounts
-     * @return the reconstructed account
-     */
-    private fun getAccount(name: String, mnemonic: Array<String>, getBalance: (StorageReference) -> BigInteger): Account {
-        val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
-        return Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
     }
 
     /**
