@@ -181,11 +181,15 @@ class Controller(private val mvc: MVC) {
 
     fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>) {
         safeRunAsIO {
-            val importedAccount = getAccount(name, mnemonic, this::getBalance)
+            val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
             ensureConnected()
+            val importedAccount = Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(importedAccount)
             accounts.writeIntoInternalStorage(mvc)
+            mainScope.launch {
+                mvc.view?.onAccountImported(importedAccount)
+            }
             mvc.model.setAccounts(accounts)
         }
     }
@@ -199,9 +203,7 @@ class Controller(private val mvc: MVC) {
      * @return the reconstructed account
      */
     private fun getAccount(name: String, mnemonic: Array<String>, getBalance: (StorageReference) -> BigInteger): Account {
-        val bip39 = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY)
-        val acc = bip39.toAccount()
-
+        val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
         return Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
     }
 

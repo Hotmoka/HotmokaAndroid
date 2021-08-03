@@ -69,6 +69,9 @@ abstract class AbstractFragment : Fragment(), View {
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
     }
 
+    override fun onAccountImported(account: Account) {
+    }
+
     protected fun notifyException(t: Throwable) {
         Log.d(TAG, "action failed with the following exception", t)
         Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()

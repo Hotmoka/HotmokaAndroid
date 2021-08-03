@@ -43,6 +43,13 @@ interface View {
     fun onAccountCreated(account: Account)
 
     /**
+     * Called when an account has been imported.
+     *
+     * @param account the imported account
+     */
+    fun onAccountImported(account: Account)
+
+    /**
      * Called when the computation of the BIP39 words for an account
      * has been completed.
      *

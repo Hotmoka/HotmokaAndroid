@@ -47,6 +47,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onAccountCreated(account: Account) {
     }
 
+    override fun onAccountImported(account: Account) {
+    }
+
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
     }
 

@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.navigation.fragment.findNavController
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
+import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.crypto.BIP39Dictionary
 
@@ -29,9 +32,8 @@ class ImportAccountFragment : AbstractFragment() {
             binding.word29, binding.word30, binding.word31, binding.word32,
             binding.word33, binding.word34, binding.word35, binding.word36
         )
-        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1,
-            BIP39Dictionary.ENGLISH_DICTIONARY.allWords.toArray
-               { size -> Array(size) { "" } })
+        val allWords: Array<String> = BIP39Dictionary.ENGLISH_DICTIONARY.allWords.toArray { i -> arrayOfNulls(i) }
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, allWords)
 
         for (viewForWord in viewsForWord)
             viewForWord.setAdapter(adapter)
@@ -47,5 +49,10 @@ class ImportAccountFragment : AbstractFragment() {
     private fun performImport() {
         val words = viewsForWord.map { textView -> textView.text.toString() }.toTypedArray()
         getController().requestImportAccountFromBip39Words(binding.accountName.text.toString(), words)
+    }
+
+    override fun onAccountImported(account: Account) {
+        notifyUser(resources.getString(R.string.account_imported, account.name))
+        findNavController().popBackStack()
     }
 }
