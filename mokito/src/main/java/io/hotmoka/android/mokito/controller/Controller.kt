@@ -17,7 +17,6 @@ import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.BIP39Dictionary
 import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
-import io.hotmoka.crypto.internal.ED25519
 import io.hotmoka.remote.RemoteNodeConfig
 import io.hotmoka.views.AccountCreationHelper
 import kotlinx.coroutines.CoroutineScope
@@ -30,9 +29,8 @@ class Controller(private val mvc: MVC) {
     private var node: AndroidRemoteNode = AndroidRemoteNode()
     private var takamakaCode: TransactionReference? = null
     private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val backgroundScope = CoroutineScope(Dispatchers.Default)
     private val mainScope = CoroutineScope(Dispatchers.Main)
-    private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519() as ED25519
+    private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519()
     private val random = SecureRandom()
 
     private fun ensureConnected() {
@@ -133,8 +131,7 @@ class Controller(private val mvc: MVC) {
             val entropy = entropy(16)
 
             // compute the key pair for that entropy and the given password
-            val bip39 = BIP39Words.of(entropy, BIP39Dictionary.ENGLISH_DICTIONARY)
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(bip39.stream(), password)
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
 
             // create an account with the public key, let the faucet pay for that
             val reference = AccountCreationHelper(node)
@@ -166,16 +163,14 @@ class Controller(private val mvc: MVC) {
                 Log.d("Controller", all)
             }*/
 
-            mainScope.launch {
-                mvc.view?.onAccountCreated(newAccount)
-            }
+            mainScope.launch { mvc.view?.onAccountCreated(newAccount) }
             mvc.model.setAccounts(accounts)
         }
     }
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
-            val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference?.transaction)
+            val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference)
             val bip39 = BIP39Words.of(acc, BIP39Dictionary.ENGLISH_DICTIONARY)
 
             mainScope.launch {
@@ -201,16 +196,13 @@ class Controller(private val mvc: MVC) {
      * @param name the name of the account
      * @param mnemonic the 36 mnemonic words
      * @param getBalance a function that retrieves the balance of accounts
-     * @return the imported account
+     * @return the reconstructed account
      */
     private fun getAccount(name: String, mnemonic: Array<String>, getBalance: (StorageReference) -> BigInteger): Account {
         val bip39 = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY)
         val acc = bip39.toAccount()
 
-        // the progressive is assumed to be 0 for accounts represented in BIP39
-        val reference = StorageReference(acc.transaction, BigInteger.ZERO)
-
-        return Account(reference, name, acc.entropy, getBalance(reference))
+        return Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
     }
 
     /**
@@ -247,20 +239,6 @@ class Controller(private val mvc: MVC) {
 
     private fun safeRunAsIO(task: () -> Unit) {
         ioScope.launch {
-            try {
-                task.invoke()
-            }
-            catch (t: Throwable) {
-                // if something goes wrong, we inform the user
-                mainScope.launch {
-                    mvc.view?.notifyUser(t.toString())
-                }
-            }
-        }
-    }
-
-    private fun safeRunAsBackground(task: () -> Unit) {
-        backgroundScope.launch {
             try {
                 task.invoke()
             }
