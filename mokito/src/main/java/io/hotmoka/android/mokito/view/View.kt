@@ -50,6 +50,22 @@ interface View {
     fun onAccountImported(account: Account)
 
     /**
+     * Called when an account has been deleted.
+     *
+     * @param account the deleted account
+     */
+    fun onAccountDeleted(account: Account)
+
+    /**
+     * Called when an account has been replaced with another.
+     * For instance, its name has changed.
+     *
+     * @param old the old account
+     * @param new the new account, that replaces {@code old}
+     */
+    fun onAccountReplaced(old: Account, new: Account)
+
+    /**
      * Called when the computation of the BIP39 words for an account
      * has been completed.
      *

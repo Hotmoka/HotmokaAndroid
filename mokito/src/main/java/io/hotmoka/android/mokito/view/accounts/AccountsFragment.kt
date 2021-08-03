@@ -72,7 +72,8 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     }
 
     override fun onAccountCreated(account: Account) {
-        findNavController().navigate(AccountsFragmentDirections.actionShowCreatedAccount(account))
+        super.onAccountCreated(account)
+        findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
     }
 
     private inner class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
@@ -130,7 +131,8 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 viewHolder.sendIcon.visibility = View.VISIBLE
                 viewHolder.settingsIcon.visibility = View.VISIBLE
                 viewHolder.settingsIcon.setOnClickListener {
-                    AccountSettingsDialogFragment.show(this@AccountsFragment, account)
+                    findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
+                    //AccountSettingsDialogFragment.show(this@AccountsFragment, account)
                 }
             }
 

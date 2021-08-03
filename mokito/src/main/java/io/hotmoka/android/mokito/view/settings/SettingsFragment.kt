@@ -41,13 +41,23 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
     }
 
-    override fun onAccountsChanged(accounts: Accounts) {
-    }
-
     override fun onAccountCreated(account: Account) {
+        notifyUser(resources.getString(R.string.account_created_toast, account.name))
     }
 
     override fun onAccountImported(account: Account) {
+        notifyUser(resources.getString(R.string.account_imported_toast, account.name))
+    }
+
+    override fun onAccountDeleted(account: Account) {
+        notifyUser(resources.getString(R.string.account_deleted_toast, account.name))
+    }
+
+    override fun onAccountReplaced(old: Account, new: Account) {
+        notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
+    }
+
+    override fun onAccountsChanged(accounts: Accounts) {
     }
 
     override fun onBip39Available(account: Account, bip39: BIP39Words) {

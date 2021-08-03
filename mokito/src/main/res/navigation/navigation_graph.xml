@@ -11,8 +11,8 @@
         android:label="@string/accounts"
         tools:layout="@layout/fragment_accounts" >
         <action
-            android:id="@+id/action_show_created_account"
-            app:destination="@id/show_created_account" />
+            android:id="@+id/action_show_account"
+            app:destination="@id/show_account" />
         <action
             android:id="@+id/action_insert_account"
             app:destination="@id/import_account" />
@@ -55,11 +55,11 @@
         android:label="@string/settings" />
 
     <fragment
-        android:id="@+id/show_created_account"
-        android:name="io.hotmoka.android.mokito.view.accounts.AccountCreatedFragment"
-        android:label="@string/new_account" >
+        android:id="@+id/show_account"
+        android:name="io.hotmoka.android.mokito.view.accounts.ShowAccountFragment"
+        android:label="@string/show_account" >
         <argument
-            android:name="newAccount"
+            android:name="account"
             app:argType="io.hotmoka.android.mokito.model.Account" />
     </fragment>
 

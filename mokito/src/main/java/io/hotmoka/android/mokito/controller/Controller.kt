@@ -109,6 +109,7 @@ class Controller(private val mvc: MVC) {
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(account)
             accounts.writeIntoInternalStorage(mvc)
+            mainScope.launch { mvc.view?.onAccountDeleted(account) }
             mvc.model.setAccounts(accounts)
         }
     }
@@ -120,6 +121,7 @@ class Controller(private val mvc: MVC) {
             accounts.delete(old)
             accounts.add(new)
             accounts.writeIntoInternalStorage(mvc)
+            mainScope.launch { mvc.view?.onAccountReplaced(old, new) }
             mvc.model.setAccounts(accounts)
         }
     }
@@ -258,10 +260,14 @@ class Controller(private val mvc: MVC) {
             }
             catch (t: Throwable) {
                 // if something goes wrong, we inform the user
-                mainScope.launch {
-                    mvc.view?.notifyUser(t.toString())
-                }
+                notifyUser(t.toString())
             }
+        }
+    }
+
+    private fun notifyUser(message: String) {
+        mainScope.launch {
+            mvc.view?.notifyUser(message)
         }
     }
 

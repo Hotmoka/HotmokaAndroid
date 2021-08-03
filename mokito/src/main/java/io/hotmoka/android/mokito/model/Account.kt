@@ -106,10 +106,10 @@ open class Account: Comparable<Account>, Parcelable {
 
     override fun writeToParcel(out: Parcel, flags: Int) {
         out.writeByte(0)
-        writeToParcelInternal(out, flags)
+        writeToParcelInternal(out)
     }
 
-    protected fun writeToParcelInternal(out: Parcel, flags: Int) {
+    protected fun writeToParcelInternal(out: Parcel) {
         out.writeSerializable(reference)
         out.writeString(name)
         out.writeSerializable(balance)

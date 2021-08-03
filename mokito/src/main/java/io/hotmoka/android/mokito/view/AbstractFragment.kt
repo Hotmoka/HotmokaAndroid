@@ -6,6 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
@@ -74,13 +75,23 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     override fun onAccountsChanged(accounts: Accounts) {
     }
 
-    override fun onAccountCreated(account: Account) {
-    }
-
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
     }
 
+    override fun onAccountCreated(account: Account) {
+        notifyUser(resources.getString(R.string.account_created_toast, account.name))
+    }
+
     override fun onAccountImported(account: Account) {
+        notifyUser(resources.getString(R.string.account_imported_toast, account.name))
+    }
+
+    override fun onAccountDeleted(account: Account) {
+        notifyUser(resources.getString(R.string.account_deleted_toast, account.name))
+    }
+
+    override fun onAccountReplaced(old: Account, new: Account) {
+        notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
     }
 
     protected fun notifyException(t: Throwable) {

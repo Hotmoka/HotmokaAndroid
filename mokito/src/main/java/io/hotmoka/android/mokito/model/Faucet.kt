@@ -23,7 +23,7 @@ class Faucet: Account {
 
     override fun writeToParcel(out: Parcel, flags: Int) {
         out.writeByte(1)
-        writeToParcelInternal(out, flags)
+        writeToParcelInternal(out)
         out.writeSerializable(maxFaucet)
     }
 }

@@ -8,29 +8,37 @@ import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.TextView
 import androidx.navigation.fragment.findNavController
-import io.hotmoka.android.mokito.databinding.FragmentAccountCreatedBinding
+import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.crypto.BIP39Words
 
-class AccountCreatedFragment : AbstractFragment<FragmentAccountCreatedBinding>() {
-    private lateinit var newAccount: Account
+class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
+    private lateinit var account: Account
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        newAccount = AccountCreatedFragmentArgs.fromBundle(requireArguments()).newAccount
+        account = ShowAccountFragmentArgs.fromBundle(requireArguments()).account
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        setBinding(FragmentAccountCreatedBinding.inflate(inflater, container, false))
-        getController().requestBip39Words(newAccount)
-        binding.accountName.text = newAccount.name
-        binding.dismiss.setOnClickListener { findNavController().popBackStack() }
+        setBinding(FragmentShowAccountBinding.inflate(inflater, container, false))
+        getController().requestBip39Words(account)
+        binding.accountName.setText(account.name)
+        binding.ok.setOnClickListener { editAccountIfNeeded() }
         return binding.root
     }
 
+    private fun editAccountIfNeeded() {
+        val new = account.setName(binding.accountName.text.toString())
+        if (account.name != new.name)
+            getController().requestReplace(account, new)
+
+        findNavController().popBackStack()
+    }
+
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
-        if (account == newAccount) {
+        if (account == this.account) {
             binding.words.removeAllViews()
 
             var pos = 0

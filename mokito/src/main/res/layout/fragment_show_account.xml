@@ -7,25 +7,39 @@
     tools:context=".view.state.InsertReferenceFragment">
 
     <Button
-        android:id="@+id/dismiss"
+        android:id="@+id/ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/dismiss"
+        android:layout_marginTop="24dp"
+        android:text="@string/ok"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/words" />
+
+    <EditText
+        android:id="@+id/account_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/warning"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView_accountName"
+        tools:text="Juliette" />
 
     <TableLayout
         android:id="@+id/words"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:stretchColumns="*"
-        app:layout_constraintBottom_toTopOf="@+id/dismiss"
+        app:layout_constraintBottom_toTopOf="@+id/ok"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/warning">
@@ -33,26 +47,23 @@
     </TableLayout>
 
     <TextView
-        android:id="@+id/account_name"
+        android:id="@+id/textView_accountName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/warning"
+        android:text="@string/account_name"
+        app:layout_constraintBottom_toTopOf="@+id/account_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="Juliette" />
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/warning"
-        android:layout_width="0dp"
+        android:layout_width="363dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="16dp"
         android:text="@string/warning_about_words"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/words"

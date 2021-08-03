@@ -45,7 +45,7 @@ class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
     }
 
     override fun onAccountImported(account: Account) {
-        notifyUser(resources.getString(R.string.account_imported, account.name))
+        super.onAccountImported(account)
         findNavController().popBackStack()
     }
 }
