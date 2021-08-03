@@ -13,12 +13,10 @@ import io.hotmoka.beans.values.StorageReference
  * A fragment used to insert the storage reference of an object
  * that exists in the store of a Hotmoka node.
  */
-class InsertReferenceFragment : AbstractFragment() {
-    private var _binding: FragmentInsertReferenceBinding? = null
-    private val binding get() = _binding!!
+class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentInsertReferenceBinding.inflate(inflater, container, false)
+        setBinding(FragmentInsertReferenceBinding.inflate(inflater, container, false))
 
         binding.showState.setOnClickListener {
             val input = binding.reference.text.toString()
@@ -39,10 +37,5 @@ class InsertReferenceFragment : AbstractFragment() {
         }
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

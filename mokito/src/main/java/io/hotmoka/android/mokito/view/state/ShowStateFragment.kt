@@ -21,9 +21,7 @@ import kotlin.Comparator
 /**
  * A fragment used to show the state of an object from its storage reference.
  */
-open class ShowStateFragment : AbstractFragment() {
-    private var _binding: FragmentShowStateBinding? = null
-    private val binding get() = _binding!!
+open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
     private var reference: StorageReference? = null
     private lateinit var adapter: RecyclerAdapter
 
@@ -32,13 +30,13 @@ open class ShowStateFragment : AbstractFragment() {
         setHasOptionsMenu(true)
 
         // the arguments might be missing if this fragment is actually a ShowManifestFragment;
-        // in that case, reference will be set later, when the stae of the manifest will be ready
+        // in that case, reference will be set later, when the state of the manifest will be ready
         if (arguments != null)
             reference = ShowStateFragmentArgs.fromBundle(requireArguments()).reference
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentShowStateBinding.inflate(inflater, container, false)
+        setBinding(FragmentShowStateBinding.inflate(inflater, container, false))
         adapter = RecyclerAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
@@ -109,11 +107,6 @@ open class ShowStateFragment : AbstractFragment() {
             else
                 update1.compareTo(update2)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private inner class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {

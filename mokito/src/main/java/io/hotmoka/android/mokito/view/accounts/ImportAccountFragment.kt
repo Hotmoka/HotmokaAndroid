@@ -13,13 +13,11 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.crypto.BIP39Dictionary
 
-class ImportAccountFragment : AbstractFragment() {
-    private var _binding: FragmentImportAccountBinding? = null
-    private val binding get() = _binding!!
+class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
     private lateinit var viewsForWord: Array<AutoCompleteTextView>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentImportAccountBinding.inflate(inflater, container, false)
+        setBinding(FragmentImportAccountBinding.inflate(inflater, container, false))
         binding.importAccount.setOnClickListener { performImport() }
         viewsForWord = arrayOf(
             binding.word1, binding.word2, binding.word3, binding.word4,
@@ -39,11 +37,6 @@ class ImportAccountFragment : AbstractFragment() {
             viewForWord.setAdapter(adapter)
 
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun performImport() {

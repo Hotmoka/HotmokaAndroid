@@ -17,9 +17,7 @@ import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
 import java.math.BigInteger
 
-class AccountsFragment : AbstractFragment() {
-    private var _binding: FragmentAccountsBinding? = null
-    private val binding get() = _binding!!
+class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     private lateinit var adapter: RecyclerAdapter
 
     companion object {
@@ -33,7 +31,7 @@ class AccountsFragment : AbstractFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentAccountsBinding.inflate(inflater, container, false)
+        setBinding(FragmentAccountsBinding.inflate(inflater, container, false))
         adapter = RecyclerAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
@@ -75,11 +73,6 @@ class AccountsFragment : AbstractFragment() {
 
     override fun onAccountCreated(account: Account) {
         findNavController().navigate(AccountsFragmentDirections.actionShowCreatedAccount(account))
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private inner class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {

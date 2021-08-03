@@ -13,9 +13,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.crypto.BIP39Words
 
-class AccountCreatedFragment : AbstractFragment() {
-    private var _binding: FragmentAccountCreatedBinding? = null
-    private val binding get() = _binding!!
+class AccountCreatedFragment : AbstractFragment<FragmentAccountCreatedBinding>() {
     private lateinit var newAccount: Account
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,16 +22,11 @@ class AccountCreatedFragment : AbstractFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentAccountCreatedBinding.inflate(inflater, container, false)
+        setBinding(FragmentAccountCreatedBinding.inflate(inflater, container, false))
         getController().requestBip39Words(newAccount)
         binding.accountName.text = newAccount.name
         binding.dismiss.setOnClickListener { findNavController().popBackStack() }
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
