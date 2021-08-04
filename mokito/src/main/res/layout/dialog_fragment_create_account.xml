@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
+    <io.hotmoka.android.mokito.view.PasswordVisibilityToggle
         android:id="@+id/hideShowPayerPassword"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -19,8 +19,8 @@
         app:layout_constraintTop_toTopOf="@+id/payer_password"
         app:srcCompat="@drawable/selector_show_password" />
 
-    <ImageButton
-        android:id="@+id/hideShowNewAcccountPassword"
+    <io.hotmoka.android.mokito.view.PasswordVisibilityToggle
+        android:id="@+id/hideShowNewAccountPassword"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="16dp"
@@ -44,7 +44,7 @@
         android:hint="@string/new_account_password"
         android:inputType="textPassword"
         app:layout_constraintBottom_toTopOf="@+id/account_balance"
-        app:layout_constraintEnd_toStartOf="@+id/hideShowNewAcccountPassword"
+        app:layout_constraintEnd_toStartOf="@+id/hideShowNewAccountPassword"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"

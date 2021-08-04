@@ -44,11 +44,11 @@
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
     <string name="dismiss">dismiss</string>
-    <string name="warning_about_words">Please write down the following 36 words on paper, in their sequential order. You will need them if you want to reinstall the account in this application (after deletion) or if you want to add it to another application. If you delete the account and lose these words, you will lose this account and its balance for ever!</string>
+    <string name="warning_about_words">Please write down on paper the following 36 words, in their sequential order. You will need them if you want to reinstall the account in this application (after deletion) or if you want to add it to another application. If you delete the account and lose these words, you will lose this account and its balance for ever!</string>
     <string name="action_import">Import account</string>
     <string name="action_import_account_tooltip">Import an account into this application</string>
     <string name="import_account">Import Account</string>
-    <string name="description_about_words_to_insert">Insert the 36 words that have been provided at time of creation of the account, in their order. Remember that you will also need the account password, later, in order to control the account.</string>
+    <string name="description_about_words_to_insert">Insert the 36 words that have been provided at time of creation of the account, in their sequential order.</string>
 
     <string name="word1">word 1</string>
     <string name="word2">word 2</string>
@@ -92,4 +92,5 @@
     <string name="account_created_toast">Account %1$s created</string>
     <string name="account_deleted_toast">Account %1$s deleted</string>
     <string name="account_replaced_toast">Account %1$s edited</string>
+    <string name="account_password">Account password</string>
 </resources>

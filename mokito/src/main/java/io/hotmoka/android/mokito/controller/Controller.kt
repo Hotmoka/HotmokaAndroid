@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.controller
 
+import android.util.Base64
 import android.util.Log
 import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
@@ -14,6 +15,7 @@ import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.BigIntegerValue
 import io.hotmoka.beans.values.BooleanValue
 import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.values.StringValue
 import io.hotmoka.crypto.BIP39Dictionary
 import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
@@ -22,6 +24,7 @@ import io.hotmoka.views.AccountCreationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.IllegalArgumentException
 import java.math.BigInteger
 import java.security.PublicKey
 import java.security.SecureRandom
@@ -83,24 +86,11 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    /**
-     * Creates a random array of the given amount of bytes.
-     */
-    private fun entropy(bytes: Int): ByteArray {
-        val entropy = ByteArray(bytes)
-        random.nextBytes(entropy)
-        return entropy
-    }
-
     fun requestAccounts() {
         safeRunAsIO {
             ensureConnected()
             mvc.model.setAccounts(reloadAccounts())
         }
-    }
-
-    private fun reloadAccounts(): Accounts {
-        return Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
     }
 
     fun requestDelete(account: Account) {
@@ -161,10 +151,70 @@ class Controller(private val mvc: MVC) {
         }, name, password, balance)
     }
 
+    /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
+    val all = lines.fold("") { some, text ->
+        "$some\n$text"
+    }
+    Log.d("Controller", all)
+    }*/
+
+    fun requestBip39Words(account: Account) {
+        safeRunAsIO {
+            val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference)
+            val bip39 = BIP39Words.of(acc, BIP39Dictionary.ENGLISH_DICTIONARY)
+
+            mainScope.launch {
+                mvc.view?.onBip39Available(account, bip39)
+            }
+        }
+    }
+
+    fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>, password: String) {
+        safeRunAsIO {
+            val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
+            ensureConnected()
+            val importedAccount = Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
+            verify(importedAccount, password)
+            val accounts = mvc.model.getAccounts() ?: reloadAccounts()
+            accounts.add(importedAccount)
+            accounts.writeIntoInternalStorage(mvc)
+            mainScope.launch {
+                mvc.view?.onAccountImported(importedAccount)
+            }
+            mvc.model.setAccounts(accounts)
+        }
+    }
+
+    /**
+     * Checks that the given account can actually be controlled by the given password.
+     * This means that the public key derived from the entropy of the account and the password
+     * must coincide with the public key stored inside the account in the Hotmoka node.
+     *
+     * @throws IllegalArgumentException if the two public keys do not match
+     */
+    private fun verify(account: Account, password: String) {
+        account.reference?.let { reference ->
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(
+                account.getEntropy(),
+                BIP39Dictionary.ENGLISH_DICTIONARY,
+                password
+            )
+            val publicKeyAsStored = getPublicKey(reference) // it is stored as BASE64-encoded
+            val publicKeyAsImported = Base64.encodeToString(keys.public.encoded, Base64.NO_WRAP)
+            if (publicKeyAsStored != publicKeyAsImported)
+                throw IllegalArgumentException("The public key of the account does not match its entropy")
+        }
+    }
+
+    private fun reloadAccounts(): Accounts {
+        return Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
+    }
+
     private fun createNewAccount(creator: (PublicKey) -> StorageReference, name: String, password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()
-            val entropy = entropy(16) // 128 bits of entropy
+            val entropy = ByteArray(16) // 128 bits of entropy
+            random.nextBytes(entropy)
             val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
 
             // create an account with the public key
@@ -184,39 +234,6 @@ class Controller(private val mvc: MVC) {
             accounts.writeIntoInternalStorage(mvc)
 
             mainScope.launch { mvc.view?.onAccountCreated(newAccount) }
-            mvc.model.setAccounts(accounts)
-        }
-    }
-
-    /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
-    val all = lines.fold("") { some, text ->
-        "$some\n$text"
-    }
-    Log.d("Controller", all)
-    }*/
-
-    fun requestBip39Words(account: Account) {
-        safeRunAsIO {
-            val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference)
-            val bip39 = BIP39Words.of(acc, BIP39Dictionary.ENGLISH_DICTIONARY)
-
-            mainScope.launch {
-                mvc.view?.onBip39Available(account, bip39)
-            }
-        }
-    }
-
-    fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>) {
-        safeRunAsIO {
-            val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
-            ensureConnected()
-            val importedAccount = Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
-            val accounts = mvc.model.getAccounts() ?: reloadAccounts()
-            accounts.add(importedAccount)
-            accounts.writeIntoInternalStorage(mvc)
-            mainScope.launch {
-                mvc.view?.onAccountImported(importedAccount)
-            }
             mvc.model.setAccounts(accounts)
         }
     }
@@ -251,6 +268,14 @@ class Controller(private val mvc: MVC) {
                 reference, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.BALANCE, reference
             )
         ) as BigIntegerValue).value
+    }
+
+    private fun getPublicKey(reference: StorageReference): String {
+        return (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                reference, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.PUBLIC_KEY, reference
+            )
+        ) as StringValue).value
     }
 
     private fun safeRunAsIO(task: () -> Unit) {
