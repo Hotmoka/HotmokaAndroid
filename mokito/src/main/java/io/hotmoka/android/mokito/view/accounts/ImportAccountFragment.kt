@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.navigation.fragment.findNavController
-import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
@@ -19,6 +18,7 @@ class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentImportAccountBinding.inflate(inflater, container, false))
         binding.importAccount.setOnClickListener { performImport() }
+        binding.hideShowAccountPassword.controls(binding.accountPassword)
         viewsForWord = arrayOf(
             binding.word1, binding.word2, binding.word3, binding.word4,
             binding.word5, binding.word6, binding.word7, binding.word8,
@@ -41,7 +41,9 @@ class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
 
     private fun performImport() {
         val words = viewsForWord.map { textView -> textView.text.toString() }.toTypedArray()
-        getController().requestImportAccountFromBip39Words(binding.accountName.text.toString(), words)
+        getController().requestImportAccountFromBip39Words(
+            binding.accountName.text.toString(), words, binding.accountPassword.text.toString()
+        )
     }
 
     override fun onAccountImported(account: Account) {

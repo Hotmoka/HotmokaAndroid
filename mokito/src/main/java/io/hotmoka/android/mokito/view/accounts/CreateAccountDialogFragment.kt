@@ -5,10 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.method.HideReturnsTransformationMethod
-import android.text.method.PasswordTransformationMethod
 import android.view.View
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.DialogFragmentCreateAccountBinding
@@ -40,14 +37,6 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
         payer = arguments?.getParcelable(PAYER_KEY)
     }
 
-    private fun togglePassword(button: View, passwordField: EditText) {
-        button.isActivated = !button.isActivated
-        if (button.isActivated)
-            passwordField.transformationMethod = HideReturnsTransformationMethod.getInstance()
-        else
-            passwordField.transformationMethod = PasswordTransformationMethod.getInstance()
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogFragmentCreateAccountBinding.inflate(layoutInflater)
 
@@ -56,9 +45,9 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
             binding.hideShowPayerPassword.visibility = View.GONE
         }
         else
-            binding.hideShowPayerPassword.setOnClickListener { togglePassword(binding.hideShowPayerPassword, binding.payerPassword) }
+            binding.hideShowPayerPassword.controls(binding.payerPassword)
 
-        binding.hideShowNewAcccountPassword.setOnClickListener { togglePassword(binding.hideShowNewAcccountPassword, binding.accountPassword) }
+        binding.hideShowNewAccountPassword.controls(binding.accountPassword)
 
         val builder = AlertDialog.Builder(context)
         builder.setTitle(R.string.account_creation)
