@@ -2,6 +2,8 @@ package io.hotmoka.android.mokito.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
+import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.values.StorageReference
@@ -38,6 +40,11 @@ open class Account: Comparable<Account>, Parcelable {
     val balance: BigInteger
 
     /**
+     * True if and only if the account could be accessed and its balance could be retrieved.
+     */
+    val accessible: Boolean
+
+    /**
      * The entropy that was used to generate the key pair of the account. Only the
      * public key of the key pair is stored in the Hotmoka node. Note that this entropy
      * is useless if the associated password is not known, that, merged with this entropy,
@@ -46,11 +53,12 @@ open class Account: Comparable<Account>, Parcelable {
      */
     private val entropy: ByteArray
 
-    constructor(reference: StorageReference?, name: String, entropy: ByteArray, balance: BigInteger) {
+    constructor(reference: StorageReference?, name: String, entropy: ByteArray, balance: BigInteger, accessible: Boolean) {
         this.reference = reference
         this.name = name
         this.entropy = entropy
         this.balance = balance
+        this.accessible = accessible
     }
 
     constructor(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger) {
@@ -74,11 +82,26 @@ open class Account: Comparable<Account>, Parcelable {
 
         if (reference != null) {
             this.reference = reference
-            this.balance = getBalance(reference)
+            var balance: BigInteger
+            var accessible: Boolean
+
+            try {
+                balance = getBalance(reference)
+                accessible = true
+            }
+            catch (e: TransactionRejectedException) {
+                balance = BigInteger.ZERO
+                accessible = false
+                Log.d("Account", "cannot access account $reference")
+            }
+
+            this.balance = balance
+            this.accessible = accessible
         }
         else {
             this.reference = null
             this.balance = BigInteger.ZERO
+            this.accessible = true
         }
 
         if (name != null)
@@ -96,6 +119,7 @@ open class Account: Comparable<Account>, Parcelable {
         this.reference = parcel.readSerializable() as StorageReference
         this.name = parcel.readString()!!
         this.balance = parcel.readSerializable() as BigInteger
+        this.accessible = parcel.readByte() != 0.toByte()
         this.entropy = ByteArray(parcel.readInt())
         parcel.readByteArray(this.entropy)
     }
@@ -113,6 +137,7 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeSerializable(reference)
         out.writeString(name)
         out.writeSerializable(balance)
+        out.writeByte(if (accessible) 1.toByte() else 0.toByte())
         out.writeInt(entropy.size)
         out.writeByteArray(entropy)
     }
@@ -137,7 +162,7 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     fun setName(newName: String): Account {
-        return Account(reference, newName, entropy.clone(), balance)
+        return Account(reference, newName, entropy.clone(), balance, accessible)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -211,9 +236,9 @@ open class Account: Comparable<Account>, Parcelable {
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun skip(parser: XmlPullParser) {
-        if (parser.eventType != XmlPullParser.START_TAG) {
+        if (parser.eventType != XmlPullParser.START_TAG)
             throw IllegalStateException()
-        }
+
         var depth = 1
         while (depth != 0) {
             when (parser.next()) {

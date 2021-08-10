@@ -92,4 +92,5 @@
     <string name="account_created_toast">Account %1$s created</string>
     <string name="account_deleted_toast">Account %1$s deleted</string>
     <string name="account_replaced_toast">Account %1$s edited</string>
+    <string name="account_not_accessible">Account not accessible</string>
 </resources>

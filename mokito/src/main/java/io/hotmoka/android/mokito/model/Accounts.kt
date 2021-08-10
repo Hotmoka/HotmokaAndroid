@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.util.Xml
 import io.hotmoka.android.mokito.MVC
+import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.values.StorageReference
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -41,7 +42,22 @@ class Accounts(mvc: MVC, faucet: StorageReference?, maxFaucet: BigInteger, getBa
             Log.d("Accounts", "no $accountsFilename")
         }
 
-        faucet?.let { add(Faucet(faucet, maxFaucet, getBalance(faucet))) }
+        faucet?.let {
+            var balance: BigInteger
+            var accessible: Boolean
+
+            try {
+                balance = getBalance(faucet)
+                accessible = true
+            }
+            catch (e: TransactionRejectedException) {
+                balance = BigInteger.ZERO
+                accessible = false
+                Log.d("Accounts", "cannot access the faucet")
+            }
+
+            add(Faucet(faucet, maxFaucet, balance, accessible))
+        }
     }
 
     @Throws(XmlPullParserException::class, IOException::class)

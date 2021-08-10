@@ -7,6 +7,7 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.remote.AndroidRemoteNode
+import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.signatures.MethodSignature
@@ -179,7 +180,7 @@ class Controller(private val mvc: MVC) {
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
             val accounts = reloadAccounts()
-            val newAccount = Account(reference, name, entropy, balance)
+            val newAccount = Account(reference, name, entropy, balance, true)
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
 
@@ -210,7 +211,19 @@ class Controller(private val mvc: MVC) {
         safeRunAsIO {
             val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
             ensureConnected()
-            val importedAccount = Account(acc.reference, name, acc.entropy, getBalance(acc.reference))
+            var balance: BigInteger
+            var accessible: Boolean
+
+            try {
+                balance = getBalance(acc.reference)
+                accessible = true
+            }
+            catch (e: TransactionRejectedException) {
+                balance = BigInteger.ZERO
+                accessible = false
+            }
+
+            val importedAccount = Account(acc.reference, name, acc.entropy, balance, accessible)
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(importedAccount)
             accounts.writeIntoInternalStorage(mvc)

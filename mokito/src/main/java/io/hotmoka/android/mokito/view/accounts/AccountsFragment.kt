@@ -107,15 +107,21 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             val account = accounts[i]
             viewHolder.itemName.text = account.name
             viewHolder.itemReference.text = account.reference.toString()
-            val balance = account.balance
-            val split = balance.divideAndRemainder(_10exp21)
-            val mokas = split[0]
-            val fraction = split[1]
-            var fractionWithZeros = fraction.toString()
-            while (fractionWithZeros.length < 21)
-                fractionWithZeros = "0$fractionWithZeros"
 
-            viewHolder.itemBalance.text = resources.getString(R.string.balance_description, mokas, fractionWithZeros)
+            if (account.accessible) {
+                val balance = account.balance
+                val split = balance.divideAndRemainder(_10exp21)
+                val mokas = split[0]
+                val fraction = split[1]
+                var fractionWithZeros = fraction.toString()
+                while (fractionWithZeros.length < 21)
+                    fractionWithZeros = "0$fractionWithZeros"
+
+                viewHolder.itemBalance.text =
+                    resources.getString(R.string.balance_description, mokas, fractionWithZeros)
+            }
+            else
+                viewHolder.itemBalance.text = resources.getString(R.string.account_not_accessible)
 
             if (account is Faucet) {
                 // the faucet cannot be edited, nor removed, nor used to send money
@@ -132,12 +138,18 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 viewHolder.settingsIcon.visibility = View.VISIBLE
                 viewHolder.settingsIcon.setOnClickListener {
                     findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
-                    //AccountSettingsDialogFragment.show(this@AccountsFragment, account)
                 }
             }
 
-            viewHolder.newIcon.setOnClickListener {
-                CreateAccountDialogFragment.show(this@AccountsFragment, account)
+            if (!account.accessible) {
+                viewHolder.newIcon.visibility = View.GONE
+                viewHolder.sendIcon.visibility = View.GONE
+                viewHolder.receiveIcon.visibility = View.GONE
+            }
+            else {
+                viewHolder.newIcon.setOnClickListener {
+                    CreateAccountDialogFragment.show(this@AccountsFragment, account)
+                }
             }
         }
 
