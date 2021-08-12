@@ -7,11 +7,19 @@
         android:icon="@drawable/ic_refresh"
         android:title="@string/action_reload"
         android:tooltipText="@string/action_reload_accounts_tooltip"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_create_key"
+        android:orderInCategory="101"
+        android:icon="@drawable/ic_key"
+        android:title="@string/action_create_key"
+        android:tooltipText="@string/action_create_key_tooltip"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_import"
-        android:orderInCategory="101"
+        android:orderInCategory="102"
         android:icon="@drawable/ic_import"
         android:title="@string/action_import"
         android:tooltipText="@string/action_import_account_tooltip"

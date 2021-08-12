@@ -101,7 +101,7 @@ open class Account: Comparable<Account>, Parcelable {
         else {
             this.reference = null
             this.balance = BigInteger.ZERO
-            this.accessible = true
+            this.accessible = false
         }
 
         if (name != null)
@@ -149,10 +149,10 @@ open class Account: Comparable<Account>, Parcelable {
 
             override fun createFromParcel(parcel: Parcel): Account {
                 val start = parcel.readByte()
-                if (start == 0.toByte())
-                    return Account(parcel)
+                return if (start == 0.toByte())
+                    Account(parcel)
                 else
-                    return Faucet(parcel)
+                    Faucet(parcel)
             }
 
             override fun newArray(size: Int): Array<Account?> {
@@ -163,6 +163,10 @@ open class Account: Comparable<Account>, Parcelable {
 
     fun setName(newName: String): Account {
         return Account(reference, newName, entropy.clone(), balance, accessible)
+    }
+
+    fun setReference(newReference: StorageReference?): Account {
+        return Account(newReference, name, entropy.clone(), balance, accessible)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)

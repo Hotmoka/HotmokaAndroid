@@ -12,6 +12,7 @@ import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.crypto.BIP39Words
+import java.lang.IllegalStateException
 
 class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
     private lateinit var account: Account
@@ -25,16 +26,37 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         setBinding(FragmentShowAccountBinding.inflate(inflater, container, false))
         getController().requestBip39Words(account)
         binding.accountName.setText(account.name)
+        binding.reference.setText(account.reference.toString())
+
+        // if the reference of the account is already set, we do not allow its modification;
+        // if it is not set, we do not allow the modification of the name of the account
+        if (account.reference != null)
+            binding.reference.isEnabled = false
+        else
+            binding.accountName.isEnabled = false;
+
         binding.ok.setOnClickListener { editAccountIfNeeded() }
         return binding.root
     }
 
     private fun editAccountIfNeeded() {
-        val new = account.setName(binding.accountName.text.toString())
-        if (account.name != new.name)
-            getController().requestReplace(account, new)
+        var newAccount = account
 
-        findNavController().popBackStack()
+        val newName = binding.accountName.text.toString()
+        if (account.name != newName)
+            newAccount = newAccount.setName(newName)
+
+        val newReference = validateStorageReference(binding.reference.text.toString()) ?: return
+        if (account.reference != newReference)
+            if (account.reference != null) {
+                notifyUser("Cannot set the reference of an account that already has a reference set")
+                return
+            }
+            else
+                newAccount = newAccount.setReference(newReference)
+
+        getController().requestReplace(account, newAccount, "pippo")
+        //findNavController().popBackStack()
     }
 
     override fun onBip39Available(account: Account, bip39: BIP39Words) {

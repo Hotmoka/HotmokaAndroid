@@ -47,6 +47,8 @@
     <string name="warning_about_words">Please write down on paper the following 36 words, in their sequential order. You will need them if you want to reinstall the account in this application (after deletion) or if you want to add it to another application. If you delete the account and lose these words, you will lose this account and its balance for ever!</string>
     <string name="action_import">Import account</string>
     <string name="action_import_account_tooltip">Import an account into this application</string>
+    <string name="action_create_key">Create new public key</string>
+    <string name="action_create_key_tooltip">Create a new public key for a new account</string>
     <string name="import_account">Import Account</string>
     <string name="description_about_words_to_insert">Insert the 36 words that have been provided at time of creation of the account, in their sequential order.</string>
 
@@ -94,4 +96,7 @@
     <string name="account_replaced_toast">Account %1$s edited</string>
     <string name="account_not_accessible">Account not accessible</string>
     <string name="account_password">Account password</string>
+    <string name="reference_of_the_account">Reference of the account</string>
+    <string name="new_key_password">New key password</string>
+    <string name="description_new_key">This dialog allows you to create a new key pair (private/public). Once you (or somebody else) pay to the public key, that will result in the creation of an actual account in the Hotmoka node, whose storage reference will be bound to the key pair, that will become a real account that you can control. Below, you specify the password that will be used then to control the account.</string>
 </resources>

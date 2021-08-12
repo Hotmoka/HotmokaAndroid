@@ -8,7 +8,6 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.remote.AndroidRemoteNode
-import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.signatures.MethodSignature
@@ -27,6 +26,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
+import java.security.KeyPair
 import java.security.PublicKey
 import java.security.SecureRandom
 
@@ -105,14 +105,20 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestReplace(old: Account, new: Account) {
+    fun requestReplace(old: Account, new: Account, password: String) {
         safeRunAsIO {
             ensureConnected()
+            var newAccount = new
+            new.reference?.let {
+                val balance = getBalance(it)
+                newAccount = Account(it, new.name, new.getEntropy(), balance, true)
+                verify(newAccount, password)
+            }
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(old)
-            accounts.add(new)
+            accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
-            mainScope.launch { mvc.view?.onAccountReplaced(old, new) }
+            mainScope.launch { mvc.view?.onAccountReplaced(old, newAccount) }
             mvc.model.setAccounts(accounts)
         }
     }
@@ -164,9 +170,7 @@ class Controller(private val mvc: MVC) {
             val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference)
             val bip39 = BIP39Words.of(acc, BIP39Dictionary.ENGLISH_DICTIONARY)
 
-            mainScope.launch {
-                mvc.view?.onBip39Available(account, bip39)
-            }
+            mainScope.launch { mvc.view?.onBip39Available(account, bip39) }
         }
     }
 
@@ -175,31 +179,37 @@ class Controller(private val mvc: MVC) {
             val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
             ensureConnected()
 
-            var balance: BigInteger
-            var accessible: Boolean
-
-            try {
-                balance = getBalance(acc.reference)
-                accessible = true
-            }
-            catch (e: TransactionRejectedException) {
-                balance = BigInteger.ZERO
-                accessible = false
-            }
-
-            val importedAccount = Account(acc.reference, name, acc.entropy, balance, accessible)
-
-            if (accessible)
-                verify(importedAccount, password)
+            val balance = getBalance(acc.reference)
+            val importedAccount = Account(acc.reference, name, acc.entropy, balance, true)
+            verify(importedAccount, password)
 
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(importedAccount)
             accounts.writeIntoInternalStorage(mvc)
-            mainScope.launch {
-                mvc.view?.onAccountImported(importedAccount)
-            }
+            mainScope.launch { mvc.view?.onAccountImported(importedAccount) }
             mvc.model.setAccounts(accounts)
         }
+    }
+
+    fun requestNewKeyPair(password: String) {
+        safeRunAsIO {
+            val entropy = ByteArray(16) // 128 bits of entropy
+            random.nextBytes(entropy)
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
+            val publicKeyBase64 = publicKeyBase64Encoded(keys)
+            Log.d("Controller", "created public key $publicKeyBase64")
+
+            // it is not a fully functional account yet, since it misses the reference
+            val newAccount = Account(null, publicKeyBase64, entropy, BigInteger.ZERO, false)
+            val accounts = mvc.model.getAccounts() ?: reloadAccounts()
+            accounts.add(newAccount)
+            accounts.writeIntoInternalStorage(mvc)
+            mvc.model.setAccounts(accounts)
+        }
+    }
+
+    private fun publicKeyBase64Encoded(keys: KeyPair): String {
+        return Base64.encodeToString(signatureAlgorithmOfNewAccounts.encodingOf(keys.public), Base64.NO_WRAP)
     }
 
     /**
@@ -217,7 +227,7 @@ class Controller(private val mvc: MVC) {
                 password
             )
             val publicKeyAsStored = getPublicKey(reference) // it is stored as BASE64-encoded
-            val publicKeyAsImported = Base64.encodeToString(keys.public.encoded, Base64.NO_WRAP)
+            val publicKeyAsImported = publicKeyBase64Encoded(keys)
             if (publicKeyAsStored != publicKeyAsImported)
                 throw IllegalArgumentException("The public key of the account does not match its entropy")
         }
@@ -249,7 +259,6 @@ class Controller(private val mvc: MVC) {
             val newAccount = Account(reference, name, entropy, balance, true)
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
-
             mainScope.launch { mvc.view?.onAccountCreated(newAccount) }
             mvc.model.setAccounts(accounts)
         }

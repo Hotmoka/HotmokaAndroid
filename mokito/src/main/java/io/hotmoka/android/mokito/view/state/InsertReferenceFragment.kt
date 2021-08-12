@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import io.hotmoka.android.mokito.databinding.FragmentInsertReferenceBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.values.StorageReference
 
 /**
  * A fragment used to insert the storage reference of an object
@@ -19,21 +18,12 @@ class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>
         setBinding(FragmentInsertReferenceBinding.inflate(inflater, container, false))
 
         binding.showState.setOnClickListener {
-            val input = binding.reference.text.toString()
-            val reference: StorageReference
-
-            // let us validate the user input
-            try {
-                reference = StorageReference(input)
+            val reference = validateStorageReference(binding.reference.text.toString())
+            reference?.let {
+                findNavController().navigate(
+                    InsertReferenceFragmentDirections.actionInsertReferenceToShowState(it)
+                )
             }
-            catch (t: Throwable) {
-                notifyUser("A storage reference should consist of 64 hex digits followed by # and by a progressive number")
-                return@setOnClickListener
-            }
-
-            findNavController().navigate(
-                InsertReferenceFragmentDirections.actionInsertReferenceToShowState(reference)
-            )
         }
 
         return binding.root

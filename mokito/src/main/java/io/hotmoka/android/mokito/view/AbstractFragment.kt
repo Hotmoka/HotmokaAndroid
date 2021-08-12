@@ -24,7 +24,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     protected fun setBinding(binding: V) {
-        _binding = binding;
+        _binding = binding
     }
 
     override fun onStart() {
@@ -64,6 +64,24 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     protected fun getModel(): Model {
         return context.applicationContext.model
+    }
+
+    /**
+     * Checks that the given string is syntactically a storage reference.
+     * Otherwise, issues a warning to the user and returns {@code null}.
+     *
+     * @param s the string representation of the potential storage reference
+     * @return the corresponding storage reference, or {@code null} if {@code s} is not,
+     *         syntactically, a storage reference
+     */
+    protected fun validateStorageReference(s: String): StorageReference? {
+        return try {
+            StorageReference(s)
+        }
+        catch (t: Throwable) {
+            notifyUser("A storage reference should consist of 64 hex digits followed by # and by a progressive number")
+            null
+        }
     }
 
     override fun onManifestChanged(manifest: StorageReference) {

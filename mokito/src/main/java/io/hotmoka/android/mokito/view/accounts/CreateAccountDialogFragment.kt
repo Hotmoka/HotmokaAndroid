@@ -50,10 +50,10 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
         binding.hideShowNewAccountPassword.controls(binding.accountPassword)
 
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(R.string.account_creation)
-        builder.setIcon(R.drawable.ic_new)
-        builder.setNegativeButton(R.string.cancel) { _, _ -> }
-        builder.setView(binding.root)
+            .setTitle(R.string.account_creation)
+            .setIcon(R.drawable.ic_new)
+            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setView(binding.root)
 
         payer?.let { payer ->
             builder.setMessage(resources.getString(R.string.account_creation_message, payer.name))

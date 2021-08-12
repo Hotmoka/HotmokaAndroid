@@ -44,14 +44,21 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_reload) {
-            getController().requestAccounts()
-            return true
+        return when (item.itemId) {
+            R.id.action_reload -> {
+                getController().requestAccounts()
+                true
+            }
+            R.id.action_import -> {
+                findNavController().navigate(AccountsFragmentDirections.actionInsertAccount())
+                true
+            }
+            R.id.action_create_key -> {
+                CreateKeyDialogFragment.show(this)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
-        else if (item.itemId == R.id.action_import)
-            findNavController().navigate(AccountsFragmentDirections.actionInsertAccount())
-
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onStart() {
@@ -147,6 +154,8 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 viewHolder.receiveIcon.visibility = View.GONE
             }
             else {
+                viewHolder.newIcon.visibility = View.VISIBLE
+                viewHolder.receiveIcon.visibility = View.VISIBLE
                 viewHolder.newIcon.setOnClickListener {
                     CreateAccountDialogFragment.show(this@AccountsFragment, account)
                 }
