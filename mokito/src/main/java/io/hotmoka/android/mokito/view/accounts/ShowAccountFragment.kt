@@ -30,6 +30,7 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         if (account.reference != null) {
             getController().requestBip39Words(account)
             binding.reference.isEnabled = false
+            binding.specifyReference.visibility = View.GONE
             binding.reference.setText(account.reference.toString())
         }
         else {

@@ -101,4 +101,5 @@
     <string name="new_key_password">New key password</string>
     <string name="description_new_key">This dialog allows you to create a new key pair (private/public). Once you (or somebody else) pay to the public key, that will result in the creation of an actual account in the Hotmoka node, whose storage reference will be bound to the key pair, that will become a real account that you can control. Below, you specify the password that will be used then to control the account.</string>
     <string name="waiting_for_payment_to_public_key">Waiting for payment to public key</string>
+    <string name="specify_reference_instructions">If somebody has paid to this key, you can add the reference of the generated account below.</string>
 </resources>
