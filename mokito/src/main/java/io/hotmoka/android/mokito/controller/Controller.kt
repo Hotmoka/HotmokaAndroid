@@ -18,6 +18,7 @@ import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.beans.values.StringValue
 import io.hotmoka.crypto.BIP39Dictionary
 import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.remote.RemoteNodeConfig
 import io.hotmoka.views.AccountCreationHelper
@@ -196,11 +197,11 @@ class Controller(private val mvc: MVC) {
             val entropy = ByteArray(16) // 128 bits of entropy
             random.nextBytes(entropy)
             val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
-            val publicKeyBase64 = publicKeyBase64Encoded(keys)
-            Log.d("Controller", "created public key $publicKeyBase64")
+            val publicKeyBase58 = Base58.encode(signatureAlgorithmOfNewAccounts.encodingOf(keys.public))
+            Log.d("Controller", "created public key $publicKeyBase58")
 
             // it is not a fully functional account yet, since it misses the reference
-            val newAccount = Account(null, publicKeyBase64, entropy, BigInteger.ZERO, false)
+            val newAccount = Account(null, publicKeyBase58, entropy, BigInteger.ZERO, false)
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
