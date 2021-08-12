@@ -3,6 +3,8 @@ package io.hotmoka.android.mokito.view.accounts
 import android.os.Bundle
 import android.view.*
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -92,15 +94,118 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
         }
 
         private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemReference: TextView = itemView.findViewById(R.id.item_reference)
-            val itemName: TextView = itemView.findViewById(R.id.item_name)
-            val itemBalance: TextView = itemView.findViewById(R.id.item_balance)
-            val deleteIcon: ImageView = itemView.findViewById(R.id.item_delete)
-            val settingsIcon: ImageView = itemView.findViewById(R.id.item_settings)
-            val newIcon: ImageView = itemView.findViewById(R.id.item_new)
-            val receiveIcon: ImageView = itemView.findViewById(R.id.item_receive)
-            val sendIcon: ImageView = itemView.findViewById(R.id.item_send)
-            val card: CardView = itemView.findViewById(R.id.account_card_view)
+            private val itemReference: TextView = itemView.findViewById(R.id.item_reference)
+            private val itemName: TextView = itemView.findViewById(R.id.item_name)
+            private val itemBalance: TextView = itemView.findViewById(R.id.item_balance)
+            private val deleteIcon: ImageView = itemView.findViewById(R.id.item_delete)
+            private val settingsIcon: ImageView = itemView.findViewById(R.id.item_settings)
+            private val newIcon: ImageView = itemView.findViewById(R.id.item_new)
+            private val receiveIcon: ImageView = itemView.findViewById(R.id.item_receive)
+            private val sendIcon: ImageView = itemView.findViewById(R.id.item_send)
+            private val card: CardView = itemView.findViewById(R.id.account_card_view)
+
+            /**
+             * Binds the view holder to an account that is actually a public key,
+             * still waiting for the corresponding account object to be created.
+             */
+            private fun bindToKey(account: Account) {
+                itemName.text = account.name
+                itemReference.text = getString(R.string.waiting_for_payment_to_public_key)
+                itemBalance.visibility = GONE
+                newIcon.visibility = GONE
+                sendIcon.visibility = GONE
+                receiveIcon.visibility = VISIBLE
+                deleteIsVisible(account)
+                settingsIsVisible(account)
+            }
+
+            /**
+             * Binds the view holder to an account that is actually the faucet of the node.
+             */
+            private fun bindToFaucet(account: Account) {
+                itemName.text = account.name
+                itemReference.text = account.reference.toString()
+                itemBalance.text = descriptionOfBalance(account.balance)
+                itemBalance.visibility = VISIBLE
+                newIsVisible(account)
+                sendIcon.visibility = GONE
+                receiveIcon.visibility = VISIBLE
+                deleteIcon.visibility = GONE
+                settingsIcon.visibility = GONE
+            }
+
+            /**
+             * Binds the view holder to an account that is not the faucet and is accessible.
+             */
+            private fun bindToAccessible(account: Account) {
+                itemName.text = account.name
+                itemReference.text = account.reference.toString()
+                itemBalance.text = descriptionOfBalance(account.balance)
+                itemBalance.visibility = VISIBLE
+                newIsVisible(account)
+                sendIcon.visibility = VISIBLE
+                receiveIcon.visibility = VISIBLE
+                deleteIsVisible(account)
+                settingsIsVisible(account)
+            }
+
+            /**
+             * Binds the view holder to an account that is not the faucet and is inaccessible.
+             */
+            private fun bindToInaccessible(account: Account) {
+                itemName.text = account.name
+                itemReference.text = account.reference.toString()
+                itemBalance.text = resources.getString(R.string.account_not_accessible)
+                itemBalance.visibility = VISIBLE
+                newIcon.visibility = GONE
+                sendIcon.visibility = GONE
+                receiveIcon.visibility = GONE
+                deleteIsVisible(account)
+                settingsIsVisible(account)
+            }
+
+            private fun settingsIsVisible(account: Account) {
+                settingsIcon.visibility = VISIBLE
+                settingsIcon.setOnClickListener {
+                    findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
+                }
+            }
+
+            private fun deleteIsVisible(account: Account) {
+                deleteIcon.visibility = VISIBLE
+                deleteIcon.setOnClickListener {
+                    DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
+                }
+            }
+
+            private fun newIsVisible(account: Account) {
+                newIcon.visibility = VISIBLE
+                newIcon.setOnClickListener {
+                    CreateAccountDialogFragment.show(this@AccountsFragment, account)
+                }
+            }
+
+            private fun descriptionOfBalance(balance: BigInteger): String {
+                val split = balance.divideAndRemainder(_10exp21)
+                val mokas = split[0]
+                val fraction = split[1]
+                var fractionWithZeros = fraction.toString()
+                while (fractionWithZeros.length < 21)
+                    fractionWithZeros = "0$fractionWithZeros"
+
+                return getString(R.string.balance_description, mokas, fractionWithZeros)
+            }
+
+            fun bindTo(account: Account) {
+                if (account is Faucet)
+                    bindToFaucet(account)
+                else if (account.isKey())
+                    bindToKey(account)
+                else if (account.isAccessible)
+                    bindToAccessible(account)
+                else
+                    bindToInaccessible(account)
+            }
         }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
@@ -111,55 +216,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
-            val account = accounts[i]
-            viewHolder.itemName.text = account.name
-            viewHolder.itemReference.text = account.reference.toString()
-
-            if (account.accessible) {
-                val balance = account.balance
-                val split = balance.divideAndRemainder(_10exp21)
-                val mokas = split[0]
-                val fraction = split[1]
-                var fractionWithZeros = fraction.toString()
-                while (fractionWithZeros.length < 21)
-                    fractionWithZeros = "0$fractionWithZeros"
-
-                viewHolder.itemBalance.text =
-                    resources.getString(R.string.balance_description, mokas, fractionWithZeros)
-            }
-            else
-                viewHolder.itemBalance.text = resources.getString(R.string.account_not_accessible)
-
-            if (account is Faucet) {
-                // the faucet cannot be edited, nor removed, nor used to send money
-                viewHolder.deleteIcon.visibility = View.GONE
-                viewHolder.sendIcon.visibility = View.GONE
-                viewHolder.settingsIcon.visibility = View.GONE
-            }
-            else {
-                viewHolder.deleteIcon.visibility = View.VISIBLE
-                viewHolder.deleteIcon.setOnClickListener {
-                    DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
-                }
-                viewHolder.sendIcon.visibility = View.VISIBLE
-                viewHolder.settingsIcon.visibility = View.VISIBLE
-                viewHolder.settingsIcon.setOnClickListener {
-                    findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
-                }
-            }
-
-            if (!account.accessible) {
-                viewHolder.newIcon.visibility = View.GONE
-                viewHolder.sendIcon.visibility = View.GONE
-                viewHolder.receiveIcon.visibility = View.GONE
-            }
-            else {
-                viewHolder.newIcon.visibility = View.VISIBLE
-                viewHolder.receiveIcon.visibility = View.VISIBLE
-                viewHolder.newIcon.setOnClickListener {
-                    CreateAccountDialogFragment.show(this@AccountsFragment, account)
-                }
-            }
+            viewHolder.bindTo(accounts[i])
         }
 
         override fun getItemCount(): Int {

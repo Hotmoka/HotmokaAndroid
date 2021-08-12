@@ -42,7 +42,7 @@ open class Account: Comparable<Account>, Parcelable {
     /**
      * True if and only if the account could be accessed and its balance could be retrieved.
      */
-    val accessible: Boolean
+    val isAccessible: Boolean
 
     /**
      * The entropy that was used to generate the key pair of the account. Only the
@@ -58,7 +58,7 @@ open class Account: Comparable<Account>, Parcelable {
         this.name = name
         this.entropy = entropy
         this.balance = balance
-        this.accessible = accessible
+        this.isAccessible = accessible
     }
 
     constructor(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger) {
@@ -96,12 +96,12 @@ open class Account: Comparable<Account>, Parcelable {
             }
 
             this.balance = balance
-            this.accessible = accessible
+            this.isAccessible = accessible
         }
         else {
             this.reference = null
             this.balance = BigInteger.ZERO
-            this.accessible = false
+            this.isAccessible = false
         }
 
         if (name != null)
@@ -119,9 +119,16 @@ open class Account: Comparable<Account>, Parcelable {
         this.reference = parcel.readSerializable() as StorageReference
         this.name = parcel.readString()!!
         this.balance = parcel.readSerializable() as BigInteger
-        this.accessible = parcel.readByte() != 0.toByte()
+        this.isAccessible = parcel.readByte() != 0.toByte()
         this.entropy = ByteArray(parcel.readInt())
         parcel.readByteArray(this.entropy)
+    }
+
+    /**
+     * Determines if this account is just a key, waiting for the creation of an account for that key.
+     */
+    fun isKey(): Boolean {
+        return reference == null
     }
 
     override fun describeContents(): Int {
@@ -137,7 +144,7 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeSerializable(reference)
         out.writeString(name)
         out.writeSerializable(balance)
-        out.writeByte(if (accessible) 1.toByte() else 0.toByte())
+        out.writeByte(if (isAccessible) 1.toByte() else 0.toByte())
         out.writeInt(entropy.size)
         out.writeByteArray(entropy)
     }
@@ -162,11 +169,11 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     fun setName(newName: String): Account {
-        return Account(reference, newName, entropy.clone(), balance, accessible)
+        return Account(reference, newName, entropy.clone(), balance, isAccessible)
     }
 
     fun setReference(newReference: StorageReference?): Account {
-        return Account(newReference, name, entropy.clone(), balance, accessible)
+        return Account(newReference, name, entropy.clone(), balance, isAccessible)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)

@@ -12,7 +12,6 @@ import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.crypto.BIP39Words
-import java.lang.IllegalStateException
 
 class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
     private lateinit var account: Account
@@ -24,16 +23,20 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentShowAccountBinding.inflate(inflater, container, false))
-        getController().requestBip39Words(account)
         binding.accountName.setText(account.name)
-        binding.reference.setText(account.reference.toString())
 
         // if the reference of the account is already set, we do not allow its modification;
         // if it is not set, we do not allow the modification of the name of the account
-        if (account.reference != null)
+        if (account.reference != null) {
+            getController().requestBip39Words(account)
             binding.reference.isEnabled = false
-        else
-            binding.accountName.isEnabled = false;
+            binding.reference.setText(account.reference.toString())
+        }
+        else {
+            binding.accountName.isEnabled = false
+            binding.reference.setText("")
+            binding.warning.visibility = View.GONE
+        }
 
         binding.ok.setOnClickListener { editAccountIfNeeded() }
         return binding.root
@@ -41,22 +44,24 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
 
     private fun editAccountIfNeeded() {
         var newAccount = account
+        var replace = false
 
         val newName = binding.accountName.text.toString()
-        if (account.name != newName)
+        if (account.name != newName) {
+            replace = true
             newAccount = newAccount.setName(newName)
+        }
 
         val newReference = validateStorageReference(binding.reference.text.toString()) ?: return
-        if (account.reference != newReference)
-            if (account.reference != null) {
-                notifyUser("Cannot set the reference of an account that already has a reference set")
-                return
-            }
-            else
-                newAccount = newAccount.setReference(newReference)
+        if (account.reference != newReference) {
+            replace = true
+            newAccount = newAccount.setReference(newReference)
+        }
 
-        getController().requestReplace(account, newAccount, "pippo")
-        //findNavController().popBackStack()
+        if (replace)
+            getController().requestReplace(account, newAccount, "pippo")
+
+        findNavController().popBackStack()
     }
 
     override fun onBip39Available(account: Account, bip39: BIP39Words) {

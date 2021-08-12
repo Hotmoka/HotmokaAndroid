@@ -30,6 +30,7 @@
     <string name="new_account">New Account</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
+    <string name="delete_key_confirmation_message">Do you really want to delete account %1$s? It might remain in the Hotmoka node, but this app will lose access to the account.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="delete_question">Delete?</string>
     <string name="account_settings">Account settings</string>
@@ -99,4 +100,5 @@
     <string name="reference_of_the_account">Reference of the account</string>
     <string name="new_key_password">New key password</string>
     <string name="description_new_key">This dialog allows you to create a new key pair (private/public). Once you (or somebody else) pay to the public key, that will result in the creation of an actual account in the Hotmoka node, whose storage reference will be bound to the key pair, that will become a real account that you can control. Below, you specify the password that will be used then to control the account.</string>
+    <string name="waiting_for_payment_to_public_key">Waiting for payment to public key</string>
 </resources>

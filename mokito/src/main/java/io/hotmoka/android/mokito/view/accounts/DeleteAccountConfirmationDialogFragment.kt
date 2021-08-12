@@ -36,7 +36,11 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
             .setNegativeButton(R.string.keep) { _,_ -> }
 
         account?.let {
-            builder.setMessage(getString(R.string.delete_confirmation_message, it.name))
+            if (it.isKey())
+                builder.setMessage(getString(R.string.delete_key_confirmation_message, it.name))
+            else
+                builder.setMessage(getString(R.string.delete_confirmation_message, it.name))
+            
             builder.setPositiveButton(R.string.delete) { _, _ -> getController().requestDelete(it) }
         }
 
