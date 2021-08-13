@@ -55,9 +55,8 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
 
         val newReferenceInput = binding.reference.text.toString()
         if (account.reference == null && newReferenceInput.isNotEmpty()) {
-            val newReference = validateStorageReference(newReferenceInput) ?: return
             replace = true
-            newAccount = newAccount.setReference(newReference)
+            newAccount = newAccount.setReference(validateStorageReference(newReferenceInput))
         }
 
         if (replace)

@@ -119,20 +119,20 @@ class AndroidRemoteNode : Node {
         return callSafely({ node -> node.addConstructorCallTransaction(request) }, "addConstructorCallTransaction")
     }
 
-    override fun addInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): StorageValue {
-        return callSafely({ node -> node.addInstanceMethodCallTransaction(request) }, "addInstanceMethodCallTransaction")
+    override fun addInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): StorageValue? {
+        return callSafelyAcceptsNull({ node -> node.addInstanceMethodCallTransaction(request) }, "addInstanceMethodCallTransaction")
     }
 
-    override fun addStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): StorageValue {
-        return callSafely({ node -> node.addStaticMethodCallTransaction(request) }, "addStaticMethodCallTransaction")
+    override fun addStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): StorageValue? {
+        return callSafelyAcceptsNull({ node -> node.addStaticMethodCallTransaction(request) }, "addStaticMethodCallTransaction")
     }
 
-    override fun runInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): StorageValue {
-        return callSafely({ node -> node.runInstanceMethodCallTransaction(request) }, "runInstanceMethodCallTransaction")
+    override fun runInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): StorageValue? {
+        return callSafelyAcceptsNull({ node -> node.runInstanceMethodCallTransaction(request) }, "runInstanceMethodCallTransaction")
     }
 
-    override fun runStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): StorageValue {
-        return callSafely({ node -> node.runStaticMethodCallTransaction(request) }, "runStaticMethodCallTransaction")
+    override fun runStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): StorageValue? {
+        return callSafelyAcceptsNull({ node -> node.runStaticMethodCallTransaction(request) }, "runStaticMethodCallTransaction")
     }
 
     override fun postJarStoreTransaction(request: JarStoreTransactionRequest): JarSupplier {
@@ -164,6 +164,16 @@ class AndroidRemoteNode : Node {
                 Log.d(TAG, "$name => success")
                 return result
             }
+        }
+
+        throw IllegalStateException("remote node not connected")
+    }
+
+    private fun <T> callSafelyAcceptsNull(task: (Node) -> T?, name: String): T? {
+        node?.let {
+            val result = task(it)
+            Log.d(TAG, "$name => success")
+            return result
         }
 
         throw IllegalStateException("remote node not connected")

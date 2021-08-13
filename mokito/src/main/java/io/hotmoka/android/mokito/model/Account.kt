@@ -176,7 +176,7 @@ open class Account: Comparable<Account>, Parcelable {
         return Account(reference, newName, entropy.clone(), publicKey, balance, isAccessible)
     }
 
-    fun setReference(newReference: StorageReference?): Account {
+    fun setReference(newReference: StorageReference): Account {
         return Account(newReference, name, entropy.clone(), publicKey, balance, isAccessible)
     }
 

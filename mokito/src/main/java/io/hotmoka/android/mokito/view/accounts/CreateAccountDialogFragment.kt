@@ -15,7 +15,7 @@ import io.hotmoka.android.mokito.view.AbstractDialogFragment
 import java.math.BigInteger
 
 class CreateAccountDialogFragment: AbstractDialogFragment() {
-    private var payer: Account? = null
+    private lateinit var payer: Account
     private var _binding: DialogFragmentCreateAccountBinding? = null
     private val binding get() = _binding!!
 
@@ -34,7 +34,7 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        payer = arguments?.getParcelable(PAYER_KEY)
+        payer = arguments?.getParcelable(PAYER_KEY)!!
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -48,36 +48,34 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
             binding.hideShowPayerPassword.controls(binding.payerPassword)
 
         binding.hideShowNewAccountPassword.controls(binding.accountPassword)
+        binding.payerPassword.hint = getString(R.string.payer_account_password, payer.name)
+        binding.accountBalance.hint = getString(
+            R.string.new_account_balance,
+            maxAllowedForCreation().toString()
+        )
 
         val builder = AlertDialog.Builder(context)
             .setTitle(R.string.account_creation)
             .setIcon(R.drawable.ic_new)
             .setNegativeButton(R.string.cancel) { _, _ -> }
             .setView(binding.root)
+            .setMessage(resources.getString(R.string.account_creation_message, payer.name))
 
-        payer?.let { payer ->
-            builder.setMessage(resources.getString(R.string.account_creation_message, payer.name))
-            binding.payerPassword.hint = resources.getString(R.string.payer_account_password, payer.name)
-            binding.accountBalance.hint = resources.getString(
-                R.string.new_account_balance,
-                maxAllowedForCreation().toString()
-            )
-            builder.setPositiveButton(R.string.done) { _, _ ->
-                if (payer is Faucet)
-                    getController().requestNewAccountFromFaucet(
-                        binding.accountName.text.toString(),
-                        binding.accountPassword.text.toString(),
-                        BigInteger(binding.accountBalance.text.toString())
-                    )
-                else
-                    getController().requestNewAccountFromAnotherAccount(
-                        payer,
-                        binding.payerPassword.text.toString(),
-                        binding.accountName.text.toString(),
-                        binding.accountPassword.text.toString(),
-                        BigInteger(binding.accountBalance.text.toString())
-                    )
-            }
+        builder.setPositiveButton(R.string.done) { _, _ ->
+            if (payer is Faucet)
+                getController().requestNewAccountFromFaucet(
+                    binding.accountName.text.toString(),
+                    binding.accountPassword.text.toString(),
+                    BigInteger(binding.accountBalance.text.toString())
+                )
+            else
+                getController().requestNewAccountFromAnotherAccount(
+                    payer,
+                    binding.payerPassword.text.toString(),
+                    binding.accountName.text.toString(),
+                    binding.accountPassword.text.toString(),
+                    BigInteger(binding.accountBalance.text.toString())
+                )
         }
 
         val dialog =  builder.create()
@@ -106,26 +104,23 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
      * balance of the payer, but if the payer is the faucet, there is a smaller limit for it.
      */
     private fun maxAllowedForCreation(): BigInteger {
-        payer?.let {
+        payer.let {
             return if (it is Faucet)
                 // the faucet has a limit that is normally smaller than its balance
                 it.maxFaucet.min(it.balance)
             else
                 it.balance
         }
-
-        return BigInteger.ZERO
     }
 
     private fun enableDoneIfOK() {
         var enable = false
 
-        payer?.let {
-            try {
-                val balance = BigInteger(binding.accountBalance.text.toString())
-                enable = balance.subtract(maxAllowedForCreation()).signum() <= 0
-            } catch (e: NumberFormatException) {
-            }
+        try {
+            val balance = BigInteger(binding.accountBalance.text.toString())
+            enable = balance.subtract(maxAllowedForCreation()).signum() <= 0
+        }
+        catch (e: NumberFormatException) {
         }
 
         (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = enable

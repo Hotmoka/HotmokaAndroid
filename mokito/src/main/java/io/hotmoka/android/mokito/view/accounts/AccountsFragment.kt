@@ -143,7 +143,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 itemBalance.text = descriptionOfBalance(account.balance)
                 itemBalance.visibility = VISIBLE
                 newIsVisible(account)
-                sendIcon.visibility = VISIBLE
+                sendIsVisible(account)
                 receiveIcon.visibility = VISIBLE
                 deleteIsVisible(account)
                 settingsIsVisible(account)
@@ -182,6 +182,13 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 newIcon.visibility = VISIBLE
                 newIcon.setOnClickListener {
                     CreateAccountDialogFragment.show(this@AccountsFragment, account)
+                }
+            }
+
+            private fun sendIsVisible(account: Account) {
+                sendIcon.visibility = VISIBLE
+                sendIcon.setOnClickListener {
+                    SendCoinsDialogFragment.show(this@AccountsFragment, account)
                 }
             }
 

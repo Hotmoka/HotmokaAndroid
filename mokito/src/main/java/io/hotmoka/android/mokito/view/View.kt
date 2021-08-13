@@ -74,6 +74,13 @@ interface View {
      */
     fun onBip39Available(account: Account, bip39: BIP39Words)
 
+    /**
+     * Called when a payment has been executed, on behalf of a paying account.
+     *
+     * @param payer the paying account
+     */
+    fun onPaymentCompleted(payer: Account)
+
     fun notifyException(t: Throwable)
 
     fun notifyUser(message: String)

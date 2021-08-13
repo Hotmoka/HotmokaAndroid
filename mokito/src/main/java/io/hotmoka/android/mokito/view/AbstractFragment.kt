@@ -68,19 +68,17 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     /**
      * Checks that the given string is syntactically a storage reference.
-     * Otherwise, issues a warning to the user and returns {@code null}.
      *
      * @param s the string representation of the potential storage reference
-     * @return the corresponding storage reference, or {@code null} if {@code s} is not,
-     *         syntactically, a storage reference
+     * @return the corresponding storage reference
+     *
      */
-    protected fun validateStorageReference(s: String): StorageReference? {
-        return try {
-            StorageReference(s)
+    protected fun validateStorageReference(s: String): StorageReference {
+        try {
+            return StorageReference(s)
         }
         catch (t: Throwable) {
-            notifyUser(getString(R.string.storage_reference_constraints))
-            null
+            throw IllegalArgumentException(getString(R.string.storage_reference_constraints))
         }
     }
 
@@ -110,6 +108,10 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     override fun onAccountReplaced(old: Account, new: Account) {
         notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
+    }
+
+    override fun onPaymentCompleted(payer: Account) {
+        notifyUser(getString(R.string.payment_completed))
     }
 
     override fun notifyException(t: Throwable) {

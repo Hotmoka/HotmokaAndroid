@@ -22,6 +22,7 @@ import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.remote.RemoteNodeConfig
 import io.hotmoka.views.AccountCreationHelper
+import io.hotmoka.views.SendCoinsHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -151,14 +152,8 @@ class Controller(private val mvc: MVC) {
 
     fun requestNewAccountFromAnotherAccount(payer: Account, passwordOfPayer: String, name: String, passwordOfNewAccount: String, balance: BigInteger) {
         createNewAccount({ publicKey ->
-
             checkPassword(payer, passwordOfPayer)
-
-            val keysOfPayer = signatureAlgorithmOfNewAccounts.getKeyPair(
-                payer.getEntropy(),
-                BIP39Dictionary.ENGLISH_DICTIONARY,
-                passwordOfPayer
-            )
+            val keysOfPayer = getKeysOf(payer, passwordOfPayer)
 
             AccountCreationHelper(node)
                 .fromPayer(
@@ -213,11 +208,57 @@ class Controller(private val mvc: MVC) {
 
             // it is not a fully functional account yet, since it misses the reference
             val newAccount = Account(null, publicKeyBase58, entropy, publicKeyBase64, BigInteger.ZERO, false)
+            ensureConnected()
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
             mvc.model.setAccounts(accounts)
         }
+    }
+
+    /**
+     * Request a payment to an existing account.
+     *
+     * @param payer the paying account
+     * @param destination the recipient of the payment
+     * @param amount to amount to transfer to {@code destination}
+     * @param passwordOfPayer the password of {@code payer}
+     */
+    fun requestPayment(payer: Account, destination: StorageReference, amount: BigInteger, passwordOfPayer: String) {
+        safeRunAsIO {
+            checkPassword(payer, passwordOfPayer)
+            val keys = getKeysOf(payer, passwordOfPayer)
+            ensureConnected()
+            SendCoinsHelper(node).fromPayer(payer.reference, keys, destination, amount, BigInteger.ZERO, {}, {})
+
+            // we reload the accounts, since the payer will see its balance decrease
+            val accounts = reloadAccounts()
+            mvc.model.setAccounts(accounts)
+            mainScope.launch { mvc.view?.onPaymentCompleted(payer) }
+        }
+    }
+
+    /**
+     * Request a payment to a public key.
+     *
+     * @param payer the paying account
+     * @param publicKey the Base58-encoded public key of the recipient of the payment
+     * @param amount to amount to transfer to {@code publicKey}
+     * @param anonymous if true, the payment occurs by creating an account in the account ledger
+     *                  of the Hotmoka node, for {@code publicKey}. Otherwise, a new account gets
+     *                  created, with {@code publicKey} as public key
+     * @param password the password of {@code payer}
+     */
+    fun requestPaymentToPublicKey(payer: Account, publicKey: String, amount: BigInteger, anonymous: Boolean, password: String) {
+        safeRunAsIO {
+            checkPassword(payer, password)
+            ensureConnected()
+
+        }
+    }
+
+    private fun getKeysOf(account: Account, password: String): KeyPair {
+        return signatureAlgorithmOfNewAccounts.getKeyPair(account.getEntropy(), BIP39Dictionary.ENGLISH_DICTIONARY, password)
     }
 
     private fun publicKeyBase64Encoded(keys: KeyPair): String {

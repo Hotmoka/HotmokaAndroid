@@ -10,7 +10,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractDialogFragment
 
 class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
-    private var account: Account? = null
+    private lateinit var account: Account
 
     companion object {
         private const val TAG = "DeleteAccountConfirmationDialog"
@@ -27,7 +27,7 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        account = arguments?.getParcelable(ACCOUNT_KEY)
+        account = arguments?.getParcelable(ACCOUNT_KEY)!!
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -38,17 +38,15 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
             .setTitle(R.string.delete_question)
             .setIcon(R.drawable.ic_delete)
             .setView(binding.root)
-            .setNegativeButton(R.string.keep) { _,_ -> }
+            .setNegativeButton(R.string.keep) { _, _ -> }
 
-        account?.let {
-            if (it.isKey())
-                builder.setMessage(getString(R.string.delete_key_confirmation_message, it.name))
-            else
-                builder.setMessage(getString(R.string.delete_confirmation_message, it.name))
-            
-            builder.setPositiveButton(R.string.delete) {
-                _, _ -> getController().requestDelete(it, binding.accountPassword.text.toString())
-            }
+        if (account.isKey())
+            builder.setMessage(getString(R.string.delete_key_confirmation_message, account.name))
+        else
+            builder.setMessage(getString(R.string.delete_confirmation_message, account.name))
+
+        builder.setPositiveButton(R.string.delete) { _, _ ->
+            getController().requestDelete(account, binding.accountPassword.text.toString())
         }
 
         return builder.create()

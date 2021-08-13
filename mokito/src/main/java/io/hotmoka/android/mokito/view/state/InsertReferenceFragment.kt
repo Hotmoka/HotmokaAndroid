@@ -19,11 +19,9 @@ class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>
 
         binding.showState.setOnClickListener {
             val reference = validateStorageReference(binding.reference.text.toString())
-            reference?.let {
-                findNavController().navigate(
-                    InsertReferenceFragmentDirections.actionInsertReferenceToShowState(it)
-                )
-            }
+            findNavController().navigate(
+                InsertReferenceFragmentDirections.actionInsertReferenceToShowState(reference)
+            )
         }
 
         return binding.root

@@ -3,8 +3,10 @@ package io.hotmoka.android.mokito.view
 import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Model
+import io.hotmoka.beans.values.StorageReference
 
 abstract class AbstractDialogFragment: DialogFragment() {
 
@@ -22,6 +24,22 @@ abstract class AbstractDialogFragment: DialogFragment() {
 
     protected fun getModel(): Model {
         return context.applicationContext.model
+    }
+
+    /**
+     * Checks that the given string is syntactically a storage reference.
+     *
+     * @param s the string representation of the potential storage reference
+     * @return the corresponding storage reference
+     * @throws IllegalArgumentException of {@code s} is not syntactically a storage reference
+     */
+    protected fun validateStorageReference(s: String): StorageReference {
+        try {
+            return StorageReference(s)
+        }
+        catch (t: Throwable) {
+            throw IllegalArgumentException(getString(R.string.storage_reference_constraints))
+        }
     }
 
     protected fun notifyException(t: Throwable) {
