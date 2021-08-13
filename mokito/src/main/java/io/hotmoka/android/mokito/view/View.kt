@@ -74,5 +74,7 @@ interface View {
      */
     fun onBip39Available(account: Account, bip39: BIP39Words)
 
+    fun notifyException(t: Throwable)
+
     fun notifyUser(message: String)
 }

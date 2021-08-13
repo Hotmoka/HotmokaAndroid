@@ -110,7 +110,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              */
             private fun bindToKey(account: Account) {
                 itemName.text = account.name
-                itemReference.text = getString(R.string.waiting_for_payment_to_public_key)
+                itemReference.text = getString(R.string.waiting_for_payment_to_this_key)
                 itemBalance.visibility = GONE
                 newIcon.visibility = GONE
                 sendIcon.visibility = GONE

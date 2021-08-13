@@ -12,8 +12,7 @@ class CreateKeyDialogFragment: AbstractDialogFragment() {
 
     companion object {
         fun show(father: Fragment) {
-            val dialog = CreateKeyDialogFragment()
-            dialog.show(father.childFragmentManager, "CreateKeyDialog")
+            CreateKeyDialogFragment().show(father.childFragmentManager, "CreateKeyDialog")
         }
     }
 

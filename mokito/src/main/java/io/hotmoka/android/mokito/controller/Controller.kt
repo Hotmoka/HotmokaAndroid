@@ -42,6 +42,18 @@ class Controller(private val mvc: MVC) {
     private fun ensureConnected() {
         if (!node.isConnected())
             connect()
+
+        try {
+            mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
+                val all = lines.fold("") { some, text ->
+                    "$some\n$text"
+                }
+                Log.d("Controller", all)
+            }
+        }
+        catch (e: Exception) {
+            Log.d("Controller", "no accounts.txt", e)
+        }
     }
 
     private fun connect() {
@@ -67,7 +79,6 @@ class Controller(private val mvc: MVC) {
         safeRunAsIO {
             // we clear the model, since the new node might contain different data
             mvc.model.clear()
-
             node.disconnect()
             connect()
         }
@@ -95,8 +106,9 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestDelete(account: Account) {
+    fun requestDelete(account: Account, password: String) {
         safeRunAsIO {
+            checkPassword(account, password)
             ensureConnected()
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(account)
@@ -106,14 +118,15 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestReplace(old: Account, new: Account, password: String) {
+    fun requestReplace(old: Account, new: Account, passwordOld: String) {
         safeRunAsIO {
+            checkPassword(old, passwordOld)
             ensureConnected()
             var newAccount = new
-            new.reference?.let {
-                val balance = getBalance(it)
-                newAccount = Account(it, new.name, new.getEntropy(), balance, true)
-                verify(newAccount, password)
+            new.reference?.let { newReference ->
+                val balance = getBalance(newReference)
+                newAccount = Account(newReference, new.name, new.getEntropy(), new.publicKey, balance, true)
+                checkThatRemotePublicKeyMatches(newAccount)
             }
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(old)
@@ -124,7 +137,7 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestNewAccountFromFaucet(name: String, password: String, balance: BigInteger) {
+    fun requestNewAccountFromFaucet(name: String, passwordOfNewAccount: String, balance: BigInteger) {
         createNewAccount({ publicKey ->
             AccountCreationHelper(node)
                 .fromFaucet(
@@ -133,11 +146,14 @@ class Controller(private val mvc: MVC) {
                     balance,
                     BigInteger.ZERO
                 ) { }
-        }, name, password, balance)
+        }, name, passwordOfNewAccount, balance)
     }
 
-    fun requestNewAccountFromAnotherAccount(payer: Account, passwordOfPayer: String, name: String, password: String, balance: BigInteger) {
+    fun requestNewAccountFromAnotherAccount(payer: Account, passwordOfPayer: String, name: String, passwordOfNewAccount: String, balance: BigInteger) {
         createNewAccount({ publicKey ->
+
+            checkPassword(payer, passwordOfPayer)
+
             val keysOfPayer = signatureAlgorithmOfNewAccounts.getKeyPair(
                 payer.getEntropy(),
                 BIP39Dictionary.ENGLISH_DICTIONARY,
@@ -156,15 +172,8 @@ class Controller(private val mvc: MVC) {
                     {},
                     {}
                 )
-        }, name, password, balance)
+        }, name, passwordOfNewAccount, balance)
     }
-
-    /*mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
-    val all = lines.fold("") { some, text ->
-        "$some\n$text"
-    }
-    Log.d("Controller", all)
-    }*/
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
@@ -181,8 +190,9 @@ class Controller(private val mvc: MVC) {
             ensureConnected()
 
             val balance = getBalance(acc.reference)
-            val importedAccount = Account(acc.reference, name, acc.entropy, balance, true)
-            verify(importedAccount, password)
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(acc.entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
+            val importedAccount = Account(acc.reference, name, acc.entropy, publicKeyBase64Encoded(keys), balance, true)
+            checkThatRemotePublicKeyMatches(importedAccount)
 
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(importedAccount)
@@ -197,11 +207,12 @@ class Controller(private val mvc: MVC) {
             val entropy = ByteArray(16) // 128 bits of entropy
             random.nextBytes(entropy)
             val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
-            val publicKeyBase58 = Base58.encode(signatureAlgorithmOfNewAccounts.encodingOf(keys.public))
+            val publicKeyBase58 = publicKeyBase58Encoded(keys)
+            val publicKeyBase64 = publicKeyBase64Encoded(keys)
             Log.d("Controller", "created public key $publicKeyBase58")
 
             // it is not a fully functional account yet, since it misses the reference
-            val newAccount = Account(null, publicKeyBase58, entropy, BigInteger.ZERO, false)
+            val newAccount = Account(null, publicKeyBase58, entropy, publicKeyBase64, BigInteger.ZERO, false)
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
@@ -213,25 +224,35 @@ class Controller(private val mvc: MVC) {
         return Base64.encodeToString(signatureAlgorithmOfNewAccounts.encodingOf(keys.public), Base64.NO_WRAP)
     }
 
+    private fun publicKeyBase58Encoded(keys: KeyPair): String {
+        return Base58.encode(signatureAlgorithmOfNewAccounts.encodingOf(keys.public))
+    }
+
     /**
-     * Checks that the given account can actually be controlled by the given password.
-     * This means that the public key derived from the entropy of the account and the password
-     * must coincide with the public key stored inside the account in the Hotmoka node.
+     * Checks that the reference of the given account is actually an account object in the node
+     * with the same public key as the account.
      *
+     * @param account the account to check
      * @throws IllegalArgumentException if the two public keys do not match
      */
-    private fun verify(account: Account, password: String) {
-        account.reference?.let { reference ->
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(
-                account.getEntropy(),
-                BIP39Dictionary.ENGLISH_DICTIONARY,
-                password
-            )
-            val publicKeyAsStored = getPublicKey(reference) // it is stored as BASE64-encoded
-            val publicKeyAsImported = publicKeyBase64Encoded(keys)
-            if (publicKeyAsStored != publicKeyAsImported)
+    private fun checkThatRemotePublicKeyMatches(account: Account) {
+        account.reference?.let {
+            if (getPublicKey(it) != account.publicKey)
                 throw IllegalArgumentException("The public key of the account does not match its entropy")
         }
+    }
+
+    /**
+     * Checks that the given string is actually the password of the given account.
+     *
+     * @param account the account whose password is being checked
+     * @param password the proposed password of {@code account}
+     * @throws IllegalArgumentException if the password is incorrect
+     */
+    private fun checkPassword(account: Account, password: String) {
+        val keys = signatureAlgorithmOfNewAccounts.getKeyPair(account.getEntropy(), BIP39Dictionary.ENGLISH_DICTIONARY, password)
+        if (publicKeyBase64Encoded(keys) != account.publicKey)
+            throw IllegalArgumentException("Incorrect password!")
     }
 
     private fun reloadAccounts(): Accounts {
@@ -257,7 +278,7 @@ class Controller(private val mvc: MVC) {
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
             val accounts = reloadAccounts()
-            val newAccount = Account(reference, name, entropy, balance, true)
+            val newAccount = Account(reference, name, entropy, publicKeyBase64Encoded(keys), balance, true)
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
             mainScope.launch { mvc.view?.onAccountCreated(newAccount) }
@@ -312,14 +333,10 @@ class Controller(private val mvc: MVC) {
             }
             catch (t: Throwable) {
                 // if something goes wrong, we inform the user
-                notifyUser(t.toString())
+                mainScope.launch {
+                    mvc.view?.notifyException(t)
+                }
             }
-        }
-    }
-
-    private fun notifyUser(message: String) {
-        mainScope.launch {
-            mvc.view?.notifyUser(message)
         }
     }
 

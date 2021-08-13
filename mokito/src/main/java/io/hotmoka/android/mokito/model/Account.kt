@@ -23,7 +23,7 @@ open class Account: Comparable<Account>, Parcelable {
     /**
      * The reference of the account in the store of the Hotmoka node.
      * This might be missing if we are waiting for somebody else
-     * to create the account and store it in the accounts ledger of the manifest of the node.
+     * to create the account and bind it to the entropy.
      */
     val reference: StorageReference?
 
@@ -45,6 +45,11 @@ open class Account: Comparable<Account>, Parcelable {
     val isAccessible: Boolean
 
     /**
+     * The Base64 encoded public key of the account, derived from the entropy and the password.
+     */
+    val publicKey: String
+
+    /**
      * The entropy that was used to generate the key pair of the account. Only the
      * public key of the key pair is stored in the Hotmoka node. Note that this entropy
      * is useless if the associated password is not known, that, merged with this entropy,
@@ -53,10 +58,11 @@ open class Account: Comparable<Account>, Parcelable {
      */
     private val entropy: ByteArray
 
-    constructor(reference: StorageReference?, name: String, entropy: ByteArray, balance: BigInteger, accessible: Boolean) {
+    constructor(reference: StorageReference?, name: String, entropy: ByteArray, publicKey: String, balance: BigInteger, accessible: Boolean) {
         this.reference = reference
         this.name = name
         this.entropy = entropy
+        this.publicKey = publicKey
         this.balance = balance
         this.isAccessible = accessible
     }
@@ -67,6 +73,7 @@ open class Account: Comparable<Account>, Parcelable {
         var reference: StorageReference? = null
         var name: String? = null
         var entropy: ByteArray? = null
+        var publicKey: String? = null
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -76,6 +83,7 @@ open class Account: Comparable<Account>, Parcelable {
                 "reference" -> reference = readReference(parser)
                 "name" -> name = readName(parser)
                 "entropy" -> entropy = readEntropy(parser)
+                "publicKey" -> publicKey = readPublicKey(parser)
                 else -> skip(parser)
             }
         }
@@ -104,15 +112,9 @@ open class Account: Comparable<Account>, Parcelable {
             this.isAccessible = false
         }
 
-        if (name != null)
-            this.name = name
-        else
-            throw IllegalStateException("missing name tag in account")
-
-        if (entropy != null)
-            this.entropy = entropy
-        else
-            throw IllegalStateException("missing entropy tag in account")
+        this.name = name ?: throw IllegalStateException("missing name in account")
+        this.entropy = entropy ?: throw IllegalStateException("missing entropy in account")
+        this.publicKey = publicKey ?: throw IllegalStateException("missing public key in account")
     }
 
     protected constructor(parcel: Parcel) {
@@ -120,6 +122,7 @@ open class Account: Comparable<Account>, Parcelable {
         this.name = parcel.readString()!!
         this.balance = parcel.readSerializable() as BigInteger
         this.isAccessible = parcel.readByte() != 0.toByte()
+        this.publicKey = parcel.readString()!!
         this.entropy = ByteArray(parcel.readInt())
         parcel.readByteArray(this.entropy)
     }
@@ -145,6 +148,7 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeString(name)
         out.writeSerializable(balance)
         out.writeByte(if (isAccessible) 1.toByte() else 0.toByte())
+        out.writeString(publicKey)
         out.writeInt(entropy.size)
         out.writeByteArray(entropy)
     }
@@ -169,11 +173,11 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     fun setName(newName: String): Account {
-        return Account(reference, newName, entropy.clone(), balance, isAccessible)
+        return Account(reference, newName, entropy.clone(), publicKey, balance, isAccessible)
     }
 
     fun setReference(newReference: StorageReference?): Account {
-        return Account(newReference, name, entropy.clone(), balance, isAccessible)
+        return Account(newReference, name, entropy.clone(), publicKey, balance, isAccessible)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -182,6 +186,14 @@ open class Account: Comparable<Account>, Parcelable {
         val name = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "name")
         return name
+    }
+
+    @Throws(IOException::class, XmlPullParserException::class)
+    private fun readPublicKey(parser: XmlPullParser): String {
+        parser.require(XmlPullParser.START_TAG, null, "publicKey")
+        val publicKey = readText(parser)
+        parser.require(XmlPullParser.END_TAG, null, "publicKey")
+        return publicKey
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -280,6 +292,10 @@ open class Account: Comparable<Account>, Parcelable {
         serializer.startTag(null, "entropy")
         serializer.text(Hex.toHexString(entropy))
         serializer.endTag(null, "entropy")
+
+        serializer.startTag(null, "publicKey")
+        serializer.text(publicKey)
+        serializer.endTag(null, "publicKey")
 
         serializer.endTag(null, "account")
     }

@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.R
+import io.hotmoka.android.mokito.databinding.DialogFragmentDeleteAccountConfirmationBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractDialogFragment
 
@@ -30,9 +31,13 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val binding = DialogFragmentDeleteAccountConfirmationBinding.inflate(layoutInflater)
+        binding.hideShowPassword.controls(binding.accountPassword)
+
         val builder = AlertDialog.Builder(context)
             .setTitle(R.string.delete_question)
             .setIcon(R.drawable.ic_delete)
+            .setView(binding.root)
             .setNegativeButton(R.string.keep) { _,_ -> }
 
         account?.let {
@@ -41,7 +46,9 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
             else
                 builder.setMessage(getString(R.string.delete_confirmation_message, it.name))
             
-            builder.setPositiveButton(R.string.delete) { _, _ -> getController().requestDelete(it) }
+            builder.setPositiveButton(R.string.delete) {
+                _, _ -> getController().requestDelete(it, binding.accountPassword.text.toString())
+            }
         }
 
         return builder.create()

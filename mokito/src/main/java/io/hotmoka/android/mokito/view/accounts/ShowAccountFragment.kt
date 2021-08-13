@@ -53,16 +53,17 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
             newAccount = newAccount.setName(newName)
         }
 
-        val newReference = validateStorageReference(binding.reference.text.toString()) ?: return
-        if (account.reference != newReference) {
+        val newReferenceInput = binding.reference.text.toString()
+        if (account.reference == null && newReferenceInput.isNotEmpty()) {
+            val newReference = validateStorageReference(newReferenceInput) ?: return
             replace = true
             newAccount = newAccount.setReference(newReference)
         }
 
         if (replace)
-            getController().requestReplace(account, newAccount, "pippo")
-
-        findNavController().popBackStack()
+            EditAccountConfirmationDialogFragment.show(this, account, newAccount)
+        else
+            findNavController().popBackStack()
     }
 
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
@@ -108,5 +109,10 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         }
 
         binding.words.addView(row)
+    }
+
+    override fun onAccountReplaced(old: Account, new: Account) {
+        super.onAccountReplaced(old, new)
+        findNavController().popBackStack()
     }
 }

@@ -63,6 +63,18 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
     }
 
+    override fun notifyException(t: Throwable) {
+        var t2: Throwable = t
+        var cause = t2.cause
+        while (cause != null) {
+            t2 = cause
+            cause = t2.cause
+        }
+
+        Log.d(TAG, "action failed with the following exception", t)
+        Toast.makeText(context, t2.message, Toast.LENGTH_LONG).show()
+    }
+
     override fun notifyUser(message: String) {
         Log.d(TAG, message)
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()

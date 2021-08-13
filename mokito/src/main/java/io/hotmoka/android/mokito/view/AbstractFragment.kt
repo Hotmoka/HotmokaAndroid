@@ -79,7 +79,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
             StorageReference(s)
         }
         catch (t: Throwable) {
-            notifyUser("A storage reference should consist of 64 hex digits followed by # and by a progressive number")
+            notifyUser(getString(R.string.storage_reference_constraints))
             null
         }
     }
@@ -112,9 +112,16 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
     }
 
-    protected fun notifyException(t: Throwable) {
+    override fun notifyException(t: Throwable) {
+        var t2: Throwable = t
+        var cause = t2.cause
+        while (cause != null) {
+            t2 = cause
+            cause = t2.cause
+        }
+
         Log.d(TAG, "action failed with the following exception", t)
-        Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
+        Toast.makeText(context, t2.message, Toast.LENGTH_LONG).show()
     }
 
     override fun notifyUser(message: String) {

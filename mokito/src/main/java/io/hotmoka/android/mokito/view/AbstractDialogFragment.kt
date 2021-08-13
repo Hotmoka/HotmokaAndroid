@@ -1,16 +1,16 @@
 package io.hotmoka.android.mokito.view
 
+import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
 import io.hotmoka.android.mokito.controller.Controller
-import io.hotmoka.android.mokito.model.Account
-import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
-import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.StorageReference
 
-abstract class AbstractDialogFragment : DialogFragment() {
+abstract class AbstractDialogFragment: DialogFragment() {
+
+    companion object {
+        const val TAG = "AbstractDialogFragment"
+    }
 
     override fun getContext(): Mokito {
         return super.getContext() as Mokito
@@ -25,10 +25,18 @@ abstract class AbstractDialogFragment : DialogFragment() {
     }
 
     protected fun notifyException(t: Throwable) {
-        notifyProblem(t.toString())
+        var t2: Throwable = t
+        var cause = t2.cause
+        while (cause != null) {
+            t2 = cause
+            cause = t2.cause
+        }
+
+        Log.d(TAG, "action failed with the following exception", t)
+        Toast.makeText(context, t2.message, Toast.LENGTH_LONG).show()
     }
 
-    protected fun notifyProblem(message: String) {
+    protected fun notifyUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 }
