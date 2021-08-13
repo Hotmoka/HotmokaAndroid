@@ -234,7 +234,7 @@ class Controller(private val mvc: MVC) {
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(payer) }
+            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination) }
         }
     }
 

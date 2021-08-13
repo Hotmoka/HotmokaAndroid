@@ -78,8 +78,9 @@ interface View {
      * Called when a payment has been executed, on behalf of a paying account.
      *
      * @param payer the paying account
+     * @param destination the recipient of the payment
      */
-    fun onPaymentCompleted(payer: Account)
+    fun onPaymentCompleted(payer: Account, destination: StorageReference)
 
     fun notifyException(t: Throwable)
 

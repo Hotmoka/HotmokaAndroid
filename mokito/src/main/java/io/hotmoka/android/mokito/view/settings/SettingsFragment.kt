@@ -63,7 +63,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
     }
 
-    override fun onPaymentCompleted(payer: Account) {
+    override fun onPaymentCompleted(payer: Account, destination: StorageReference) {
         notifyUser(getString(R.string.payment_completed))
     }
 

@@ -110,7 +110,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
     }
 
-    override fun onPaymentCompleted(payer: Account) {
+    override fun onPaymentCompleted(payer: Account, destination: StorageReference) {
         notifyUser(getString(R.string.payment_completed))
     }
 
