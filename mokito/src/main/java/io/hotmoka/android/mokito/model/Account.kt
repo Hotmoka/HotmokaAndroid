@@ -67,7 +67,7 @@ open class Account: Comparable<Account>, Parcelable {
         this.isAccessible = accessible
     }
 
-    constructor(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger) {
+    constructor(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger, getReferenceFromAccountsLedger: (String) -> StorageReference?) {
         parser.require(XmlPullParser.START_TAG, null, "account")
 
         var reference: StorageReference? = null
@@ -87,6 +87,22 @@ open class Account: Comparable<Account>, Parcelable {
                 else -> skip(parser)
             }
         }
+
+        this.name = name ?: throw IllegalStateException("missing name in account")
+        this.entropy = entropy ?: throw IllegalStateException("missing entropy in account")
+        this.publicKey = publicKey ?: throw IllegalStateException("missing public key in account")
+
+        // the reference is null if the account is still a key waiting for the
+        // corresponding account to be created; in that case, we consult the
+        // accounts ledger of the node to see if that account has been created:
+        // we use the public key as identifier
+        if (reference == null)
+            try {
+                reference = getReferenceFromAccountsLedger(publicKey)
+            }
+            catch (e: TransactionRejectedException) {
+                Log.d("Account", "cannot access the accounts ledger")
+            }
 
         if (reference != null) {
             this.reference = reference
@@ -111,10 +127,6 @@ open class Account: Comparable<Account>, Parcelable {
             this.balance = BigInteger.ZERO
             this.isAccessible = false
         }
-
-        this.name = name ?: throw IllegalStateException("missing name in account")
-        this.entropy = entropy ?: throw IllegalStateException("missing entropy in account")
-        this.publicKey = publicKey ?: throw IllegalStateException("missing public key in account")
     }
 
     protected constructor(parcel: Parcel) {

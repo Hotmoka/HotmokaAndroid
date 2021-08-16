@@ -15,7 +15,13 @@ import java.math.BigInteger
 import java.util.*
 import java.util.stream.Stream
 
-class Accounts(mvc: MVC, faucet: StorageReference?, maxFaucet: BigInteger, getBalance: (StorageReference) -> BigInteger) {
+class Accounts(
+    mvc: MVC,
+    faucet: StorageReference?,
+    maxFaucet: BigInteger,
+    getBalance: (StorageReference) -> BigInteger,
+    getReferenceFromAccountsLedger: (String) -> StorageReference?
+) {
 
     /**
      * The name of the file where the accounts are stored, in the internal storage of the app.
@@ -34,7 +40,7 @@ class Accounts(mvc: MVC, faucet: StorageReference?, maxFaucet: BigInteger, getBa
                 parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
                 parser.setInput(it, null)
                 parser.nextTag()
-                readAccounts(parser, getBalance)
+                readAccounts(parser, getBalance, getReferenceFromAccountsLedger)
             }
         }
         catch (e: FileNotFoundException) {
@@ -61,7 +67,7 @@ class Accounts(mvc: MVC, faucet: StorageReference?, maxFaucet: BigInteger, getBa
     }
 
     @Throws(XmlPullParserException::class, IOException::class)
-    private fun readAccounts(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger) {
+    private fun readAccounts(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger, getReferenceFromAccountsLedger: (String) -> StorageReference?) {
         parser.require(XmlPullParser.START_TAG, null, "accounts")
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -69,7 +75,7 @@ class Accounts(mvc: MVC, faucet: StorageReference?, maxFaucet: BigInteger, getBa
 
             // starts by looking for the account tag
             if (parser.name == "account")
-                add(Account(parser, getBalance))
+                add(Account(parser, getBalance, getReferenceFromAccountsLedger))
             else
                 skip(parser)
         }

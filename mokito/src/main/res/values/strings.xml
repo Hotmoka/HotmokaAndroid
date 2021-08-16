@@ -115,4 +115,5 @@
     <string name="anonymous">Anonymous</string>
     <string name="toggle_password_visibility">Toggle password visibility</string>
     <string name="payment_completed">Payment completed</string>
+    <string name="destination_syntax_error">The destination does not look like a storage reference nor like a Base58 encoded public key</string>
 </resources>

@@ -10,6 +10,7 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
+import io.hotmoka.beans.signatures.CodeSignature
 import io.hotmoka.beans.signatures.MethodSignature
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.BigIntegerValue
@@ -40,6 +41,11 @@ class Controller(private val mvc: MVC) {
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519()
     private val random = SecureRandom()
 
+    companion object {
+        private const val TAG = "Controller"
+        private val _100_000 = BigInteger.valueOf(100_000L)
+    }
+
     private fun ensureConnected() {
         if (!node.isConnected())
             connect()
@@ -49,11 +55,11 @@ class Controller(private val mvc: MVC) {
                 val all = lines.fold("") { some, text ->
                     "$some\n$text"
                 }
-                Log.d("Controller", all)
+                Log.d(TAG, all)
             }
         }
         catch (e: Exception) {
-            Log.d("Controller", "no accounts.txt", e)
+            Log.d(TAG, "no accounts.txt", e)
         }
     }
 
@@ -204,7 +210,7 @@ class Controller(private val mvc: MVC) {
             val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
             val publicKeyBase58 = publicKeyBase58Encoded(keys)
             val publicKeyBase64 = publicKeyBase64Encoded(keys)
-            Log.d("Controller", "created public key $publicKeyBase58")
+            Log.d(TAG, "created public key $publicKeyBase58")
 
             // it is not a fully functional account yet, since it misses the reference
             val newAccount = Account(null, publicKeyBase58, entropy, publicKeyBase64, BigInteger.ZERO, false)
@@ -230,6 +236,7 @@ class Controller(private val mvc: MVC) {
             val keys = getKeysOf(payer, passwordOfPayer)
             ensureConnected()
             SendCoinsHelper(node).fromPayer(payer.reference, keys, destination, amount, BigInteger.ZERO, {}, {})
+            Log.d(TAG, "paid $amount to account $destination")
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
@@ -252,8 +259,28 @@ class Controller(private val mvc: MVC) {
     fun requestPaymentToPublicKey(payer: Account, publicKey: String, amount: BigInteger, anonymous: Boolean, password: String) {
         safeRunAsIO {
             checkPassword(payer, password)
+            val keysOfPayer = getKeysOf(payer, password)
             ensureConnected()
+            val destination = AccountCreationHelper(node).fromPayer(
+                payer.reference,
+                keysOfPayer,
+                signatureAlgorithmOfNewAccounts,
+                signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.decode(publicKey)),
+                amount,
+                BigInteger.ZERO,
+                anonymous,
+                {},
+                {}
+            )
+            if (anonymous)
+                Log.d(TAG, "paid $amount anonymously to key $publicKey [destination is $destination]")
+            else
+                Log.d(TAG, "paid $amount to key $publicKey [destination is $destination]")
 
+            // we reload the accounts, since the payer will see its balance decrease
+            val accounts = reloadAccounts()
+            mvc.model.setAccounts(accounts)
+            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination) }
         }
     }
 
@@ -297,7 +324,7 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun reloadAccounts(): Accounts {
-        return Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance)
+        return Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance, this::getReferenceFromAccountsLedger)
     }
 
     private fun createNewAccount(creator: (PublicKey) -> StorageReference, name: String, password: String, balance: BigInteger) {
@@ -309,7 +336,7 @@ class Controller(private val mvc: MVC) {
 
             // create an account with the public key
             val reference = creator(keys.public)
-            Log.d("Controller", "created new account $reference")
+            Log.d(TAG, "created new account $reference")
 
             // currently, the progressive number of the created accounts will be #0,
             // but we better check against future unexpected changes in the server's behavior
@@ -335,7 +362,7 @@ class Controller(private val mvc: MVC) {
     private fun getFaucet(): StorageReference? {
         val manifest = getManifestCached()
         val hasFaucet = (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.ALLOWS_UNSIGNED_FAUCET, manifest
+            manifest, _100_000, takamakaCode, MethodSignature.ALLOWS_UNSIGNED_FAUCET, manifest
         )) as BooleanValue).value
 
         return if (hasFaucet)
@@ -347,22 +374,41 @@ class Controller(private val mvc: MVC) {
     private fun getMaxFaucet(): BigInteger {
         val manifest = getManifestCached()
         return (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_MAX_FAUCET, getGameteCached()
+            manifest, _100_000, takamakaCode, MethodSignature.GET_MAX_FAUCET, getGameteCached()
         )) as BigIntegerValue).value
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
         return (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                reference, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.BALANCE, reference
+                reference, _100_000, takamakaCode, MethodSignature.BALANCE, reference
             )
         ) as BigIntegerValue).value
+    }
+
+    private fun getReferenceFromAccountsLedger(publicKey: String): StorageReference? {
+        Log.d(TAG, "looking in the ledger for $publicKey")
+        val manifest = getManifestCached()
+        val ledger = getAccountsLedgerCached()
+        val result = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                manifest, _100_000, takamakaCode,
+                CodeSignature.GET_FROM_ACCOUNTS_LEDGER,
+                ledger,
+                StringValue(publicKey)
+            )
+        ))
+
+        return if (result is StorageReference)
+            result
+        else
+            null
     }
 
     private fun getPublicKey(reference: StorageReference): String {
         return (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                reference, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.PUBLIC_KEY, reference
+                reference, _100_000, takamakaCode, MethodSignature.PUBLIC_KEY, reference
             )
         ) as StringValue).value
     }
@@ -398,10 +444,24 @@ class Controller(private val mvc: MVC) {
 
         val manifest = getManifestCached()
         val gamete = node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, BigInteger.valueOf(100_000L), takamakaCode, MethodSignature.GET_GAMETE, manifest
+            manifest, _100_000, takamakaCode, MethodSignature.GET_GAMETE, manifest
         )) as StorageReference
 
         mvc.model.setGamete(gamete)
         return gamete
+    }
+
+    private fun getAccountsLedgerCached(): StorageReference {
+        mvc.model.getAccountsLedger()?.let {
+            return it
+        }
+
+        val manifest = getManifestCached()
+        val accountsLedger = node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
+            manifest, _100_000, takamakaCode, MethodSignature.GET_ACCOUNTS_LEDGER, manifest
+        )) as StorageReference
+
+        mvc.model.setAccountsLedger(accountsLedger)
+        return accountsLedger
     }
 }

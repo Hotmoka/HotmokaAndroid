@@ -23,6 +23,11 @@ class Model(private val mvc: MVC) {
     private var gamete: StorageReference? = null
 
     /**
+     * The accounts ledger of the Hotmoka node.
+     */
+    private var accountsLedger: StorageReference? = null
+
+    /**
      * The accounts of the user.
      */
     private var accounts: Accounts? = null
@@ -77,6 +82,12 @@ class Model(private val mvc: MVC) {
         mainScope.launch {
             mvc.view?.onAccountsChanged(accounts)
         }
+    }
+
+    fun getAccountsLedger(): StorageReference? = accountsLedger
+
+    fun setAccountsLedger(accountsLedger: StorageReference) {
+        this.accountsLedger = accountsLedger
     }
 
     /**
