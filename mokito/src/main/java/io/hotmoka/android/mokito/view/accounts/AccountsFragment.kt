@@ -188,7 +188,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             private fun sendIsVisible(account: Account) {
                 sendIcon.visibility = VISIBLE
                 sendIcon.setOnClickListener {
-                    SendCoinsDialogFragment.show(this@AccountsFragment, account)
+                    findNavController().navigate(AccountsFragmentDirections.actionPayWithAccount(account))
                 }
             }
 

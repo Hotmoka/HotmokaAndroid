@@ -241,7 +241,7 @@ class Controller(private val mvc: MVC) {
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination) }
+            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination, amount, false) }
         }
     }
 
@@ -280,7 +280,7 @@ class Controller(private val mvc: MVC) {
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination) }
+            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination, amount, anonymous) }
         }
     }
 
@@ -318,9 +318,13 @@ class Controller(private val mvc: MVC) {
      * @throws IllegalArgumentException if the password is incorrect
      */
     private fun checkPassword(account: Account, password: String) {
-        val keys = signatureAlgorithmOfNewAccounts.getKeyPair(account.getEntropy(), BIP39Dictionary.ENGLISH_DICTIONARY, password)
-        if (publicKeyBase64Encoded(keys) != account.publicKey)
+        if (!passwordIsCorrect(account, password))
             throw IllegalArgumentException("Incorrect password!")
+    }
+
+    fun passwordIsCorrect(account: Account, password: String): Boolean {
+        val keys = signatureAlgorithmOfNewAccounts.getKeyPair(account.getEntropy(), BIP39Dictionary.ENGLISH_DICTIONARY, password)
+        return publicKeyBase64Encoded(keys) == account.publicKey
     }
 
     private fun reloadAccounts(): Accounts {

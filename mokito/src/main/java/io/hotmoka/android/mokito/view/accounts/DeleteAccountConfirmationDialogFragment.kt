@@ -38,7 +38,7 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
             .setTitle(R.string.delete_question)
             .setIcon(R.drawable.ic_delete)
             .setView(binding.root)
-            .setNegativeButton(R.string.keep) { _, _ -> }
+            .setNegativeButton(R.string.dismiss) { _, _ -> }
 
         if (account.isKey())
             builder.setMessage(getString(R.string.delete_key_confirmation_message, account.name))

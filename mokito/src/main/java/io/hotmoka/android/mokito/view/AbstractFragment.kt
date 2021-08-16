@@ -14,6 +14,7 @@ import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.BIP39Words
+import java.math.BigInteger
 
 abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     private var _binding: V? = null
@@ -110,7 +111,12 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
     }
 
-    override fun onPaymentCompleted(payer: Account, destination: StorageReference) {
+    override fun onPaymentCompleted(
+        payer: Account,
+        destination: StorageReference,
+        amount: BigInteger,
+        anonymous: Boolean
+    ) {
         notifyUser(getString(R.string.payment_completed))
     }
 

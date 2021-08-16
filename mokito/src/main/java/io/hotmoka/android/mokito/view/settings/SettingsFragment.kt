@@ -13,6 +13,7 @@ import io.hotmoka.android.mokito.view.View
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.BIP39Words
+import java.math.BigInteger
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, View {
 
@@ -63,7 +64,12 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
     }
 
-    override fun onPaymentCompleted(payer: Account, destination: StorageReference) {
+    override fun onPaymentCompleted(
+        payer: Account,
+        destination: StorageReference,
+        amount: BigInteger,
+        anonymous: Boolean
+    ) {
         notifyUser(getString(R.string.payment_completed))
     }
 

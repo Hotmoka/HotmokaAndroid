@@ -12,6 +12,8 @@
         <entry key="mokito/src/main/res/layout/dialog_fragment_edit_account_confirmation.xml" value="0.3671875" />
         <entry key="mokito/src/main/res/layout/dialog_fragment_send_coins.xml" value="0.31302083333333336" />
         <entry key="mokito/src/main/res/layout/fragment_import_account.xml" value="0.3255208333333333" />
+        <entry key="mokito/src/main/res/layout/fragment_insert_reference.xml" value="0.39166666666666666" />
+        <entry key="mokito/src/main/res/layout/fragment_send_coins.xml" value="0.39166666666666666" />
         <entry key="mokito/src/main/res/layout/fragment_show_account.xml" value="0.3255208333333333" />
       </map>
     </option>

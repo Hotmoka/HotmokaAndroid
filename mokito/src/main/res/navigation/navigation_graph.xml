@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_insert_account"
             app:destination="@id/import_account" />
+        <action
+            android:id="@+id/action_pay_with_account"
+            app:destination="@id/send_coins" />
     </fragment>
 
     <fragment
@@ -67,5 +70,14 @@
         android:id="@+id/import_account"
         android:name="io.hotmoka.android.mokito.view.accounts.ImportAccountFragment"
         android:label="@string/import_account" />
+
+    <fragment
+        android:id="@+id/send_coins"
+        android:name="io.hotmoka.android.mokito.view.accounts.SendCoinsFragment"
+        android:label="@string/send_coins" >
+        <argument
+            android:name="payer"
+            app:argType="io.hotmoka.android.mokito.model.Account" />
+    </fragment>
 
 </navigation>
