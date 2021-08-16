@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_pay_with_account"
             app:destination="@id/send_coins" />
+        <action
+            android:id="@+id/action_pay_with_faucet"
+            app:destination="@id/send_coins_from_faucet" />
     </fragment>
 
     <fragment
@@ -78,6 +81,15 @@
         <argument
             android:name="payer"
             app:argType="io.hotmoka.android.mokito.model.Account" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/send_coins_from_faucet"
+        android:name="io.hotmoka.android.mokito.view.accounts.SendCoinsFromFaucetFragment"
+        android:label="@string/send_coins" >
+        <argument
+            android:name="payer"
+            app:argType="io.hotmoka.android.mokito.model.Faucet" />
     </fragment>
 
 </navigation>

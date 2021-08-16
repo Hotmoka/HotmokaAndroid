@@ -7,6 +7,7 @@ import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
+import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
@@ -27,7 +28,6 @@ import io.hotmoka.views.SendCoinsHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import java.math.BigInteger
 import java.security.KeyPair
 import java.security.PublicKey
@@ -245,6 +245,15 @@ class Controller(private val mvc: MVC) {
         }
     }
 
+    /*private fun notifyGasConsumption(requests: Array<TransactionRequest<*>>) {
+        val counter = GasCounter(node, *requests)
+        Log.d(TAG, "total: " + counter.total)
+        Log.d(TAG, "forCPU: " + counter.forCPU)
+        Log.d(TAG, "forRAM: " + counter.forRAM)
+        Log.d(TAG, "forStorage: " + counter.forStorage)
+        Log.d(TAG, "forPenalty: " + counter.forPenalty)
+    }*/
+
     /**
      * Request a payment to a public key.
      *
@@ -281,6 +290,19 @@ class Controller(private val mvc: MVC) {
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
             mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination, amount, anonymous) }
+        }
+    }
+
+    fun requestPaymentFromFaucet(faucet: Faucet, destination: StorageReference, amount: BigInteger) {
+        safeRunAsIO {
+            ensureConnected()
+            SendCoinsHelper(node).fromFaucet(destination, amount, BigInteger.ZERO, {}, {})
+            Log.d(TAG, "paid $amount from ${faucet.name} to account $destination")
+
+            // we reload the accounts, since the payer will see its balance decrease
+            val accounts = reloadAccounts()
+            mvc.model.setAccounts(accounts)
+            mainScope.launch { mvc.view?.onPaymentCompleted(faucet, destination, amount, false) }
         }
     }
 

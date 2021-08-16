@@ -14,6 +14,7 @@ import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.Base58
 import java.math.BigInteger
 
 abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
@@ -135,5 +136,22 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     override fun notifyUser(message: String) {
         Log.d(TAG, message)
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
+
+    protected fun looksLikePublicKey(s: String): Boolean {
+        return try {
+            return Base58.decode(s).size == 32 // ed25519 public keys are 32 bytes long
+        } catch (e: java.lang.IllegalArgumentException) {
+            false
+        }
+    }
+
+    protected fun looksLikeStorageReference(s: String): Boolean {
+        return try {
+            validateStorageReference(s)
+            true
+        } catch (e: java.lang.IllegalArgumentException) {
+            false
+        }
     }
 }

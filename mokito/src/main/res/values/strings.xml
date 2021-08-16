@@ -34,6 +34,7 @@
     <string name="delete_key_confirmation_message">Do you really want to delete account %1$s? It might remain in the Hotmoka node, but this app will lose access to the account.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer.</string>
+    <string name="payment_from_faucet_message">Please specify the destination of the transfer and the amount of coins to transfer.</string>
     <string name="delete_question">Delete account?</string>
     <string name="edit_question">Edit account?</string>
     <string name="account_settings">Account settings</string>
@@ -116,8 +117,11 @@
     <string name="toggle_password_visibility">Toggle password visibility</string>
     <string name="payment_completed">Payment completed</string>
     <string name="destination_syntax_error">The destination does not look like a storage reference nor like a Base58 encoded public key</string>
+    <string name="destination_syntax_for_faucet_error">The destination does not look like a storage reference</string>
     <string name="send_coins">Send coins</string>
     <string name="not_enough_coins">The balance of account %1$s is not enough for this transfer</string>
+    <string name="too_much_from_faucet">Cannot transfer more than %1$s from the faucet</string>
     <string name="illegal_amount_to_pay">Illegal amount to pay</string>
     <string name="incorrect_password">Incorrect password!</string>
+    <string name="destination_account">Destination account</string>
 </resources>
