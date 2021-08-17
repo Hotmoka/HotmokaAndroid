@@ -81,6 +81,10 @@
         <argument
             android:name="payer"
             app:argType="io.hotmoka.android.mokito.model.Account" />
+        <action
+            android:id="@+id/action_send_coins_to_sent_coins_receipt"
+            app:destination="@id/sent_coins_receipt"
+            app:popUpTo="@id/nav_accounts" />
     </fragment>
 
     <fragment
@@ -90,6 +94,31 @@
         <argument
             android:name="payer"
             app:argType="io.hotmoka.android.mokito.model.Faucet" />
+        <action
+            android:id="@+id/action_send_coins_from_faucet_to_sent_coins_receipt"
+            app:destination="@id/sent_coins_receipt"
+            app:popUpTo="@id/nav_accounts" />
+    </fragment>
+    <fragment
+        android:id="@+id/sent_coins_receipt"
+        android:name="io.hotmoka.android.mokito.view.accounts.SentCoinsReceiptFragment"
+        android:label="@string/sent_coins_receipt" >
+        <argument
+            android:name="payer"
+            app:argType="io.hotmoka.android.mokito.model.Account" />
+        <argument
+            android:name="destination"
+            app:argType="io.hotmoka.beans.values.StorageReference" />
+        <argument
+            android:name="publicKey"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="amount"
+            app:argType="java.math.BigInteger" />
+        <argument
+            android:name="anonymous"
+            app:argType="boolean" />
     </fragment>
 
 </navigation>

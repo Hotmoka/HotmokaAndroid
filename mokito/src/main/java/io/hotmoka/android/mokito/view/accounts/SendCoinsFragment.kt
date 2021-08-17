@@ -71,9 +71,8 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                 amount,
                 password
             )
-            findNavController().popBackStack()
         }
-        else if (looksLikePublicKey(input)) {
+        else if (looksLikePublicKey(input))
             // otherwise, if might looks like a public key
             getController().requestPaymentToPublicKey(
                 payer,
@@ -82,8 +81,6 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                 binding.anonymous.isChecked,
                 password
             )
-            findNavController().popBackStack()
-        }
         else
             notifyUser(getString(R.string.destination_syntax_error))
     }
@@ -91,12 +88,21 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     override fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
+        publicKey: String?,
         amount: BigInteger,
         anonymous: Boolean
     ) {
-        super.onPaymentCompleted(payer, destination, amount, anonymous)
-        if (payer == this.payer && !anonymous) {
+        super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous)
+        if (payer == this.payer)
             // present a receipt to the user, that can be shared if she wants
-        }
+            findNavController().navigate(
+                SendCoinsFragmentDirections.actionSendCoinsToSentCoinsReceipt(
+                    payer,
+                    destination,
+                    publicKey,
+                    amount,
+                    anonymous
+                )
+            )
     }
 }

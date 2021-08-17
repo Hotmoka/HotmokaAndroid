@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="panareas">
+        <item quantity="one">%s panarea</item>
+        <item quantity="other">%s panareas</item>
+    </plurals>
+</resources>

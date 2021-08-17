@@ -67,6 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
+        publicKey: String?,
         amount: BigInteger,
         anonymous: Boolean
     ) {

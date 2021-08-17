@@ -62,7 +62,6 @@ class SendCoinsFromFaucetFragment: AbstractFragment<FragmentSendCoinsFromFaucetB
                 destination,
                 amount
             )
-            findNavController().popBackStack()
         }
         else
             notifyUser(getString(R.string.destination_syntax_for_faucet_error))
@@ -71,12 +70,21 @@ class SendCoinsFromFaucetFragment: AbstractFragment<FragmentSendCoinsFromFaucetB
     override fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
+        publicKey: String?,
         amount: BigInteger,
         anonymous: Boolean
     ) {
-        super.onPaymentCompleted(payer, destination, amount, anonymous)
-        if (payer == this.payer && !anonymous) {
+        super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous)
+        if (payer == this.payer)
             // present a receipt to the user, that can be shared if she wants
-        }
+            findNavController().navigate(
+                SendCoinsFromFaucetFragmentDirections.actionSendCoinsFromFaucetToSentCoinsReceipt(
+                    payer,
+                    destination,
+                    publicKey,
+                    amount,
+                    anonymous
+                )
+            )
     }
 }

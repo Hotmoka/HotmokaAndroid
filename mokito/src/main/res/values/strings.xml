@@ -124,4 +124,12 @@
     <string name="illegal_amount_to_pay">Illegal amount to pay</string>
     <string name="incorrect_password">Incorrect password!</string>
     <string name="destination_account">Destination account</string>
+    <string name="sent_coins_receipt">Sent coins receipt</string>
+    <string name="paid_with">Paid with %1$s</string>
+    <string name="coins_sent_from_faucet_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.</string>
+    <string name="coins_sent_from_payer_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.</string>
+    <string name="coins_sent_from_payer_to_public_key_anonymously_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto an account with storage reference\n\n%2$s\n\nand key\n\n%3$s\n\nSince the transfer was anonymous, who holds the key sees it bound now, automatically, to that storage reference and can already control the account.</string>
+    <string name="coins_sent_from_payer_to_public_key_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto a new account with storage reference\n\n%2$s\n\nand key\n\n%3$s\n\nWho holds the key can now bind it to that storage reference and control the account.</string>
+    <string name="share_subject">Subject</string>
+    <string name="share_using">Share using</string>
 </resources>

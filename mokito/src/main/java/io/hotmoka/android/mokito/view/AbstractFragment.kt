@@ -115,6 +115,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     override fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
+        publicKey: String?,
         amount: BigInteger,
         anonymous: Boolean
     ) {

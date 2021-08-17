@@ -15,6 +15,7 @@
         <entry key="mokito/src/main/res/layout/fragment_insert_reference.xml" value="0.39166666666666666" />
         <entry key="mokito/src/main/res/layout/fragment_send_coins.xml" value="0.39166666666666666" />
         <entry key="mokito/src/main/res/layout/fragment_send_coins_from_faucet.xml" value="0.4713541666666667" />
+        <entry key="mokito/src/main/res/layout/fragment_sent_coins_receipt.xml" value="0.2890625" />
         <entry key="mokito/src/main/res/layout/fragment_show_account.xml" value="0.3255208333333333" />
       </map>
     </option>

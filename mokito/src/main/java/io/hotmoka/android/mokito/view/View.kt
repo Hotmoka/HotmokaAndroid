@@ -80,12 +80,14 @@ interface View {
      *
      * @param payer the paying account
      * @param destination the recipient of the payment
+     * @param publicKey the public key that has received the payment, if the payment was into a key
      * @param amount the amount of coins transferred to {@code destination}
      * @param anonymous true if and only if the transfer was an anonymous transfer to a key
      */
     fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
+        publicKey: String?,
         amount: BigInteger,
         anonymous: Boolean
     )
