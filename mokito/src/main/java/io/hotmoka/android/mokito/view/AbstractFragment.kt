@@ -97,19 +97,29 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     override fun onAccountCreated(account: Account) {
-        notifyUser(resources.getString(R.string.account_created_toast, account.name))
+        notifyUser(getString(R.string.account_created_toast, account.name))
     }
 
     override fun onAccountImported(account: Account) {
-        notifyUser(resources.getString(R.string.account_imported_toast, account.name))
+        notifyUser(getString(R.string.account_imported_toast, account.name))
     }
 
     override fun onAccountDeleted(account: Account) {
-        notifyUser(resources.getString(R.string.account_deleted_toast, account.name))
+        notifyUser(getString(R.string.account_deleted_toast, account.name))
     }
 
     override fun onAccountReplaced(old: Account, new: Account) {
-        notifyUser(resources.getString(R.string.account_replaced_toast, new.name))
+        notifyUser(getString(R.string.account_replaced_toast, new.name))
+    }
+
+    override fun onQRScanCancelled() {
+        Log.d(TAG, getString(R.string.qr_scan_cancelled))
+        notifyUser(getString(R.string.qr_scan_cancelled))
+    }
+
+    override fun onQRScanAvailable(data: String) {
+        Log.d(TAG, getString(R.string.qr_scan_successful))
+        notifyUser(getString(R.string.qr_scan_successful))
     }
 
     override fun onPaymentCompleted(

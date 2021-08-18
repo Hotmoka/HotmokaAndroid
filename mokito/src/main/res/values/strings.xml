@@ -33,9 +33,9 @@
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
     <string name="delete_key_confirmation_message">Do you really want to delete account %1$s? It might remain in the Hotmoka node, but this app will lose access to the account.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
-    <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer.</string>
+    <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer. You can also click on the QR-code button to import this data via QR-code.</string>
     <string name="receive_message">Please specify the requested amount of coins to receive, then click on the button to generate the QR-code and show that QR-code to the payer.</string>
-    <string name="payment_from_faucet_message">Please specify the destination of the transfer and the amount of coins to transfer.</string>
+    <string name="payment_from_faucet_message">Please specify the destination of the transfer and the amount of coins to transfer. You can also click on the QR-code button to import this data via QR-code.</string>
     <string name="delete_question">Delete account?</string>
     <string name="edit_question">Edit account?</string>
     <string name="account_settings">Account settings</string>
@@ -137,4 +137,10 @@
     <string name="share_subject">Subject</string>
     <string name="share_using">Share using</string>
     <string name="receive_coins">Receive coins</string>
+    <string name="scan_qr_code">Scan the QR code generated in the paying wallet</string>
+    <string name="qr_scan_cancelled">QR code scan cancelled</string>
+    <string name="qr_scan_successful">Successfully read QR code data</string>
+    <string name="wrong_qr_code_data">Data in QR code in not in the expected format</string>
+    <string name="coins_cant_be_negative">The amount to transfer cannot be negative</string>
+    <string name="payment_to_key_not_implemented_for_faucet">Payment to key is currently not implemented for the faucet</string>
 </resources>
