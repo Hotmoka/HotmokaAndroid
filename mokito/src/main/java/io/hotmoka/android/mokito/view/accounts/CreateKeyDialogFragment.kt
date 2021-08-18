@@ -18,7 +18,6 @@ class CreateKeyDialogFragment: AbstractDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DialogFragmentCreateKeyBinding.inflate(layoutInflater)
-        binding.hideShowPassword.controls(binding.accountPassword)
 
         return AlertDialog.Builder(context)
             .setTitle(R.string.action_create_key)

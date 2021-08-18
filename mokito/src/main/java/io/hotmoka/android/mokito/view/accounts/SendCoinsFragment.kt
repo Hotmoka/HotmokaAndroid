@@ -32,7 +32,6 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentSendCoinsBinding.inflate(inflater, container, false))
-        binding.hideShowPassword.controls(binding.accountPassword)
         binding.anonymousDescription.text = getString(R.string.anonymous_description, AccountCreationHelper.EXTRA_GAS_FOR_ANONYMOUS)
         binding.balance.hint = getString(R.string.amount_to_pay, payer.balance.toString())
         binding.heading.text = getString(R.string.payment_message, payer.name)

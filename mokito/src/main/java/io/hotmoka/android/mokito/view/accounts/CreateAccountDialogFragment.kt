@@ -44,10 +44,7 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
             binding.payerPassword.visibility = View.GONE
             binding.hideShowPayerPassword.visibility = View.GONE
         }
-        else
-            binding.hideShowPayerPassword.controls(binding.payerPassword)
 
-        binding.hideShowNewAccountPassword.controls(binding.accountPassword)
         binding.payerPassword.hint = getString(R.string.payer_account_password, payer.name)
         binding.accountBalance.hint = getString(
             R.string.new_account_balance,

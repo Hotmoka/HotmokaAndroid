@@ -130,6 +130,7 @@
         android:background="@color/white"
         android:contentDescription="@string/toggle_password_visibility"
         android:scaleType="centerInside"
+        app:controls="@+id/account_password"
         app:layout_constraintBottom_toBottomOf="@+id/account_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

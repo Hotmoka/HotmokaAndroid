@@ -32,7 +32,6 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DialogFragmentDeleteAccountConfirmationBinding.inflate(layoutInflater)
-        binding.hideShowPassword.controls(binding.accountPassword)
 
         val builder = AlertDialog.Builder(context)
             .setTitle(R.string.delete_question)

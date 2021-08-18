@@ -18,7 +18,6 @@ class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentImportAccountBinding.inflate(inflater, container, false))
         binding.importAccount.setOnClickListener { performImport() }
-        binding.hideShowAccountPassword.controls(binding.accountPassword)
         viewsForWord = arrayOf(
             binding.word1, binding.word2, binding.word3, binding.word4,
             binding.word5, binding.word6, binding.word7, binding.word8,

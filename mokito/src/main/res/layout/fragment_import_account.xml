@@ -41,6 +41,7 @@
         android:layout_marginEnd="16dp"
         android:background="@color/white"
         android:scaleType="centerInside"
+        app:controls="@id/account_password"
         app:layout_constraintBottom_toBottomOf="@+id/account_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
