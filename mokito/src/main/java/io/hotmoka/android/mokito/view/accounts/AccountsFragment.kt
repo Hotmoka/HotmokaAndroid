@@ -114,7 +114,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 itemBalance.visibility = GONE
                 newIcon.visibility = GONE
                 sendIcon.visibility = GONE
-                receiveIcon.visibility = VISIBLE
+                receiveIsVisible(account)
                 deleteIsVisible(account)
                 settingsIsVisible(account)
             }
@@ -129,7 +129,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 itemBalance.visibility = VISIBLE
                 newIsVisible(account)
                 sendIsVisible(account)
-                receiveIcon.visibility = VISIBLE
+                receiveIsVisible(account)
                 deleteIcon.visibility = GONE
                 settingsIcon.visibility = GONE
             }
@@ -144,7 +144,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 itemBalance.visibility = VISIBLE
                 newIsVisible(account)
                 sendIsVisible(account)
-                receiveIcon.visibility = VISIBLE
+                receiveIsVisible(account)
                 deleteIsVisible(account)
                 settingsIsVisible(account)
             }
@@ -192,6 +192,13 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                         findNavController().navigate(AccountsFragmentDirections.actionPayWithFaucet(account))
                     else
                         findNavController().navigate(AccountsFragmentDirections.actionPayWithAccount(account))
+                }
+            }
+
+            private fun receiveIsVisible(account: Account) {
+                receiveIcon.visibility = VISIBLE
+                receiveIcon.setOnClickListener {
+                    findNavController().navigate(AccountsFragmentDirections.actionReceiveToAccount(account))
                 }
             }
 

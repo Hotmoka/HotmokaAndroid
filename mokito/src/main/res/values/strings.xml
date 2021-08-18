@@ -34,6 +34,7 @@
     <string name="delete_key_confirmation_message">Do you really want to delete account %1$s? It might remain in the Hotmoka node, but this app will lose access to the account.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer.</string>
+    <string name="receive_message">Please specify the requested amount of coins to receive, then click on the button to generate the QR-code and show that QR-code to the payer.</string>
     <string name="payment_from_faucet_message">Please specify the destination of the transfer and the amount of coins to transfer.</string>
     <string name="delete_question">Delete account?</string>
     <string name="edit_question">Edit account?</string>
@@ -112,7 +113,9 @@
     <string name="destination_account_or_key">Destination account or key</string>
     <string name="anonymous_description">If you are paying to a key, you can require an anonymous transaction. It will cost up to %1$s units of gas more, but the recipient will be automatically notified of the transfer.</string>
     <string name="amount_to_pay">Amount to pay (max %1$s)</string>
+    <string name="amount_to_receive">Amount to receive</string>
     <string name="pay_with">Pay with %1$s</string>
+    <string name="pay_to">Pay to %1$s</string>
     <string name="anonymous">Anonymous</string>
     <string name="toggle_password_visibility">Toggle password visibility</string>
     <string name="payment_completed">Payment completed</string>
@@ -122,6 +125,7 @@
     <string name="not_enough_coins">The balance of account %1$s is not enough for this transfer</string>
     <string name="too_much_from_faucet">Cannot transfer more than %1$s from the faucet</string>
     <string name="illegal_amount_to_pay">Illegal amount to pay</string>
+    <string name="illegal_amount_to_receive">Illegal amount to receive</string>
     <string name="incorrect_password">Incorrect password!</string>
     <string name="destination_account">Destination account</string>
     <string name="sent_coins_receipt">Sent coins receipt</string>
@@ -132,4 +136,5 @@
     <string name="coins_sent_from_payer_to_public_key_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto a new account with storage reference\n\n%2$s\n\nand key\n\n%3$s\n\nWho holds the key can now bind it to that storage reference and control the account.</string>
     <string name="share_subject">Subject</string>
     <string name="share_using">Share using</string>
+    <string name="receive_coins">Receive coins</string>
 </resources>

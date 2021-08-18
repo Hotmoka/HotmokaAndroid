@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_pay_with_faucet"
             app:destination="@id/send_coins_from_faucet" />
+        <action
+            android:id="@+id/action_receive_to_account"
+            app:destination="@id/receive_coins" />
     </fragment>
 
     <fragment
@@ -99,6 +102,7 @@
             app:destination="@id/sent_coins_receipt"
             app:popUpTo="@id/nav_accounts" />
     </fragment>
+
     <fragment
         android:id="@+id/sent_coins_receipt"
         android:name="io.hotmoka.android.mokito.view.accounts.SentCoinsReceiptFragment"
@@ -119,6 +123,15 @@
         <argument
             android:name="anonymous"
             app:argType="boolean" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/receive_coins"
+        android:name="io.hotmoka.android.mokito.view.accounts.ReceiveCoinsFragment"
+        android:label="@string/receive_coins" >
+        <argument
+            android:name="receiver"
+            app:argType="io.hotmoka.android.mokito.model.Account" />
     </fragment>
 
 </navigation>
