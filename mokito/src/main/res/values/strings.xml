@@ -34,7 +34,7 @@
     <string name="delete_key_confirmation_message">Do you really want to delete account %1$s? It might remain in the Hotmoka node, but this app will lose access to the account.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer. You can also click on the QR-code button to import this data via QR-code.</string>
-    <string name="receive_message">Please specify the requested amount of coins to receive, then click on the button to generate the QR-code and show that QR-code to the payer.</string>
+    <string name="receive_message">Please specify the requested amount to receive, then click on the button to generate the QR-code and show that QR-code to the payer.</string>
     <string name="payment_from_faucet_message">Please specify the destination of the transfer and the amount of coins to transfer. You can also click on the QR-code button to import this data via QR-code.</string>
     <string name="delete_question">Delete account?</string>
     <string name="edit_question">Edit account?</string>
@@ -43,7 +43,6 @@
     <string name="keep">Keep</string>
     <string name="edit">Edit</string>
     <string name="done">Done</string>
-    <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="account_name">Account name</string>
     <string name="new_account_name">New account name</string>

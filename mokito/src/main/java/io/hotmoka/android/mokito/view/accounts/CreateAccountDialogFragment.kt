@@ -54,7 +54,7 @@ class CreateAccountDialogFragment: AbstractDialogFragment() {
         val builder = AlertDialog.Builder(context)
             .setTitle(R.string.account_creation)
             .setIcon(R.drawable.ic_new)
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNegativeButton(R.string.dismiss) { _, _ -> }
             .setView(binding.root)
             .setMessage(resources.getString(R.string.account_creation_message, payer.name))
 

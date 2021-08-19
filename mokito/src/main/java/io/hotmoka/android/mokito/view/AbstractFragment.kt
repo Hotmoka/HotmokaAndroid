@@ -37,14 +37,18 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     override fun onStop() {
         context.applicationContext.view = null
+        closeKeyboard()
+        super.onStop()
+    }
 
-        val inputMethodManager: InputMethodManager = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    protected fun closeKeyboard() {
+        val inputMethodManager: InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+
         if (inputMethodManager.isAcceptingText)
             context.currentFocus?.let {
                 inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
             }
-
-        super.onStop()
     }
 
     override fun onDestroyView() {

@@ -18,11 +18,12 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentReceiveCoinsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.beans.Coin
 import io.hotmoka.views.AccountCreationHelper
 import java.io.UnsupportedEncodingException
-import java.math.BigInteger
+import java.math.BigDecimal
 import java.nio.charset.Charset
-import java.util.EnumMap
+import java.util.*
 
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     private lateinit var receiver: Account
@@ -50,30 +51,36 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
             binding.anonymous.visibility = View.GONE
         }
 
-        binding.balance.hint = getString(R.string.amount_to_receive)
+        binding.amount.hint = getString(R.string.amount_to_receive)
         binding.heading.text = getString(R.string.receive_message)
-        binding.showQr.setOnClickListener { showQrCode() }
+        binding.showQr.setOnClickListener {
+            closeKeyboard()
+            showQrCode()
+        }
 
         return binding.root
     }
 
     private fun showQrCode() {
-        val amount: BigInteger
+        val coinWeight = binding.coinType.selectedItemPosition
+        val withDecimals: BigDecimal
 
         try {
-            amount = BigInteger(binding.balance.text.toString())
+            withDecimals = BigDecimal(binding.amount.text.toString())
         }
         catch (e: NumberFormatException) {
             notifyUser(getString(R.string.illegal_amount_to_receive))
             return
         }
 
+        val amount = Coin.level(coinWeight + 1, withDecimals)
+
         val receiverName = if (receiver.isKey())
             receiver.name else receiver.reference.toString()
 
         val message = "$receiverName&$amount&${binding.anonymous.isChecked}"
 
-        Log.d("Receive", message)
+        Log.d("Receive", "data in the QR code: $message")
 
         binding.bitmap.setImageBitmap(createQRCode(message, Charsets.UTF_8, binding.bitmap.width, binding.bitmap.width))
     }
