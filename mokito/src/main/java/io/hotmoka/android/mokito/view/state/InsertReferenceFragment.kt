@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import io.hotmoka.android.mokito.databinding.FragmentInsertReferenceBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections.toShowState
 
 /**
  * A fragment used to insert the storage reference of an object
@@ -19,9 +19,7 @@ class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>
 
         binding.showState.setOnClickListener {
             val reference = validateStorageReference(binding.reference.text.toString())
-            findNavController().navigate(
-                InsertReferenceFragmentDirections.actionInsertReferenceToShowState(reference)
-            )
+            navigate(toShowState(reference))
         }
 
         return binding.root

@@ -6,17 +6,16 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
-import io.hotmoka.android.mokito.R.*
+import io.hotmoka.android.mokito.R.layout
+import io.hotmoka.android.mokito.R.string
 import io.hotmoka.android.mokito.databinding.FragmentShowStateBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.android.mokito.view.state.ShowStateFragmentDirections.toShowState
 import io.hotmoka.beans.updates.*
 import io.hotmoka.beans.values.StorageReference
-import java.lang.IllegalStateException
-import kotlin.Comparator
 
 /**
  * A fragment used to show the state of an object from its storage reference.
@@ -163,10 +162,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true
                         viewHolder.itemArrow.visibility = View.VISIBLE
-                        viewHolder.card.setOnClickListener {
-                            val action = ShowStateFragmentDirections.actionShowStateSelf(update.value)
-                            findNavController().navigate(action)
-                        }
+                        viewHolder.card.setOnClickListener { navigate(toShowState(update.value)) }
                     }
                     else {
                         viewHolder.card.isClickable = false
@@ -183,10 +179,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
                     if (update is UpdateOfStorage) {
                         viewHolder.card.isClickable = true
                         viewHolder.itemArrow.visibility = View.VISIBLE
-                        viewHolder.card.setOnClickListener {
-                            val action = ShowStateFragmentDirections.actionShowStateSelf(update.value)
-                            findNavController().navigate(action)
-                        }
+                        viewHolder.card.setOnClickListener { navigate(toShowState(update.value)) }
                     }
                     else {
                         viewHolder.card.isClickable = false

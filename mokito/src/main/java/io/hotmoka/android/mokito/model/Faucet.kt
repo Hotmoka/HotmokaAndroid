@@ -26,4 +26,8 @@ class Faucet: Account {
         writeToParcelInternal(out)
         out.writeSerializable(maxFaucet)
     }
+
+    override fun maxPayment(): BigInteger {
+        return maxFaucet.min(super.maxPayment())
+    }
 }

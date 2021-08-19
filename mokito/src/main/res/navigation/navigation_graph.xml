@@ -11,22 +11,19 @@
         android:label="@string/accounts"
         tools:layout="@layout/fragment_accounts" >
         <action
-            android:id="@+id/action_show_account"
+            android:id="@+id/to_show_account"
             app:destination="@id/show_account" />
         <action
-            android:id="@+id/action_insert_account"
+            android:id="@+id/to_import_account"
             app:destination="@id/import_account" />
         <action
-            android:id="@+id/action_pay_with_account"
+            android:id="@+id/to_send_coins"
             app:destination="@id/send_coins" />
         <action
-            android:id="@+id/action_pay_with_faucet"
-            app:destination="@id/send_coins_from_faucet" />
-        <action
-            android:id="@+id/action_receive_to_account"
+            android:id="@+id/to_receive_to_account"
             app:destination="@id/receive_coins" />
         <action
-            android:id="@+id/action_create_new_account"
+            android:id="@+id/to_create_new_account"
             app:destination="@id/create_new_account" />
     </fragment>
 
@@ -36,7 +33,7 @@
         android:label="@string/object_explorer"
         tools:layout="@layout/fragment_insert_reference" >
         <action
-            android:id="@+id/action_insert_reference_to_show_state"
+            android:id="@+id/to_show_state"
             app:destination="@id/show_state" />
     </fragment>
 
@@ -48,7 +45,7 @@
             android:name="reference"
             app:argType="io.hotmoka.beans.values.StorageReference" />
         <action
-            android:id="@+id/action_show_state_self"
+            android:id="@+id/to_show_state"
             app:destination="@id/show_state" />
     </fragment>
 
@@ -57,7 +54,7 @@
         android:name="io.hotmoka.android.mokito.view.manifest.ShowManifestFragment"
         android:label="@string/manifest">
         <action
-            android:id="@+id/action_show_state_self"
+            android:id="@+id/to_show_state"
             app:destination="@id/show_state" />
     </fragment>
 
@@ -88,20 +85,7 @@
             android:name="payer"
             app:argType="io.hotmoka.android.mokito.model.Account" />
         <action
-            android:id="@+id/action_send_coins_to_sent_coins_receipt"
-            app:destination="@id/sent_coins_receipt"
-            app:popUpTo="@id/nav_accounts" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/send_coins_from_faucet"
-        android:name="io.hotmoka.android.mokito.view.accounts.SendCoinsFromFaucetFragment"
-        android:label="@string/send_coins" >
-        <argument
-            android:name="payer"
-            app:argType="io.hotmoka.android.mokito.model.Faucet" />
-        <action
-            android:id="@+id/action_send_coins_from_faucet_to_sent_coins_receipt"
+            android:id="@+id/to_sent_coins_receipt"
             app:destination="@id/sent_coins_receipt"
             app:popUpTo="@id/nav_accounts" />
     </fragment>
@@ -144,7 +128,7 @@
             android:name="payer"
             app:argType="io.hotmoka.android.mokito.model.Account" />
         <action
-            android:id="@+id/action_show_new_account"
+            android:id="@+id/to_show_account"
             app:destination="@id/show_account"
             app:popUpTo="@id/nav_accounts" />
     </fragment>

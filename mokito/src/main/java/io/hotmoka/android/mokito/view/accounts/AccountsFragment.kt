@@ -51,7 +51,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 true
             }
             R.id.action_import -> {
-                navigate(actionInsertAccount())
+                navigate(toImportAccount())
                 true
             }
             R.id.action_create_key -> {
@@ -160,9 +160,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
 
             private fun settingsIsVisible(account: Account) {
                 settingsIcon.visibility = VISIBLE
-                settingsIcon.setOnClickListener {
-                    navigate(actionShowAccount(account))
-                }
+                settingsIcon.setOnClickListener { navigate(toShowAccount(account)) }
             }
 
             private fun deleteIsVisible(account: Account) {
@@ -174,26 +172,17 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
 
             private fun newIsVisible(account: Account) {
                 newIcon.visibility = VISIBLE
-                newIcon.setOnClickListener {
-                    navigate(actionCreateNewAccount(account))
-                }
+                newIcon.setOnClickListener { navigate(toCreateNewAccount(account)) }
             }
 
             private fun sendIsVisible(account: Account) {
                 sendIcon.visibility = VISIBLE
-                sendIcon.setOnClickListener {
-                    if (account is Faucet)
-                        navigate(actionPayWithFaucet(account))
-                    else
-                        navigate(actionPayWithAccount(account))
-                }
+                sendIcon.setOnClickListener { navigate(toSendCoins(account)) }
             }
 
             private fun receiveIsVisible(account: Account) {
                 receiveIcon.visibility = VISIBLE
-                receiveIcon.setOnClickListener {
-                    navigate(actionReceiveToAccount(account))
-                }
+                receiveIcon.setOnClickListener { navigate(toReceiveToAccount(account)) }
             }
 
             private fun descriptionOfBalance(balance: BigInteger): String {

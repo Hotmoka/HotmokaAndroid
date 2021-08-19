@@ -8,10 +8,13 @@ import com.google.zxing.integration.android.IntentIntegrator
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentSendCoinsBinding
 import io.hotmoka.android.mokito.model.Account
+import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.beans.Coin
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.views.AccountCreationHelper
 import java.math.BigInteger
+import io.hotmoka.android.mokito.view.accounts.SendCoinsFragmentDirections.*
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account
@@ -28,11 +31,23 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentSendCoinsBinding.inflate(inflater, container, false))
+        binding.accountPassword.hint = getString(R.string.payer_account_password, payer.name)
         binding.anonymousDescription.text = getString(R.string.anonymous_description, AccountCreationHelper.EXTRA_GAS_FOR_ANONYMOUS)
-        binding.balance.hint = getString(R.string.amount_to_pay, payer.balance.toString())
-        binding.heading.text = getString(R.string.payment_message, payer.name)
+        binding.amount.hint = getString(R.string.amount_to_pay)
+        binding.heading.text =
+            if (payer is Faucet)
+                getString(R.string.payment_from_faucet_message)
+            else
+                getString(R.string.payment_message, payer.name)
         binding.qrCode.setOnClickListener { readQrCode() }
         binding.pay.setOnClickListener { pay() }
+
+        if (payer is Faucet) {
+            binding.accountPassword.visibility = View.GONE
+            binding.anonymousDescription.visibility = View.GONE
+            binding.anonymous.visibility = View.GONE
+            binding.hideShowPassword.visibility = View.GONE
+        }
 
         return binding.root
     }
@@ -63,8 +78,9 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
             }
 
             binding.destination.setText(parts[0])
-            binding.balance.setText(parts[1])
+            binding.amount.setText(parts[1])
             binding.anonymous.isChecked = anonymous
+            binding.coinType.setSelection(Coin.Levels.PANAREA.level() - 1) // set unit to Panareas
         }
     }
 
@@ -74,7 +90,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         val amount: BigInteger
 
         try {
-            amount = BigInteger(binding.balance.text.toString())
+            amount = binding.coinType.asPanareas()
         }
         catch (e: NumberFormatException) {
             notifyUser(getString(R.string.illegal_amount_to_pay))
@@ -86,12 +102,14 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
             return
         }
 
-        if (amount.subtract(payer.balance).signum() > 0) {
-            notifyUser(getString(R.string.not_enough_coins, payer.name))
+        val max = payer.maxPayment()
+        if (amount.subtract(max).signum() > 0) {
+            val maxPanareas = resources.getQuantityString(R.plurals.panareas, max.toInt(), max)
+            notifyUser(getString(R.string.amount_too_high, payer.name, maxPanareas))
             return
         }
 
-        if (!getController().passwordIsCorrect(payer, password)) {
+        if (payer !is Faucet && !getController().passwordIsCorrect(payer, password)) {
             notifyUser(getString(R.string.incorrect_password))
             return
         }
@@ -99,22 +117,27 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         if (looksLikeStorageReference(input)) {
             // first we check if the destination looks like a storage reference
             val destination = validateStorageReference(input)
-            getController().requestPayment(
-                payer,
-                destination,
-                amount,
-                password
-            )
+            payer.let {
+                if (it is Faucet)
+                    getController().requestPaymentFromFaucet(it, destination, amount)
+                else
+                    getController().requestPayment(it, destination, amount, password)
+            }
         }
         else if (looksLikePublicKey(input))
             // otherwise, if might looks like a public key
-            getController().requestPaymentToPublicKey(
-                payer,
-                input,
-                amount,
-                binding.anonymous.isChecked,
-                password
-            )
+            if (payer is Faucet)
+                notifyUser(getString(R.string.payment_to_key_not_implemented_for_faucet))
+            else
+                getController().requestPaymentToPublicKey(
+                    payer,
+                    input,
+                    amount,
+                    binding.anonymous.isChecked,
+                    password
+                )
+        else if (payer is Faucet)
+            notifyUser(getString(R.string.destination_syntax_for_faucet_error))
         else
             notifyUser(getString(R.string.destination_syntax_error))
     }
@@ -128,15 +151,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     ) {
         super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous)
         if (payer == this.payer)
-            // present a receipt to the user, that can be shared if she wants
-            navigate(
-                SendCoinsFragmentDirections.actionSendCoinsToSentCoinsReceipt(
-                    payer,
-                    destination,
-                    publicKey,
-                    amount,
-                    anonymous
-                )
-            )
+            // present a receipt to the user, who can share it if she wants
+            navigate(toSentCoinsReceipt(payer, destination, publicKey, amount, anonymous))
     }
 }

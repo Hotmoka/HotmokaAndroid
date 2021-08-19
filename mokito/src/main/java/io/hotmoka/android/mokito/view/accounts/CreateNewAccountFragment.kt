@@ -9,7 +9,7 @@ import io.hotmoka.android.mokito.databinding.FragmentCreateNewAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
-import java.math.BigInteger
+import io.hotmoka.android.mokito.view.accounts.CreateNewAccountFragmentDirections.toShowAccount
 
 class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding>() {
     private lateinit var payer: Account
@@ -41,10 +41,10 @@ class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding
     private fun createNewAccount() {
         try {
             val balanceOfNewAccount = binding.coinType.asPanareas()
-            val max = maxAllowedForCreation()
+            val max = payer.maxPayment()
             if (balanceOfNewAccount.subtract(max).signum() > 0) {
                 val maxPanareas = resources.getQuantityString(R.plurals.panareas, max.toInt(), max)
-                notifyUser(getString(R.string.not_enough_coins, payer.name, maxPanareas))
+                notifyUser(getString(R.string.amount_too_high, payer.name, maxPanareas))
                 return
             }
 
@@ -77,20 +77,6 @@ class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding
 
     override fun onAccountCreated(account: Account) {
         super.onAccountCreated(account)
-        navigate(CreateNewAccountFragmentDirections.actionShowNewAccount(account))
-    }
-
-    /**
-     * Yields the maximum balance allowed for a new account. Normally, this is the
-     * balance of the payer, but if the payer is the faucet, there is a smaller limit for it.
-     */
-    private fun maxAllowedForCreation(): BigInteger {
-        payer.let {
-            return if (it is Faucet)
-                // the faucet has a limit that is normally smaller than its balance
-                it.maxFaucet.min(it.balance)
-            else
-                it.balance
-        }
+        navigate(toShowAccount(account))
     }
 }

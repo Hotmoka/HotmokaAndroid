@@ -146,6 +146,15 @@ open class Account: Comparable<Account>, Parcelable {
         return reference == null
     }
 
+    /**
+     * Yields the maximum amount that can be spent with this account.
+     *
+     * @return the maximum amount
+     */
+    open fun maxPayment(): BigInteger {
+        return balance
+    }
+
     override fun describeContents(): Int {
         return 0
     }
