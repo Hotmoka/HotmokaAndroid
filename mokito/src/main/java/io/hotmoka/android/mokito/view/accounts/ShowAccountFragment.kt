@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.TextView
-import androidx.navigation.fragment.findNavController
 import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
@@ -62,7 +61,7 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         if (replace)
             EditAccountConfirmationDialogFragment.show(this, account, newAccount)
         else
-            findNavController().popBackStack()
+            popBackStack()
     }
 
     override fun onBip39Available(account: Account, bip39: BIP39Words) {
@@ -112,6 +111,6 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
 
     override fun onAccountReplaced(old: Account, new: Account) {
         super.onAccountReplaced(old, new)
-        findNavController().popBackStack()
+        popBackStack()
     }
 }

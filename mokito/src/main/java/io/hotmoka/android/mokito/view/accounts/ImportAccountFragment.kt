@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
-import androidx.navigation.fragment.findNavController
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
@@ -47,6 +46,6 @@ class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
 
     override fun onAccountImported(account: Account) {
         super.onAccountImported(account)
-        findNavController().popBackStack()
+        popBackStack()
     }
 }

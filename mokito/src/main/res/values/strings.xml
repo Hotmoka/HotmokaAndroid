@@ -46,7 +46,7 @@
     <string name="delete">Delete</string>
     <string name="account_name">Account name</string>
     <string name="new_account_name">New account name</string>
-    <string name="new_account_balance">New account balance (max %1$s)</string>
+    <string name="new_account_balance">New account balance</string>
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
     <string name="dismiss">dismiss</string>
@@ -121,7 +121,7 @@
     <string name="destination_syntax_error">The destination does not look like a storage reference nor like a Base58 encoded public key</string>
     <string name="destination_syntax_for_faucet_error">The destination does not look like a storage reference</string>
     <string name="send_coins">Send coins</string>
-    <string name="not_enough_coins">The balance of account %1$s is not enough for this transfer</string>
+    <string name="not_enough_coins">The balance of account %1$s is not enough for this transfer: max is %2$s</string>
     <string name="too_much_from_faucet">Cannot transfer more than %1$s from the faucet</string>
     <string name="illegal_amount_to_pay">Illegal amount to pay</string>
     <string name="illegal_amount_to_receive">Illegal amount to receive</string>
@@ -142,4 +142,6 @@
     <string name="wrong_qr_code_data">Data in QR code in not in the expected format</string>
     <string name="coins_cant_be_negative">The amount to transfer cannot be negative</string>
     <string name="payment_to_key_not_implemented_for_faucet">Payment to key is currently not implemented for the faucet</string>
+    <string name="create_new_account">Create new account</string>
+    <string name="illegal_balance_for_new_account">Illegal balance for new account</string>
 </resources>

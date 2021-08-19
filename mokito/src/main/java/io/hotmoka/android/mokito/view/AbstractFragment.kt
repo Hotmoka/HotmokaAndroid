@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavDirections
+import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Controller
@@ -58,6 +60,14 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     override fun getContext(): Mokito {
         return super.getContext() as Mokito
+    }
+
+    protected fun navigate(where: NavDirections) {
+        findNavController().navigate(where)
+    }
+
+    protected fun popBackStack() {
+        findNavController().popBackStack()
     }
 
     protected fun setSubtitle(subtitle: String) {

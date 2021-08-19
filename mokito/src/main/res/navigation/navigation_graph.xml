@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_receive_to_account"
             app:destination="@id/receive_coins" />
+        <action
+            android:id="@+id/action_create_new_account"
+            app:destination="@id/create_new_account" />
     </fragment>
 
     <fragment
@@ -132,6 +135,18 @@
         <argument
             android:name="receiver"
             app:argType="io.hotmoka.android.mokito.model.Account" />
+    </fragment>
+    <fragment
+        android:id="@+id/create_new_account"
+        android:name="io.hotmoka.android.mokito.view.accounts.CreateNewAccountFragment"
+        android:label="@string/create_new_account" >
+        <argument
+            android:name="payer"
+            app:argType="io.hotmoka.android.mokito.model.Account" />
+        <action
+            android:id="@+id/action_show_new_account"
+            app:destination="@id/show_account"
+            app:popUpTo="@id/nav_accounts" />
     </fragment>
 
 </navigation>

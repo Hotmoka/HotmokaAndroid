@@ -18,11 +18,8 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentReceiveCoinsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.Coin
 import io.hotmoka.views.AccountCreationHelper
 import java.io.UnsupportedEncodingException
-import java.math.BigDecimal
-import java.nio.charset.Charset
 import java.util.*
 
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
@@ -62,31 +59,25 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     }
 
     private fun showQrCode() {
-        val coinWeight = binding.coinType.selectedItemPosition
-        val withDecimals: BigDecimal
-
         try {
-            withDecimals = BigDecimal(binding.amount.text.toString())
+            val amount = binding.coinType.asPanareas()
+            val receiverName = if (receiver.isKey())
+                receiver.name else receiver.reference.toString()
+            val message = "$receiverName&$amount&${binding.anonymous.isChecked}"
+            Log.d("Receive", "data in the QR code: $message")
+            binding.bitmap.setImageBitmap(
+                createQRCode(message, binding.bitmap.width, binding.bitmap.width)
+            )
         }
         catch (e: NumberFormatException) {
             notifyUser(getString(R.string.illegal_amount_to_receive))
             return
         }
-
-        val amount = Coin.level(coinWeight + 1, withDecimals)
-
-        val receiverName = if (receiver.isKey())
-            receiver.name else receiver.reference.toString()
-
-        val message = "$receiverName&$amount&${binding.anonymous.isChecked}"
-
-        Log.d("Receive", "data in the QR code: $message")
-
-        binding.bitmap.setImageBitmap(createQRCode(message, Charsets.UTF_8, binding.bitmap.width, binding.bitmap.width))
     }
 
     @Throws(UnsupportedEncodingException::class, WriterException::class)
-    private fun createQRCode(message: String, charset: Charset, width: Int, height: Int): Bitmap {
+    private fun createQRCode(message: String, width: Int, height: Int): Bitmap {
+        val charset = Charsets.UTF_8
         val hintMap: MutableMap<EncodeHintType, ErrorCorrectionLevel> = EnumMap(EncodeHintType::class.java)
         hintMap[EncodeHintType.ERROR_CORRECTION] = ErrorCorrectionLevel.H
         val matrix: BitMatrix =

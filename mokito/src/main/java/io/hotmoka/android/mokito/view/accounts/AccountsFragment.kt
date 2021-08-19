@@ -2,13 +2,11 @@ package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
 import android.view.*
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
@@ -17,6 +15,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.android.mokito.view.accounts.AccountsFragmentDirections.*
 import java.math.BigInteger
 
 class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
@@ -52,7 +51,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 true
             }
             R.id.action_import -> {
-                findNavController().navigate(AccountsFragmentDirections.actionInsertAccount())
+                navigate(actionInsertAccount())
                 true
             }
             R.id.action_create_key -> {
@@ -78,11 +77,6 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
 
     override fun onAccountsChanged(accounts: Accounts) {
         adapter.setAccounts(accounts)
-    }
-
-    override fun onAccountCreated(account: Account) {
-        super.onAccountCreated(account)
-        findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
     }
 
     private inner class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
@@ -167,7 +161,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             private fun settingsIsVisible(account: Account) {
                 settingsIcon.visibility = VISIBLE
                 settingsIcon.setOnClickListener {
-                    findNavController().navigate(AccountsFragmentDirections.actionShowAccount(account))
+                    navigate(actionShowAccount(account))
                 }
             }
 
@@ -181,7 +175,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             private fun newIsVisible(account: Account) {
                 newIcon.visibility = VISIBLE
                 newIcon.setOnClickListener {
-                    CreateAccountDialogFragment.show(this@AccountsFragment, account)
+                    navigate(actionCreateNewAccount(account))
                 }
             }
 
@@ -189,16 +183,16 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 sendIcon.visibility = VISIBLE
                 sendIcon.setOnClickListener {
                     if (account is Faucet)
-                        findNavController().navigate(AccountsFragmentDirections.actionPayWithFaucet(account))
+                        navigate(actionPayWithFaucet(account))
                     else
-                        findNavController().navigate(AccountsFragmentDirections.actionPayWithAccount(account))
+                        navigate(actionPayWithAccount(account))
                 }
             }
 
             private fun receiveIsVisible(account: Account) {
                 receiveIcon.visibility = VISIBLE
                 receiveIcon.setOnClickListener {
-                    findNavController().navigate(AccountsFragmentDirections.actionReceiveToAccount(account))
+                    navigate(actionReceiveToAccount(account))
                 }
             }
 

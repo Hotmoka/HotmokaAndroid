@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import com.google.zxing.integration.android.IntentIntegrator
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentSendCoinsFromFaucetBinding
@@ -46,7 +45,7 @@ class SendCoinsFromFaucetFragment: AbstractFragment<FragmentSendCoinsFromFaucetB
             .setCameraId(0)
             .setBeepEnabled(true)
             .setBarcodeImageEnabled(false)
-            .initiateScan();
+            .initiateScan()
     }
 
     override fun onQRScanAvailable(data: String) {
@@ -111,7 +110,7 @@ class SendCoinsFromFaucetFragment: AbstractFragment<FragmentSendCoinsFromFaucetB
         super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous)
         if (payer == this.payer)
             // present a receipt to the user, that can be shared if she wants
-            findNavController().navigate(
+            navigate(
                 SendCoinsFromFaucetFragmentDirections.actionSendCoinsFromFaucetToSentCoinsReceipt(
                     payer,
                     destination,

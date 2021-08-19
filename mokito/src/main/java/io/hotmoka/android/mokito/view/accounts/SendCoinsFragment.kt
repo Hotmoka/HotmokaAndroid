@@ -4,18 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import com.google.zxing.integration.android.IntentIntegrator
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentSendCoinsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.crypto.Base58
 import io.hotmoka.views.AccountCreationHelper
-import java.lang.IllegalArgumentException
 import java.math.BigInteger
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account
@@ -48,7 +44,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
             .setCameraId(0)
             .setBeepEnabled(true)
             .setBarcodeImageEnabled(false)
-            .initiateScan();
+            .initiateScan()
     }
 
     override fun onQRScanAvailable(data: String) {
@@ -56,7 +52,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         if (parts.size != 3)
             notifyUser(getString(R.string.wrong_qr_code_data))
         else {
-            val anonymous: Boolean;
+            val anonymous: Boolean
             if (parts[2] == "true")
                 anonymous = true
             else if (parts[2] == "false")
@@ -133,7 +129,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous)
         if (payer == this.payer)
             // present a receipt to the user, that can be shared if she wants
-            findNavController().navigate(
+            navigate(
                 SendCoinsFragmentDirections.actionSendCoinsToSentCoinsReceipt(
                     payer,
                     destination,
