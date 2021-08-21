@@ -21,6 +21,10 @@ import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.views.AccountCreationHelper
 import java.io.UnsupportedEncodingException
 import java.util.*
+import android.widget.AdapterView
+
+
+
 
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     private lateinit var receiver: Account
@@ -53,6 +57,23 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
         binding.showQr.setOnClickListener {
             closeKeyboard()
             showQrCode()
+        }
+
+        // if the user modifies something, we reset the QR code in order to
+        // avoid the risk that she thinks that the QR code is for the updated input
+        binding.amount.setOnClickListener { binding.bitmap.setImageBitmap(null) }
+        binding.coinType.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                selectedItemView: View?,
+                position: Int,
+                id: Long
+            ) {
+                binding.bitmap.setImageBitmap(null)
+            }
+
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+            }
         }
 
         return binding.root

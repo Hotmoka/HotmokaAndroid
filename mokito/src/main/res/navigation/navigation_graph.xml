@@ -20,7 +20,7 @@
             android:id="@+id/to_send_coins"
             app:destination="@id/send_coins" />
         <action
-            android:id="@+id/to_receive_to_account"
+            android:id="@+id/to_receive_coins"
             app:destination="@id/receive_coins" />
         <action
             android:id="@+id/to_create_new_account"

@@ -3,6 +3,7 @@ package io.hotmoka.android.mokito.model
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
+import io.hotmoka.beans.Coin
 import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
@@ -35,7 +36,17 @@ open class Account: Comparable<Account>, Parcelable {
     val name: String
 
     /**
-     * The account of the account in the storage of the Hotmoka node.
+     * The Base64 encoded public key of the account, derived from the entropy and the password.
+     */
+    val publicKey: String
+
+    /**
+     * The coin level preferred for the representation of the balance of this account.
+     */
+    val coin: Coin
+
+    /**
+     * The balance of the account in the storage of the Hotmoka node, in Panareas.
      */
     val balance: BigInteger
 
@@ -43,11 +54,6 @@ open class Account: Comparable<Account>, Parcelable {
      * True if and only if the account could be accessed and its balance could be retrieved.
      */
     val isAccessible: Boolean
-
-    /**
-     * The Base64 encoded public key of the account, derived from the entropy and the password.
-     */
-    val publicKey: String
 
     /**
      * The entropy that was used to generate the key pair of the account. Only the
@@ -58,13 +64,14 @@ open class Account: Comparable<Account>, Parcelable {
      */
     private val entropy: ByteArray
 
-    constructor(reference: StorageReference?, name: String, entropy: ByteArray, publicKey: String, balance: BigInteger, accessible: Boolean) {
+    constructor(reference: StorageReference?, name: String, entropy: ByteArray, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
         this.entropy = entropy
         this.publicKey = publicKey
         this.balance = balance
         this.isAccessible = accessible
+        this.coin = coin
     }
 
     constructor(parser: XmlPullParser, getBalance: (StorageReference) -> BigInteger, getReferenceFromAccountsLedger: (String) -> StorageReference?) {
@@ -74,6 +81,7 @@ open class Account: Comparable<Account>, Parcelable {
         var name: String? = null
         var entropy: ByteArray? = null
         var publicKey: String? = null
+        var coin: String? = null
 
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.eventType != XmlPullParser.START_TAG)
@@ -84,6 +92,7 @@ open class Account: Comparable<Account>, Parcelable {
                 "name" -> name = readName(parser)
                 "entropy" -> entropy = readEntropy(parser)
                 "publicKey" -> publicKey = readPublicKey(parser)
+                "coin" -> coin = readCoin(parser)
                 else -> skip(parser)
             }
         }
@@ -91,6 +100,9 @@ open class Account: Comparable<Account>, Parcelable {
         this.name = name ?: throw IllegalStateException("missing name in account")
         this.entropy = entropy ?: throw IllegalStateException("missing entropy in account")
         this.publicKey = publicKey ?: throw IllegalStateException("missing public key in account")
+        this.coin = if (coin != null)
+            Coin.valueOf(coin)
+            else throw IllegalStateException("missing coin unit in account")
 
         // the reference is null if the account is still a key waiting for the
         // corresponding account to be created; in that case, we consult the
@@ -137,6 +149,7 @@ open class Account: Comparable<Account>, Parcelable {
         this.publicKey = parcel.readString()!!
         this.entropy = ByteArray(parcel.readInt())
         parcel.readByteArray(this.entropy)
+        this.coin = Coin.valueOf(parcel.readString()!!)
     }
 
     /**
@@ -172,6 +185,7 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeString(publicKey)
         out.writeInt(entropy.size)
         out.writeByteArray(entropy)
+        out.writeString(coin.name)
     }
 
     companion object {
@@ -194,11 +208,15 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     fun setName(newName: String): Account {
-        return Account(reference, newName, entropy.clone(), publicKey, balance, isAccessible)
+        return Account(reference, newName, entropy.clone(), publicKey, balance, isAccessible, coin)
     }
 
     fun setReference(newReference: StorageReference): Account {
-        return Account(newReference, name, entropy.clone(), publicKey, balance, isAccessible)
+        return Account(newReference, name, entropy.clone(), publicKey, balance, isAccessible, coin)
+    }
+
+    fun setCoin(newCoin: Coin): Account {
+        return Account(reference, name, entropy.clone(), publicKey, balance, isAccessible, newCoin)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -206,6 +224,14 @@ open class Account: Comparable<Account>, Parcelable {
         parser.require(XmlPullParser.START_TAG, null, "name")
         val name = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "name")
+        return name
+    }
+
+    @Throws(IOException::class, XmlPullParserException::class)
+    private fun readCoin(parser: XmlPullParser): String {
+        parser.require(XmlPullParser.START_TAG, null, "coin")
+        val name = readText(parser)
+        parser.require(XmlPullParser.END_TAG, null, "coin")
         return name
     }
 
@@ -317,6 +343,10 @@ open class Account: Comparable<Account>, Parcelable {
         serializer.startTag(null, "publicKey")
         serializer.text(publicKey)
         serializer.endTag(null, "publicKey")
+
+        serializer.startTag(null, "coin")
+        serializer.text(coin.name)
+        serializer.endTag(null, "coin")
 
         serializer.endTag(null, "account")
     }

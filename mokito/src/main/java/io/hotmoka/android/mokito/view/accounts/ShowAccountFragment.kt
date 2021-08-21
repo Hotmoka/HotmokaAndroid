@@ -10,6 +10,7 @@ import android.widget.TextView
 import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.beans.Coin
 import io.hotmoka.crypto.BIP39Words
 
 class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
@@ -23,6 +24,7 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentShowAccountBinding.inflate(inflater, container, false))
         binding.accountName.setText(account.name)
+        binding.coinType.setSelection(account.coin.ordinal)
 
         // if the reference of the account is already set, we do not allow its modification;
         // if it is not set, we do not allow the modification of the name of the account
@@ -56,6 +58,12 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         if (account.reference == null && newReferenceInput.isNotEmpty()) {
             replace = true
             newAccount = newAccount.setReference(validateStorageReference(newReferenceInput))
+        }
+
+        val newCoin = Coin.values()[binding.coinType.selectedItemPosition]
+        if (account.coin != newCoin) {
+            replace = true
+            newAccount = newAccount.setCoin(newCoin)
         }
 
         if (replace)

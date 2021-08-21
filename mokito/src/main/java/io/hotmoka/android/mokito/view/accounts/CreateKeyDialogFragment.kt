@@ -23,7 +23,7 @@ class CreateKeyDialogFragment: AbstractDialogFragment() {
             .setTitle(R.string.action_create_key)
             .setIcon(R.drawable.ic_new)
             .setMessage(getString(R.string.description_new_key))
-            .setPositiveButton(R.string.ok) { _, _ -> getController().requestNewKeyPair(binding.accountPassword.text.toString()) }
+            .setPositiveButton(R.string.create) { _, _ -> getController().requestNewKeyPair(binding.accountPassword.text.toString()) }
             .setNegativeButton(R.string.dismiss) { _,_ -> }
             .setView(binding.root)
             .create()

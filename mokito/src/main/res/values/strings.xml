@@ -20,7 +20,6 @@
     <string name="jar_description">"from jar at %1$s"</string>
     <string name="field_description">"%1$s: %2$s"</string>
     <string name="field_inherited_description">"%1$s: %2$s (inherited from %3$s)"</string>
-    <string name="balance_description">"%1$s,%2$s Mokas"</string>
     <string name="connected">"Connected to %1$s"</string>
     <string name="state_of_object">State of Object</string>
     <string name="manifest">Manifest</string>
@@ -31,7 +30,7 @@
     <string name="storage_reference_constraints">A storage reference should consist of 64 hex digits followed by # and by a progressive number</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
-    <string name="delete_key_confirmation_message">Do you really want to delete account %1$s? It might remain in the Hotmoka node, but this app will lose access to the account.</string>
+    <string name="delete_key_confirmation_message">Do you really want to delete key %1$s? It might remain in the Hotmoka node, but this app will lose access to the associated account, if any.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer. You can also click on the QR-code button to import this data via QR-code.</string>
     <string name="receive_message">Please specify the requested amount to receive, then click on the button to generate the QR-code and show that QR-code to the payer.</string>
@@ -50,7 +49,7 @@
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
     <string name="dismiss">dismiss</string>
-    <string name="warning_about_words">Please write down on paper the following 36 words, in their sequential order. You will need them if you want to reinstall the account in this application (after deletion) or if you want to add it to another application. If you delete the account and lose these words, you will lose this account and its balance for ever!</string>
+    <string name="warning_about_words">Please write down on paper the following 36 words, in their sequential order. You will need them if you want to (re)install the account in this or another application. If you delete the account and lose these words, you will lose access to this account for ever!</string>
     <string name="action_import">Import account</string>
     <string name="action_import_account_tooltip">Import an account into this application</string>
     <string name="action_create_key">Create new key</string>
@@ -143,4 +142,7 @@
     <string name="payment_to_key_not_implemented_for_faucet">Payment to key is currently not implemented for the faucet</string>
     <string name="create_new_account">Create new account</string>
     <string name="illegal_balance_for_new_account">Illegal balance for new account</string>
+    <string name="create">Create</string>
+    <string name="preferred_coin_type">Preferred coin type</string>
+    <string name="save_edits">Save edits</string>
 </resources>

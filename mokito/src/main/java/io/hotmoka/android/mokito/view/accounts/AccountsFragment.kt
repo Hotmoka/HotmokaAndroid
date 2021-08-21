@@ -6,7 +6,6 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
@@ -16,6 +15,8 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.accounts.AccountsFragmentDirections.*
+import io.hotmoka.beans.Coin
+import java.math.BigDecimal
 import java.math.BigInteger
 
 class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
@@ -23,7 +24,12 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
 
     companion object {
         @Suppress("ObjectPropertyName")
-        private val _10exp21 = BigInteger.TEN.pow(21)
+        private val _1000 = BigDecimal(1000)
+
+        private val idsOfPluralsOfCoins = arrayOf(
+            R.plurals.panareas, R.plurals.alicudis, R.plurals.filicudis, R.plurals.strombolis,
+            R.plurals.vulcanos, R.plurals.salinas, R.plurals.liparis, R.plurals.mokas
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,7 +102,6 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             private val newIcon: ImageView = itemView.findViewById(R.id.item_new)
             private val receiveIcon: ImageView = itemView.findViewById(R.id.item_receive)
             private val sendIcon: ImageView = itemView.findViewById(R.id.item_send)
-            private val card: CardView = itemView.findViewById(R.id.account_card_view)
 
             /**
              * Binds the view holder to an account that is actually a public key,
@@ -119,8 +124,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             private fun bindToFaucet(account: Account) {
                 itemName.text = account.name
                 itemReference.text = account.reference.toString()
-                itemBalance.text = descriptionOfBalance(account.balance)
-                itemBalance.visibility = VISIBLE
+                balanceIsVisible(account)
                 newIsVisible(account)
                 sendIsVisible(account)
                 receiveIsVisible(account)
@@ -134,8 +138,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             private fun bindToAccessible(account: Account) {
                 itemName.text = account.name
                 itemReference.text = account.reference.toString()
-                itemBalance.text = descriptionOfBalance(account.balance)
-                itemBalance.visibility = VISIBLE
+                balanceIsVisible(account)
                 newIsVisible(account)
                 sendIsVisible(account)
                 receiveIsVisible(account)
@@ -175,6 +178,11 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 newIcon.setOnClickListener { navigate(toCreateNewAccount(account)) }
             }
 
+            private fun balanceIsVisible(account: Account) {
+                itemBalance.text = descriptionOfBalance(account.balance, account.coin)
+                itemBalance.visibility = VISIBLE
+            }
+
             private fun sendIsVisible(account: Account) {
                 sendIcon.visibility = VISIBLE
                 sendIcon.setOnClickListener { navigate(toSendCoins(account)) }
@@ -182,18 +190,19 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
 
             private fun receiveIsVisible(account: Account) {
                 receiveIcon.visibility = VISIBLE
-                receiveIcon.setOnClickListener { navigate(toReceiveToAccount(account)) }
+                receiveIcon.setOnClickListener { navigate(toReceiveCoins(account)) }
             }
 
-            private fun descriptionOfBalance(balance: BigInteger): String {
-                val split = balance.divideAndRemainder(_10exp21)
-                val mokas = split[0]
-                val fraction = split[1]
-                var fractionWithZeros = fraction.toString()
-                while (fractionWithZeros.length < 21)
-                    fractionWithZeros = "0$fractionWithZeros"
+            private fun descriptionOfBalance(balance: BigInteger, coin: Coin): String {
+                var decimal = BigDecimal(balance)
+                for (level in 0 until coin.ordinal)
+                    decimal = decimal.divide(_1000)
 
-                return getString(R.string.balance_description, mokas, fractionWithZeros)
+                return resources.getQuantityString(
+                    idsOfPluralsOfCoins[coin.ordinal],
+                    if (decimal == BigDecimal.ONE) 1 else 10,
+                    decimal.toPlainString()
+                )
             }
 
             fun bindTo(account: Account) {

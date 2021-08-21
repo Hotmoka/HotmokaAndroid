@@ -4,4 +4,32 @@
         <item quantity="one">%s Panarea</item>
         <item quantity="other">%s Panareas</item>
     </plurals>
+    <plurals name="alicudis">
+        <item quantity="one">%s Alicudi</item>
+        <item quantity="other">%s Alicudis</item>
+    </plurals>
+    <plurals name="filicudis">
+        <item quantity="one">%s Filicudi</item>
+        <item quantity="other">%s Filicudis</item>
+    </plurals>
+    <plurals name="strombolis">
+        <item quantity="one">%s Stromboli</item>
+        <item quantity="other">%s Strombolis</item>
+    </plurals>
+    <plurals name="vulcanos">
+        <item quantity="one">%s Vulcano</item>
+        <item quantity="other">%s Vulcanos</item>
+    </plurals>
+    <plurals name="salinas">
+        <item quantity="one">%s Salina</item>
+        <item quantity="other">%s Salinas</item>
+    </plurals>
+    <plurals name="liparis">
+        <item quantity="one">%s Lipari</item>
+        <item quantity="other">%s Liparis</item>
+    </plurals>
+    <plurals name="mokas">
+        <item quantity="one">%s Moka</item>
+        <item quantity="other">%s Mokas</item>
+    </plurals>
 </resources>

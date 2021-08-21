@@ -9,6 +9,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.remote.AndroidRemoteNode
+import io.hotmoka.beans.Coin
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.signatures.CodeSignature
@@ -113,9 +114,8 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestDelete(account: Account, password: String) {
+    fun requestDelete(account: Account) {
         safeRunAsIO {
-            checkPassword(account, password)
             ensureConnected()
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.delete(account)
@@ -132,7 +132,7 @@ class Controller(private val mvc: MVC) {
             var newAccount = new
             new.reference?.let { newReference ->
                 val balance = getBalance(newReference)
-                newAccount = Account(newReference, new.name, new.getEntropy(), new.publicKey, balance, true)
+                newAccount = Account(newReference, new.name, new.getEntropy(), new.publicKey, balance, true, new.coin)
                 checkThatRemotePublicKeyMatches(newAccount)
             }
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -192,7 +192,7 @@ class Controller(private val mvc: MVC) {
 
             val balance = getBalance(acc.reference)
             val keys = signatureAlgorithmOfNewAccounts.getKeyPair(acc.entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
-            val importedAccount = Account(acc.reference, name, acc.entropy, publicKeyBase64Encoded(keys), balance, true)
+            val importedAccount = Account(acc.reference, name, acc.entropy, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
             checkThatRemotePublicKeyMatches(importedAccount)
 
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -213,7 +213,7 @@ class Controller(private val mvc: MVC) {
             Log.d(TAG, "created public key $publicKeyBase58")
 
             // it is not a fully functional account yet, since it misses the reference
-            val newAccount = Account(null, publicKeyBase58, entropy, publicKeyBase64, BigInteger.ZERO, false)
+            val newAccount = Account(null, publicKeyBase58, entropy, publicKeyBase64, BigInteger.ZERO, false, Coin.PANAREA)
             ensureConnected()
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(newAccount)
@@ -372,7 +372,7 @@ class Controller(private val mvc: MVC) {
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
             val accounts = reloadAccounts()
-            val newAccount = Account(reference, name, entropy, publicKeyBase64Encoded(keys), balance, true)
+            val newAccount = Account(reference, name, entropy, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
             mainScope.launch { mvc.view?.onAccountCreated(newAccount) }

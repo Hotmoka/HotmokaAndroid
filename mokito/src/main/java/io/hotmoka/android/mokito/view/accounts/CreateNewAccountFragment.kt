@@ -1,6 +1,7 @@
 package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,8 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.accounts.CreateNewAccountFragmentDirections.toShowAccount
+import java.math.BigDecimal
+import java.math.BigInteger
 
 class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding>() {
     private lateinit var payer: Account
@@ -41,9 +44,10 @@ class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding
     private fun createNewAccount() {
         try {
             val balanceOfNewAccount = binding.coinType.asPanareas()
+
             val max = payer.maxPayment()
             if (balanceOfNewAccount.subtract(max).signum() > 0) {
-                val maxPanareas = resources.getQuantityString(R.plurals.panareas, max.toInt(), max)
+                val maxPanareas = resources.getQuantityString(R.plurals.panareas, if (max == BigInteger.ONE) 1 else 10, max)
                 notifyUser(getString(R.string.amount_too_high, payer.name, maxPanareas))
                 return
             }

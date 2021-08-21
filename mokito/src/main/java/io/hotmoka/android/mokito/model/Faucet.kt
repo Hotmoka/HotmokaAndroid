@@ -1,6 +1,7 @@
 package io.hotmoka.android.mokito.model
 
 import android.os.Parcel
+import io.hotmoka.beans.Coin
 import io.hotmoka.beans.values.StorageReference
 import org.xmlpull.v1.XmlSerializer
 import java.math.BigInteger
@@ -9,7 +10,7 @@ class Faucet: Account {
     val maxFaucet: BigInteger
 
     constructor(reference: StorageReference, maxFaucet: BigInteger, balance: BigInteger, accessible: Boolean):
-            super(reference, "Faucet", ByteArray(0), "", balance, accessible) {
+            super(reference, "Faucet", ByteArray(0), "", balance, accessible, Coin.MOKA) {
         this.maxFaucet = maxFaucet
     }
 

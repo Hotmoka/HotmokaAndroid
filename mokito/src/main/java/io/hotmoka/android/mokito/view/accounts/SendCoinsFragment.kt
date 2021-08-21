@@ -80,7 +80,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
             binding.destination.setText(parts[0])
             binding.amount.setText(parts[1])
             binding.anonymous.isChecked = anonymous
-            binding.coinType.setSelection(Coin.Levels.PANAREA.level() - 1) // set unit to Panareas
+            binding.coinType.setSelection(Coin.PANAREA.ordinal) // set unit to Panareas
         }
     }
 
