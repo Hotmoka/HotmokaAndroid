@@ -7,4 +7,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="accessible_account">#FFFFFF8D</color>
+    <color name="inaccessible_account">#FFB388FF</color>
+    <color name="faucet">#FFA7FFEB</color>
+    <color name="key">#FFFF9E80</color>
 </resources>

@@ -1,14 +1,16 @@
 package io.hotmoka.android.mokito.view.accounts
 
+import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
+import io.hotmoka.android.mokito.databinding.AccountCardBinding
 import io.hotmoka.android.mokito.databinding.FragmentAccountsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
@@ -88,31 +90,25 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     private inner class RecyclerAdapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
         private var accounts = emptyArray<Account>()
 
+        @SuppressLint("NotifyDataSetChanged")
         fun setAccounts(accounts: Accounts) {
             this.accounts = accounts.getAll().toArray { i -> arrayOfNulls(i) }
             notifyDataSetChanged()
         }
 
-        private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            private val itemReference: TextView = itemView.findViewById(R.id.item_reference)
-            private val itemName: TextView = itemView.findViewById(R.id.item_name)
-            private val itemBalance: TextView = itemView.findViewById(R.id.item_balance)
-            private val deleteIcon: ImageView = itemView.findViewById(R.id.item_delete)
-            private val settingsIcon: ImageView = itemView.findViewById(R.id.item_settings)
-            private val newIcon: ImageView = itemView.findViewById(R.id.item_new)
-            private val receiveIcon: ImageView = itemView.findViewById(R.id.item_receive)
-            private val sendIcon: ImageView = itemView.findViewById(R.id.item_send)
+        private inner class ViewHolder(val binding: AccountCardBinding): RecyclerView.ViewHolder(binding.root) {
 
             /**
              * Binds the view holder to an account that is actually a public key,
              * still waiting for the corresponding account object to be created.
              */
             private fun bindToKey(account: Account) {
-                itemName.text = account.name
-                itemReference.text = getString(R.string.waiting_for_payment_to_this_key)
-                itemBalance.visibility = GONE
-                newIcon.visibility = GONE
-                sendIcon.visibility = GONE
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.key))
+                binding.name.text = account.name
+                binding.reference.text = getString(R.string.waiting_for_payment_to_this_key)
+                binding.balance.visibility = GONE
+                binding.newAccount.visibility = GONE
+                binding.send.visibility = GONE
                 receiveIsVisible(account)
                 deleteIsVisible(account)
                 settingsIsVisible(account)
@@ -122,22 +118,24 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              * Binds the view holder to an account that is actually the faucet of the node.
              */
             private fun bindToFaucet(account: Account) {
-                itemName.text = account.name
-                itemReference.text = account.reference.toString()
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.faucet))
+                binding.name.text = account.name
+                binding.reference.text = account.reference.toString()
                 balanceIsVisible(account)
                 newIsVisible(account)
                 sendIsVisible(account)
                 receiveIsVisible(account)
-                deleteIcon.visibility = GONE
-                settingsIcon.visibility = GONE
+                binding.delete.visibility = GONE
+                binding.settings.visibility = GONE
             }
 
             /**
              * Binds the view holder to an account that is not the faucet and is accessible.
              */
             private fun bindToAccessible(account: Account) {
-                itemName.text = account.name
-                itemReference.text = account.reference.toString()
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.accessible_account))
+                binding.name.text = account.name
+                binding.reference.text = account.reference.toString()
                 balanceIsVisible(account)
                 newIsVisible(account)
                 sendIsVisible(account)
@@ -150,47 +148,48 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              * Binds the view holder to an account that is not the faucet and is inaccessible.
              */
             private fun bindToInaccessible(account: Account) {
-                itemName.text = account.name
-                itemReference.text = account.reference.toString()
-                itemBalance.text = resources.getString(R.string.account_not_accessible)
-                itemBalance.visibility = VISIBLE
-                newIcon.visibility = GONE
-                sendIcon.visibility = GONE
-                receiveIcon.visibility = GONE
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.inaccessible_account))
+                binding.name.text = account.name
+                binding.reference.text = account.reference.toString()
+                binding.balance.text = resources.getString(R.string.account_not_accessible)
+                binding.balance.visibility = VISIBLE
+                binding.newAccount.visibility = GONE
+                binding.send.visibility = GONE
+                binding.receive.visibility = GONE
                 deleteIsVisible(account)
                 settingsIsVisible(account)
             }
 
             private fun settingsIsVisible(account: Account) {
-                settingsIcon.visibility = VISIBLE
-                settingsIcon.setOnClickListener { navigate(toShowAccount(account)) }
+                binding.settings.visibility = VISIBLE
+                binding.settings.setOnClickListener { navigate(toShowAccount(account)) }
             }
 
             private fun deleteIsVisible(account: Account) {
-                deleteIcon.visibility = VISIBLE
-                deleteIcon.setOnClickListener {
+                binding.delete.visibility = VISIBLE
+                binding.delete.setOnClickListener {
                     DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
                 }
             }
 
             private fun newIsVisible(account: Account) {
-                newIcon.visibility = VISIBLE
-                newIcon.setOnClickListener { navigate(toCreateNewAccount(account)) }
+                binding.newAccount.visibility = VISIBLE
+                binding.newAccount.setOnClickListener { navigate(toCreateNewAccount(account)) }
             }
 
             private fun balanceIsVisible(account: Account) {
-                itemBalance.text = descriptionOfBalance(account.balance, account.coin)
-                itemBalance.visibility = VISIBLE
+                binding.balance.text = descriptionOfBalance(account.balance, account.coin)
+                binding.balance.visibility = VISIBLE
             }
 
             private fun sendIsVisible(account: Account) {
-                sendIcon.visibility = VISIBLE
-                sendIcon.setOnClickListener { navigate(toSendCoins(account)) }
+                binding.send.visibility = VISIBLE
+                binding.send.setOnClickListener { navigate(toSendCoins(account)) }
             }
 
             private fun receiveIsVisible(account: Account) {
-                receiveIcon.visibility = VISIBLE
-                receiveIcon.setOnClickListener { navigate(toReceiveCoins(account)) }
+                binding.receive.visibility = VISIBLE
+                binding.receive.setOnClickListener { navigate(toReceiveCoins(account)) }
             }
 
             private fun descriptionOfBalance(balance: BigInteger, coin: Coin): String {
@@ -206,22 +205,23 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
             }
 
             fun bindTo(account: Account) {
-                if (account is Faucet)
-                    bindToFaucet(account)
-                else if (account.isKey())
-                    bindToKey(account)
-                else if (account.isAccessible)
-                    bindToAccessible(account)
-                else
-                    bindToInaccessible(account)
+                when {
+                    account is Faucet -> bindToFaucet(account)
+                    account.isKey() -> bindToKey(account)
+                    account.isAccessible -> bindToAccessible(account)
+                    else -> bindToInaccessible(account)
+                }
             }
         }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-            val v = LayoutInflater.from(viewGroup.context)
-                .inflate(R.layout.account_card_layout, viewGroup, false)
-
-            return ViewHolder(v)
+            return ViewHolder(
+                AccountCardBinding.inflate(
+                    LayoutInflater.from(viewGroup.context),
+                    viewGroup,
+                    false
+                )
+            )
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {

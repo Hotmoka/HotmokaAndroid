@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/account_card_view"
-    android:layout_margin="2dp"
-    android:foreground="?selectableItemBackground"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="4dp"
+    android:backgroundTint="#FF9E80"
     android:clickable="false"
+    android:foreground="?selectableItemBackground"
     app:cardCornerRadius="12dp"
     app:cardElevation="3dp"
-    app:contentPadding="0dp" >
+    app:contentPadding="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,96 +21,96 @@
         android:padding="8dp">
 
         <ImageButton
-            android:id="@+id/item_send"
+            android:id="@+id/send"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/ic_send"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/item_receive"
-            app:layout_constraintTop_toBottomOf="@+id/item_balance" />
+            app:layout_constraintStart_toEndOf="@+id/receive"
+            app:layout_constraintTop_toBottomOf="@+id/balance" />
 
         <ImageButton
-            android:id="@+id/item_receive"
+            android:id="@+id/receive"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/ic_receive"
-            app:layout_constraintEnd_toStartOf="@+id/item_send"
+            app:layout_constraintEnd_toStartOf="@+id/send"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/item_new"
-            app:layout_constraintTop_toBottomOf="@+id/item_balance" />
+            app:layout_constraintStart_toEndOf="@+id/new_account"
+            app:layout_constraintTop_toBottomOf="@+id/balance" />
 
         <ImageButton
-            android:id="@+id/item_new"
+            android:id="@+id/new_account"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/ic_new"
-            app:layout_constraintEnd_toStartOf="@+id/item_receive"
+            app:layout_constraintEnd_toStartOf="@+id/receive"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/item_settings"
-            app:layout_constraintTop_toBottomOf="@+id/item_balance" />
+            app:layout_constraintStart_toEndOf="@+id/settings"
+            app:layout_constraintTop_toBottomOf="@+id/balance" />
 
         <ImageButton
-            android:id="@+id/item_settings"
+            android:id="@+id/settings"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
-            android:clickable="true"
             android:background="@drawable/ic_settings"
-            app:layout_constraintEnd_toStartOf="@+id/item_new"
+            android:clickable="true"
+            app:layout_constraintEnd_toStartOf="@+id/new_account"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/item_delete"
-            app:layout_constraintTop_toBottomOf="@+id/item_balance" />
+            app:layout_constraintStart_toEndOf="@+id/delete"
+            app:layout_constraintTop_toBottomOf="@+id/balance" />
 
         <ImageButton
-            android:id="@+id/item_delete"
+            android:id="@+id/delete"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/ic_delete"
-            app:layout_constraintEnd_toStartOf="@+id/item_settings"
+            app:layout_constraintEnd_toStartOf="@+id/settings"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/item_balance" />
+            app:layout_constraintTop_toBottomOf="@+id/balance" />
 
         <TextView
-            android:id="@+id/item_name"
+            android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:textStyle="bold"
             android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@+id/item_reference"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/reference"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/item_reference"
+            android:id="@+id/reference"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textStyle="italic"
             android:textIsSelectable="true"
-            app:layout_constraintBottom_toTopOf="@+id/item_balance"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toTopOf="@+id/balance"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/item_name" />
+            app:layout_constraintTop_toBottomOf="@+id/name" />
 
         <TextView
-            android:id="@+id/item_balance"
+            android:id="@+id/balance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="14sp"
             android:textStyle="normal"
-            app:layout_constraintBottom_toTopOf="@+id/item_send"
+            app:layout_constraintBottom_toTopOf="@+id/send"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/item_reference" />
+            app:layout_constraintTop_toBottomOf="@+id/reference" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
