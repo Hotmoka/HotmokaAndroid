@@ -3,7 +3,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Mokito</string>
-    <string name="nav_header_subtitle">The Hotmoka Mobile Client</string>
+    <string name="nav_header_subtitle">The Hotmoka mobile client</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="action_reload">Reload</string>
@@ -127,10 +127,10 @@
     <string name="destination_account">Destination account</string>
     <string name="sent_coins_receipt">Sent coins receipt</string>
     <string name="paid_with">Paid with %1$s</string>
-    <string name="coins_sent_from_faucet_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.</string>
-    <string name="coins_sent_from_payer_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.</string>
-    <string name="coins_sent_from_payer_to_public_key_anonymously_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto an account with storage reference\n\n%2$s\n\nand key\n\n%3$s\n\nSince the transfer was anonymous, who holds the key sees it bound now, automatically, to that storage reference and can already control the account.</string>
-    <string name="coins_sent_from_payer_to_public_key_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto a new account with storage reference\n\n%2$s\n\nand key\n\n%3$s\n\nWho holds the key can now bind it to that storage reference and control the account.</string>
+    <string name="coins_sent_from_faucet_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.\n\nYou can find confirmation in %4$s.</string>
+    <string name="coins_sent_from_payer_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.\n\nYou can find confirmation in %4$s.</string>
+    <string name="coins_sent_from_payer_to_public_key_anonymously_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto an account with storage reference\n\n%2$s\n\nand key\n\n%3$s.\n\nYou can find confirmation in %5$s.\n\nSince the transfer was anonymous, who holds the key sees it bound now, automatically, to that storage reference and can already control the account.</string>
+    <string name="coins_sent_from_payer_to_public_key_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto a new account with storage reference\n\n%2$s\n\nand key\n\n%3$s.\n\nYou can find confirmation in %5$s.\n\nWho holds the key can now bind it to that storage reference and control the account.</string>
     <string name="share_subject">Subject</string>
     <string name="share_using">Share using</string>
     <string name="receive_coins">Receive coins</string>
@@ -146,4 +146,6 @@
     <string name="preferred_coin_type">Preferred coin type</string>
     <string name="save_edits">Save edits</string>
     <string name="missing_class_tag">Missing class tag in object state</string>
+    <string name="version">Version 1.0 (23/8/2021)</string>
+    <string name="author">Author: fausto.spoto@hotmoka.io</string>
 </resources>

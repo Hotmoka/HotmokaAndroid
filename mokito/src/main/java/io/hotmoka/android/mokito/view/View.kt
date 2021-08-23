@@ -2,6 +2,8 @@ package io.hotmoka.android.mokito.view
 
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
+import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.BIP39Words
@@ -95,13 +97,15 @@ interface View {
      * @param publicKey the public key that has received the payment, if the payment was into a key
      * @param amount the amount of coins transferred to {@code destination}
      * @param anonymous true if and only if the transfer was an anonymous transfer to a key
+     * @param transactions the transactions that have been used to perform the payment
      */
     fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
         publicKey: String?,
         amount: BigInteger,
-        anonymous: Boolean
+        anonymous: Boolean,
+        transactions: List<TransactionReference>
     )
 
     fun notifyException(t: Throwable)

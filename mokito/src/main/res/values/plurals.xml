@@ -32,4 +32,8 @@
         <item quantity="one">%s Moka</item>
         <item quantity="other">%s Mokas</item>
     </plurals>
+    <plurals name="transactions">
+        <item quantity="one">transaction</item>
+        <item quantity="other">transactions</item>
+    </plurals>
 </resources>

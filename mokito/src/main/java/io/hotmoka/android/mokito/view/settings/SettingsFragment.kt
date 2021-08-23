@@ -10,6 +10,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.view.View
+import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.crypto.BIP39Words
@@ -77,7 +78,8 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         destination: StorageReference,
         publicKey: String?,
         amount: BigInteger,
-        anonymous: Boolean
+        anonymous: Boolean,
+        transactions: List<TransactionReference>
     ) {
         notifyUser(getString(R.string.payment_completed))
     }

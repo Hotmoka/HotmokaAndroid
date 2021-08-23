@@ -10,6 +10,8 @@ import io.hotmoka.android.mokito.databinding.FragmentSentCoinsReceiptBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.beans.references.TransactionReference
+import java.util.stream.Collectors
 
 class SentCoinsReceiptFragment: AbstractFragment<FragmentSentCoinsReceiptBinding>() {
     private lateinit var payer: Account
@@ -32,16 +34,22 @@ class SentCoinsReceiptFragment: AbstractFragment<FragmentSentCoinsReceiptBinding
         val publicKey = args.publicKey
         val amount = resources.getQuantityString(R.plurals.panareas, args.amount.toInt(), args.amount)
         val anonymous = args.anonymous
+        val transactions: ArrayList<TransactionReference> = args.transactions as ArrayList<TransactionReference>
+        val numOfTransactions = transactions.size
+        val transactionsAsPrint = transactions.stream()
+            .map(TransactionReference::toString)
+            .collect(Collectors.joining("\n"))
+        val transactionsMessage = "${resources.getQuantityString(R.plurals.transactions, numOfTransactions)}\n\n$transactionsAsPrint"
 
         if (payer is Faucet)
-            binding.message.text = getString(R.string.coins_sent_from_faucet_receipt, payerReference, destination, amount)
+            binding.message.text = getString(R.string.coins_sent_from_faucet_receipt, payerReference, destination, amount, transactionsMessage)
         else if (publicKey != null)
             if (anonymous)
-                binding.message.text = getString(R.string.coins_sent_from_payer_to_public_key_anonymously_receipt, payerReference, destination, publicKey, amount)
+                binding.message.text = getString(R.string.coins_sent_from_payer_to_public_key_anonymously_receipt, payerReference, destination, publicKey, amount, transactionsMessage)
             else
-                binding.message.text = getString(R.string.coins_sent_from_payer_to_public_key_receipt, payerReference, destination, publicKey, amount)
+                binding.message.text = getString(R.string.coins_sent_from_payer_to_public_key_receipt, payerReference, destination, publicKey, amount, transactionsMessage)
         else
-            binding.message.text = getString(R.string.coins_sent_from_payer_receipt, payerReference, destination, amount)
+            binding.message.text = getString(R.string.coins_sent_from_payer_receipt, payerReference, destination, amount, transactionsMessage)
 
         binding.share.setOnClickListener { share() }
 

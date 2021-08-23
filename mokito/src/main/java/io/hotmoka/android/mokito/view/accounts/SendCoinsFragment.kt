@@ -15,6 +15,8 @@ import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.views.AccountCreationHelper
 import java.math.BigInteger
 import io.hotmoka.android.mokito.view.accounts.SendCoinsFragmentDirections.*
+import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.requests.TransactionRequest
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account
@@ -147,11 +149,12 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         destination: StorageReference,
         publicKey: String?,
         amount: BigInteger,
-        anonymous: Boolean
+        anonymous: Boolean,
+        transactions: List<TransactionReference>
     ) {
-        super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous)
+        super.onPaymentCompleted(payer, destination, publicKey, amount, anonymous, transactions)
         if (payer == this.payer)
             // present a receipt to the user, who can share it if she wants
-            navigate(toSentCoinsReceipt(payer, destination, publicKey, amount, anonymous))
+            navigate(toSentCoinsReceipt(payer, destination, publicKey, amount, anonymous, ArrayList(transactions)))
     }
 }

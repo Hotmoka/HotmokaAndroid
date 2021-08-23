@@ -110,6 +110,9 @@
         <argument
             android:name="anonymous"
             app:argType="boolean" />
+        <argument
+            android:name="transactions"
+            app:argType="java.util.ArrayList" />
     </fragment>
 
     <fragment

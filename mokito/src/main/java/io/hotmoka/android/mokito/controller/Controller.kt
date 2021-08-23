@@ -12,6 +12,7 @@ import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.Coin
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
+import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.signatures.CodeSignature
 import io.hotmoka.beans.signatures.MethodSignature
 import io.hotmoka.beans.updates.Update
@@ -235,14 +236,38 @@ class Controller(private val mvc: MVC) {
             checkPassword(payer, passwordOfPayer)
             val keys = getKeysOf(payer, passwordOfPayer)
             ensureConnected()
-            SendCoinsHelper(node).fromPayer(payer.reference, keys, destination, amount, BigInteger.ZERO, {}, {})
+            var savedRequests: Array<TransactionRequest<*>>? = null
+            SendCoinsHelper(node).fromPayer(payer.reference, keys, destination, amount, BigInteger.ZERO, {}, {
+                requests -> savedRequests = requests
+            })
+
             Log.d(TAG, "paid $amount to account $destination")
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination, null, amount, false) }
+
+            mainScope.launch {
+                mvc.view?.onPaymentCompleted(
+                    payer,
+                    destination,
+                    null,
+                    amount,
+                    false,
+                    toTransactions(savedRequests)
+                )
+            }
         }
+    }
+
+    private fun toTransactions(requests: Array<TransactionRequest<*>>?): List<TransactionReference> {
+        var transactions: List<TransactionReference> = emptyList()
+
+        requests?.let {
+            return it.map { request -> request.reference }
+        }
+
+        return emptyList()
     }
 
     /*private fun notifyGasConsumption(requests: Array<TransactionRequest<*>>) {
@@ -270,6 +295,7 @@ class Controller(private val mvc: MVC) {
             checkPassword(payer, password)
             val keysOfPayer = getKeysOf(payer, password)
             ensureConnected()
+            var savedRequests: Array<TransactionRequest<*>>? = null
             val destination = AccountCreationHelper(node).fromPayer(
                 payer.reference,
                 keysOfPayer,
@@ -279,8 +305,11 @@ class Controller(private val mvc: MVC) {
                 BigInteger.ZERO,
                 anonymous,
                 {},
-                {}
+                {
+                   requests -> savedRequests = requests
+                }
             )
+
             if (anonymous)
                 Log.d(TAG, "paid $amount anonymously to key $publicKey [destination is $destination]")
             else
@@ -289,20 +318,37 @@ class Controller(private val mvc: MVC) {
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(payer, destination, publicKey, amount, anonymous) }
+            mainScope.launch { mvc.view?.onPaymentCompleted(
+                payer,
+                destination,
+                publicKey,
+                amount,
+                anonymous,
+                toTransactions(savedRequests)
+            ) }
         }
     }
 
     fun requestPaymentFromFaucet(faucet: Faucet, destination: StorageReference, amount: BigInteger) {
         safeRunAsIO {
             ensureConnected()
-            SendCoinsHelper(node).fromFaucet(destination, amount, BigInteger.ZERO, {}, {})
+            var savedRequests: Array<TransactionRequest<*>>? = null
+            SendCoinsHelper(node).fromFaucet(destination, amount, BigInteger.ZERO, {}, {
+                requests -> savedRequests = requests
+            })
             Log.d(TAG, "paid $amount from ${faucet.name} to account $destination")
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(faucet, destination, null, amount, false) }
+            mainScope.launch { mvc.view?.onPaymentCompleted(
+                faucet,
+                destination,
+                null,
+                amount,
+                false,
+                toTransactions(savedRequests)
+            ) }
         }
     }
 

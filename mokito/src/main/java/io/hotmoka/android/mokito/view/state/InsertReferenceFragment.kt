@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import io.hotmoka.android.mokito.databinding.FragmentInsertReferenceBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections.toShowState
+import io.hotmoka.beans.values.StorageReference
+import java.lang.IllegalArgumentException
 
 /**
  * A fragment used to insert the storage reference of an object
@@ -18,8 +20,12 @@ class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>
         setBinding(FragmentInsertReferenceBinding.inflate(inflater, container, false))
 
         binding.showState.setOnClickListener {
-            val reference = validateStorageReference(binding.reference.text.toString())
-            navigate(toShowState(reference))
+            try {
+                navigate(toShowState(validateStorageReference(binding.reference.text.toString())))
+            }
+            catch (e: IllegalArgumentException) {
+                notifyException(e)
+            }
         }
 
         return binding.root
