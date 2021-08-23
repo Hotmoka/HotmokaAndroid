@@ -11,4 +11,7 @@
     <color name="inaccessible_account">#FFB388FF</color>
     <color name="faucet">#FFA7FFEB</color>
     <color name="key">#FFFF9E80</color>
+    <color name="class_tag">#FFB388FF</color>
+    <color name="field_in_class">#FFFF8D</color>
+    <color name="field_inherited">#84FFFF</color>
 </resources>

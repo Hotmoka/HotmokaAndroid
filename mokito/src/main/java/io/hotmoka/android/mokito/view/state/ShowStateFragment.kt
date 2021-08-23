@@ -1,24 +1,23 @@
 package io.hotmoka.android.mokito.view.state
 
+import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.*
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R
-import io.hotmoka.android.mokito.R.layout
-import io.hotmoka.android.mokito.R.string
 import io.hotmoka.android.mokito.databinding.FragmentShowStateBinding
+import io.hotmoka.android.mokito.databinding.UpdateCardBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.state.ShowStateFragmentDirections.toShowState
 import io.hotmoka.beans.updates.*
 import io.hotmoka.beans.values.StorageReference
 
 /**
- * A fragment used to show the state of an object from its storage reference.
+ * A fragment used to show the state of an object in the store of the Hotmoka node.
  */
 open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
     private var reference: StorageReference? = null
@@ -112,6 +111,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
         private var tag: ClassTag? = null
         private var state = emptyArray<Update>()
 
+        @SuppressLint("NotifyDataSetChanged")
         fun setUpdates(state: Array<Update>) {
             try {
                 val tag = state.filterIsInstance<ClassTag>().first()
@@ -121,79 +121,75 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
                 notifyDataSetChanged()
             }
             catch (e: NoSuchElementException) {
-                throw IllegalStateException("The server answered with a state missing a class tag")
+                notifyUser(getString(R.string.missing_class_tag))
             }
         }
 
-        private inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val itemDescription: TextView = itemView.findViewById(R.id.item_description)
-            val itemValue: TextView = itemView.findViewById(R.id.item_value)
-            val itemArrow: ImageView = itemView.findViewById(R.id.item_arrow)
-            val card: CardView = itemView.findViewById(R.id.update_card_view)
+        private inner class ViewHolder(val binding: UpdateCardBinding) : RecyclerView.ViewHolder(binding.root) {
+
+            fun bindToClassTag(update: ClassTag) {
+                binding.description.text = getString(R.string.class_description, update.clazz.toString())
+                binding.value.text = getString(R.string.jar_description, update.jar.toString())
+                binding.card.isClickable = false
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.class_tag))
+                binding.arrow.visibility = View.GONE
+            }
+
+            fun bindToFieldInTheSameClass(update: UpdateOfField) {
+                binding.description.text = getString(R.string.field_description,
+                    update.field.name, update.field.type.toString())
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.field_in_class))
+                bindToFieldGeneric(update)
+            }
+
+            fun bindToFieldInheritedFromSuperclass(update: UpdateOfField) {
+                binding.description.text = getString(R.string.field_inherited_description,
+                    update.field.name, update.field.type.toString(), update.field.definingClass.toString())
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.field_inherited))
+                bindToFieldGeneric(update)
+            }
+
+            private fun bindToFieldGeneric(update: UpdateOfField) {
+                binding.value.text = valueToPrint(update)
+
+                if (update is UpdateOfStorage) {
+                    binding.card.isClickable = true
+                    binding.arrow.visibility = View.VISIBLE
+                    binding.card.setOnClickListener { navigate(toShowState(update.value)) }
+                }
+                else {
+                    binding.card.isClickable = false
+                    binding.arrow.visibility = View.GONE
+                }
+            }
+
+            private fun valueToPrint(update: UpdateOfField): String {
+                return if (update is UpdateOfString)
+                    "\"${update.value}\""
+                else
+                    update.value.toString()
+            }
         }
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
-            val v = LayoutInflater.from(viewGroup.context)
-                .inflate(layout.update_card_layout, viewGroup, false)
-
-            return ViewHolder(v)
+            return ViewHolder(
+                UpdateCardBinding.inflate(
+                    LayoutInflater.from(viewGroup.context),
+                    viewGroup,
+                    false
+                )
+            )
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
             val update = state[i]
 
-            if (update is ClassTag) {
-                // class tag
-                viewHolder.itemDescription.text = resources.getString(string.class_description, update.clazz.toString())
-                viewHolder.itemValue.text = resources.getString(string.jar_description, update.jar.toString())
-                viewHolder.card.isClickable = false
-                viewHolder.card.setCardBackgroundColor(0xFFFFFFFF.toInt())
-                viewHolder.itemArrow.visibility = View.GONE
+            when {
+                update is ClassTag -> viewHolder.bindToClassTag(update)
+                (update as UpdateOfField).field.definingClass == tag?.clazz
+                    -> viewHolder.bindToFieldInTheSameClass(update)
+                else -> viewHolder.bindToFieldInheritedFromSuperclass(update)
             }
-            else {
-                val field = (update as UpdateOfField).field
-                if (field.definingClass == tag?.clazz) {
-                    // field in the same class
-                    viewHolder.itemDescription.text = resources.getString(string.field_description,
-                        field.name, field.type.toString())
-                    viewHolder.itemValue.text = valueToPrint(update)
-                    viewHolder.card.setCardBackgroundColor(0xFFE0E0E0.toInt())
-
-                    if (update is UpdateOfStorage) {
-                        viewHolder.card.isClickable = true
-                        viewHolder.itemArrow.visibility = View.VISIBLE
-                        viewHolder.card.setOnClickListener { navigate(toShowState(update.value)) }
-                    }
-                    else {
-                        viewHolder.card.isClickable = false
-                        viewHolder.itemArrow.visibility = View.GONE
-                    }
-                }
-                else {
-                    // field inherited from a superclass
-                    viewHolder.itemDescription.text = resources.getString(string.field_inherited_description,
-                        field.name, field.type.toString(), field.definingClass.toString())
-                    viewHolder.itemValue.text = valueToPrint(update)
-                    viewHolder.card.setCardBackgroundColor(0xFFC0C0C0.toInt())
-
-                    if (update is UpdateOfStorage) {
-                        viewHolder.card.isClickable = true
-                        viewHolder.itemArrow.visibility = View.VISIBLE
-                        viewHolder.card.setOnClickListener { navigate(toShowState(update.value)) }
-                    }
-                    else {
-                        viewHolder.card.isClickable = false
-                        viewHolder.itemArrow.visibility = View.GONE
-                    }
-                }
-            }
-        }
-
-        private fun valueToPrint(update: UpdateOfField): String {
-            return if (update is UpdateOfString)
-                "\"${update.value}\""
-            else
-                update.value.toString()
         }
 
         override fun getItemCount(): Int {
