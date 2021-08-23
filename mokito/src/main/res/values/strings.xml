@@ -145,7 +145,7 @@
     <string name="create_new_account">Create new account</string>
     <string name="illegal_balance_for_new_account">Illegal balance for new account</string>
     <string name="create">Create</string>
-    <string name="preferred_coin_type">Preferred coin type</string>
+    <string name="preferred_coin_unit">Preferred coin unit</string>
     <string name="save_edits">Save edits</string>
     <string name="missing_class_tag">Missing class tag in object state</string>
     <string name="version">Version 1.0 (23/8/2021)</string>
