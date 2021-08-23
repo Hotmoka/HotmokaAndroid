@@ -103,7 +103,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              * still waiting for the corresponding account object to be created.
              */
             private fun bindToKey(account: Account) {
-                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.key))
+                setCardBackground(R.color.key)
                 binding.name.text = account.name
                 binding.reference.text = getString(R.string.waiting_for_payment_to_this_key)
                 binding.balance.visibility = GONE
@@ -118,7 +118,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              * Binds the view holder to an account that is actually the faucet of the node.
              */
             private fun bindToFaucet(account: Account) {
-                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.faucet))
+                setCardBackground(R.color.faucet)
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 balanceIsVisible(account)
@@ -133,7 +133,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              * Binds the view holder to an account that is not the faucet and is accessible.
              */
             private fun bindToAccessible(account: Account) {
-                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.accessible_account))
+                setCardBackground(R.color.accessible_account)
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 balanceIsVisible(account)
@@ -148,7 +148,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
              * Binds the view holder to an account that is not the faucet and is inaccessible.
              */
             private fun bindToInaccessible(account: Account) {
-                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.inaccessible_account))
+                setCardBackground(R.color.inaccessible_account)
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 binding.balance.text = resources.getString(R.string.account_not_accessible)
@@ -158,6 +158,10 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 binding.receive.visibility = GONE
                 deleteIsVisible(account)
                 settingsIsVisible(account)
+            }
+
+            private fun setCardBackground(color: Int) {
+                binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, color))
             }
 
             private fun settingsIsVisible(account: Account) {

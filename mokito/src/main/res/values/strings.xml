@@ -49,7 +49,7 @@
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
     <string name="dismiss">dismiss</string>
-    <string name="warning_about_words">Please write down on paper the following 36 words, in their sequential order. You will need them if you want to (re)install the account in this or another application. If you delete the account and lose these words, you will lose access to this account for ever!</string>
+    <string name="warning_about_words">Please write down on paper the following mnemonic phrase of 36 words, in their sequential order. You will need them if you want to (re)install the account in this or another application. If you delete the account and lose these words, you will lose access to this account for ever!</string>
     <string name="action_import">Import account</string>
     <string name="action_import_account_tooltip">Import an account into this application</string>
     <string name="action_create_key">Create new key</string>
