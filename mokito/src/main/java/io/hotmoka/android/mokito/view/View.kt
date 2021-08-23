@@ -17,6 +17,16 @@ interface View {
     fun getContext() : Mokito
 
     /**
+     * Called whenever a background task has started.
+     */
+    fun onBackgroundStart()
+
+    /**
+     * Called whenever a background task has completed.
+     */
+    fun onBackgroundEnd()
+
+    /**
      * Called on the main thread when the manifest has been changed.
      *
      * @param manifest the new value of the manifest

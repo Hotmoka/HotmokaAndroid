@@ -41,6 +41,7 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         }
 
         binding.ok.setOnClickListener { editAccountIfNeeded() }
+
         return binding.root
     }
 

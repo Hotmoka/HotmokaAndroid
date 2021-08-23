@@ -34,6 +34,7 @@ import java.math.BigInteger
 import java.security.KeyPair
 import java.security.PublicKey
 import java.security.SecureRandom
+import java.util.concurrent.atomic.AtomicInteger
 
 class Controller(private val mvc: MVC) {
     private var node: AndroidRemoteNode = AndroidRemoteNode()
@@ -42,10 +43,15 @@ class Controller(private val mvc: MVC) {
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519()
     private val random = SecureRandom()
+    private val working = AtomicInteger(0)
 
     companion object {
         private const val TAG = "Controller"
         private val _100_000 = BigInteger.valueOf(100_000L)
+    }
+
+    fun isWorking() : Boolean {
+        return working.get() > 0
     }
 
     private fun ensureConnected() {
@@ -261,8 +267,6 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun toTransactions(requests: Array<TransactionRequest<*>>?): List<TransactionReference> {
-        var transactions: List<TransactionReference> = emptyList()
-
         requests?.let {
             return it.map { request -> request.reference }
         }
@@ -486,15 +490,23 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun safeRunAsIO(task: () -> Unit) {
+        working.incrementAndGet()
+        Log.d(TAG, "working becomes $working")
+        mainScope.launch { mvc.view?.onBackgroundStart() }
+
         ioScope.launch {
             try {
                 task.invoke()
+                working.decrementAndGet()
+                Log.d(TAG, "working becomes $working")
+                mainScope.launch { mvc.view?.onBackgroundEnd() }
             }
             catch (t: Throwable) {
+                working.decrementAndGet()
+                Log.d(TAG, "working becomes $working")
+                mainScope.launch { mvc.view?.onBackgroundEnd() }
                 // if something goes wrong, we inform the user
-                mainScope.launch {
-                    mvc.view?.notifyException(t)
-                }
+                mainScope.launch { mvc.view?.notifyException(t) }
             }
         }
     }

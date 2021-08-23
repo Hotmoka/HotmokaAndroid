@@ -37,6 +37,12 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         return super.getContext() as Mokito
     }
 
+    override fun onBackgroundStart() {
+    }
+
+    override fun onBackgroundEnd() {
+    }
+
     override fun onManifestChanged(manifest: StorageReference) {
     }
 

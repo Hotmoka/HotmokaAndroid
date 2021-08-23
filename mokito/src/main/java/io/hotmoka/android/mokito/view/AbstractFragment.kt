@@ -3,6 +3,7 @@ package io.hotmoka.android.mokito.view
 import android.app.Activity
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
@@ -22,6 +23,7 @@ import java.math.BigInteger
 
 abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     private var _binding: V? = null
+    private var progressBar: ProgressBar? = null
     protected val binding get() = _binding!!
 
     companion object {
@@ -30,6 +32,9 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     protected fun setBinding(binding: V) {
         _binding = binding
+        progressBar = binding.root.findViewById(R.id.progress_bar)
+        if (!getController().isWorking())
+            progressBar?.visibility = android.view.View.GONE
     }
 
     override fun onStart() {
@@ -42,6 +47,14 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         context.applicationContext.view = null
         closeKeyboard()
         super.onStop()
+    }
+
+    override fun onBackgroundStart() {
+        progressBar?.visibility = android.view.View.VISIBLE
+    }
+
+    override fun onBackgroundEnd() {
+        progressBar?.visibility = android.view.View.GONE
     }
 
     protected fun closeKeyboard() {
@@ -112,7 +125,10 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     override fun onAccountCreated(account: Account) {
-        notifyUser(getString(R.string.account_created_toast, account.name))
+        if (account.isKey())
+            notifyUser(getString(R.string.key_created_toast, account.name))
+        else
+            notifyUser(getString(R.string.account_created_toast, account.name))
     }
 
     override fun onAccountImported(account: Account) {
@@ -120,7 +136,10 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     override fun onAccountDeleted(account: Account) {
-        notifyUser(getString(R.string.account_deleted_toast, account.name))
+        if (account.isKey())
+            notifyUser(getString(R.string.key_deleted_toast, account.name))
+        else
+            notifyUser(getString(R.string.account_deleted_toast, account.name))
     }
 
     override fun onAccountReplaced(old: Account, new: Account) {

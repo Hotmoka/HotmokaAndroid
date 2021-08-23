@@ -53,7 +53,7 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
         }
 
         binding.amount.hint = getString(R.string.amount_to_receive)
-        binding.heading.text = getString(R.string.receive_message)
+        binding.heading.text = getString(R.string.receive_message, receiver.name)
         binding.showQr.setOnClickListener {
             closeKeyboard()
             showQrCode()

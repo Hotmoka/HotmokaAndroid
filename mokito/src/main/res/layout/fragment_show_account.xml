@@ -51,10 +51,25 @@
             app:layout_constraintBottom_toTopOf="@+id/specify_reference"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_bar"
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintVertical_chainStyle="packed"
             tools:text="Juliette" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:backgroundTint="@color/white"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/purple_700"
+            android:max="100"
+            app:layout_constraintBottom_toTopOf="@+id/account_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TableLayout
             android:id="@+id/words"
@@ -79,7 +94,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/warning_about_words"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_constraintBottom_toTopOf="@+id/words"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,7 +108,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/specify_reference_instructions"
-            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_constraintBottom_toTopOf="@+id/reference"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
