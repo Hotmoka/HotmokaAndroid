@@ -153,14 +153,11 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
                 binding.value.text = valueToPrint(update)
 
                 if (update is UpdateOfStorage) {
-                    binding.card.isClickable = true
                     binding.arrow.visibility = View.VISIBLE
-                    binding.card.setOnClickListener { navigate(toShowState(update.value)) }
+                    binding.arrow.setOnClickListener { navigate(toShowState(update.value)) }
                 }
-                else {
-                    binding.card.isClickable = false
+                else
                     binding.arrow.visibility = View.GONE
-                }
             }
 
             private fun valueToPrint(update: UpdateOfField): String {
