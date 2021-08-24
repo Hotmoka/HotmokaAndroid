@@ -20,6 +20,9 @@ import io.hotmoka.android.mokito.view.accounts.AccountsFragmentDirections.*
 import io.hotmoka.beans.Coin
 import java.math.BigDecimal
 import java.math.BigInteger
+import android.view.MenuInflater
+import androidx.appcompat.widget.PopupMenu
+
 
 class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     private lateinit var adapter: RecyclerAdapter
@@ -87,11 +90,11 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
         if (accounts.getAll().allMatch { account -> account is Faucet }) {
             // if there are no accounts but the faucet, we create a quick
             // link for the creation of a new key, as a hint to the user
-            binding.createNewKey.visibility = View.VISIBLE
+            binding.createNewKey.visibility = VISIBLE
             binding.createNewKey.setOnClickListener { CreateKeyDialogFragment.show(this) }
         }
         else
-            binding.createNewKey.visibility = View.GONE
+            binding.createNewKey.visibility = GONE
 
         adapter.setAccounts(accounts)
     }
@@ -121,6 +124,33 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 receiveIsVisible(account)
                 deleteIsVisible(account)
                 settingsIsVisible(account)
+
+                binding.menuButton.setOnClickListener { createMenuForKey(binding.menuButton, account) }
+            }
+
+            private fun createMenuForKey(view: View, account: Account) {
+                val popup = PopupMenu(context, view)
+                popup.menuInflater.inflate(R.menu.key_actions, popup.menu)
+                popup.setOnMenuItemClickListener{ item -> clickListenerForKey(item, account) }
+                popup.show()
+            }
+
+            private fun clickListenerForKey(item: MenuItem, account: Account): Boolean {
+                return when (item.itemId) {
+                    R.id.action_receive_into_key -> {
+                        navigate(toReceiveCoins(account))
+                        true
+                    }
+                    R.id.action_show_key -> {
+                        navigate(toShowAccount(account))
+                        true
+                    }
+                    R.id.action_delete_key -> {
+                        DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
+                        true
+                    }
+                    else -> false
+                }
             }
 
             /**
@@ -136,6 +166,33 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 receiveIsVisible(account)
                 binding.delete.visibility = GONE
                 binding.settings.visibility = GONE
+
+                binding.menuButton.setOnClickListener { createMenuForFaucet(binding.menuButton, account) }
+            }
+
+            private fun createMenuForFaucet(view: View, account: Account) {
+                val popup = PopupMenu(context, view)
+                popup.menuInflater.inflate(R.menu.faucet_actions, popup.menu)
+                popup.setOnMenuItemClickListener{ item -> clickListenerForFaucet(item, account) }
+                popup.show()
+            }
+
+            private fun clickListenerForFaucet(item: MenuItem, account: Account): Boolean {
+                return when (item.itemId) {
+                    R.id.action_new_account_from_faucet -> {
+                        navigate(toCreateNewAccount(account))
+                        true
+                    }
+                    R.id.action_receive_into_faucet -> {
+                        navigate(toReceiveCoins(account))
+                        true
+                    }
+                    R.id.action_send_from_faucet -> {
+                        navigate(toSendCoins(account))
+                        true
+                    }
+                    else -> false
+                }
             }
 
             /**

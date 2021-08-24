@@ -7,6 +7,7 @@
         <entry key="mokito/src/main/res/drawable/selector_show_password.xml" value="0.32864583333333336" />
         <entry key="mokito/src/main/res/layout/account_card.xml" value="0.34479166666666666" />
         <entry key="mokito/src/main/res/layout/account_card_layout.xml" value="0.34479166666666666" />
+        <entry key="mokito/src/main/res/layout/app_bar_mokito.xml" value="0.3546875" />
         <entry key="mokito/src/main/res/layout/dialog_fragment_create_account.xml" value="0.32708333333333334" />
         <entry key="mokito/src/main/res/layout/dialog_fragment_create_key.xml" value="0.3234375" />
         <entry key="mokito/src/main/res/layout/dialog_fragment_create_public_key.xml" value="0.3125" />
@@ -25,6 +26,9 @@
         <entry key="mokito/src/main/res/layout/fragment_show_state.xml" value="0.34479166666666666" />
         <entry key="mokito/src/main/res/layout/nav_header_mokito.xml" value="0.3546875" />
         <entry key="mokito/src/main/res/layout/update_card.xml" value="0.3640625" />
+        <entry key="mokito/src/main/res/menu/Faucet_actions.xml" value="0.3546875" />
+        <entry key="mokito/src/main/res/menu/key_actions.xml" value="0.3151041666666667" />
+        <entry key="mokito/src/main/res/menu/mokito_drawer.xml" value="0.34479166666666666" />
       </map>
     </option>
   </component>

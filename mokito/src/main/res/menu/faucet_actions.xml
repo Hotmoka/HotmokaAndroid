@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_new_account_from_faucet"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_new"
+        android:title="@string/action_new_account_from_faucet"
+        android:tooltipText="@string/action_new_account_from_faucet_tooltip"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_receive_into_faucet"
+        android:orderInCategory="101"
+        android:icon="@drawable/ic_send"
+        android:title="@string/action_receive_into_faucet"
+        android:tooltipText="@string/action_receive_into_faucet_tooltip"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_send_from_faucet"
+        android:orderInCategory="102"
+        android:icon="@drawable/ic_send"
+        android:title="@string/action_send_from_faucet"
+        android:tooltipText="@string/action_send_from_faucet_tooltip"
+        app:showAsAction="never" />
+
+</menu>

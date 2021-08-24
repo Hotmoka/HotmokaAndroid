@@ -3,6 +3,7 @@ package io.hotmoka.android.mokito.view
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -10,6 +11,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.zxing.integration.android.IntentIntegrator
+import io.hotmoka.android.mokito.BuildConfig
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.MokitoBinding

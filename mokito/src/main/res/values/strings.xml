@@ -58,7 +58,6 @@
     <string name="action_create_key_tooltip">Create a new public key for a new account</string>
     <string name="import_account">Import Account</string>
     <string name="description_about_words_to_insert">Insert the 36 words that have been provided at time of creation of the account, in their sequential order.</string>
-
     <string name="word1">word 1</string>
     <string name="word2">word 2</string>
     <string name="word3">word 3</string>
@@ -152,6 +151,18 @@
     <string name="preferred_coin_unit">Preferred coin unit</string>
     <string name="save_edits">Save edits</string>
     <string name="missing_class_tag">Missing class tag in object state</string>
-    <string name="version">Version 1.0 (23/8/2021)</string>
+    <string name="version">Version 1.0 (24/8/2021)</string>
     <string name="author">Author: fausto.spoto@hotmoka.io</string>
+    <string name="action_receive_into_key">Receive coins into this key</string>
+    <string name="action_receive_into_key_tooltip">Allows one to receive coins into this key, that will consequently become an actual account</string>
+    <string name="action_show_key">Show this key</string>
+    <string name="action_show_key_tooltip">Allows one to see and edit the details of this key</string>
+    <string name="action_delete_key">Delete key</string>
+    <string name="action_delete_key_tooltip">Allows one to delete this key from the list of accounts</string>
+    <string name="action_receive_into_faucet">Receive coins into the faucet</string>
+    <string name="action_receive_into_faucet_tooltip">Allows one to transfer coins into the faucet</string>
+    <string name="action_send_from_faucet">Send coins from the faucet</string>
+    <string name="action_send_from_faucet_tooltip">Allows one to send coins from the faucet to another account or key</string>
+    <string name="action_new_account_from_faucet">Fund a new account with the faucet</string>
+    <string name="action_new_account_from_faucet_tooltip">Allows one to fund a new account and let the faucet pay</string>
 </resources>

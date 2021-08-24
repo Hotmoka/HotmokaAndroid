@@ -10,8 +10,10 @@ import android.widget.TextView
 import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
+import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections
 import io.hotmoka.beans.Coin
 import io.hotmoka.crypto.BIP39Words
+import java.lang.IllegalArgumentException
 
 class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
     private lateinit var account: Account
@@ -61,8 +63,14 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
 
         val newReferenceInput = binding.reference.text.toString()
         if (account.reference == null && newReferenceInput.isNotEmpty()) {
-            replace = true
-            newAccount = newAccount.setReference(validateStorageReference(newReferenceInput))
+            try {
+                newAccount = newAccount.setReference(validateStorageReference(newReferenceInput))
+                replace = true
+            }
+            catch (e: IllegalArgumentException) {
+                notifyException(e)
+                return
+            }
         }
 
         val newCoin = Coin.values()[binding.coinType.selectedItemPosition]
