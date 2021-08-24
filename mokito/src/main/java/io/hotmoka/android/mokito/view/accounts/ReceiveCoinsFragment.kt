@@ -23,9 +23,6 @@ import java.io.UnsupportedEncodingException
 import java.util.*
 import android.widget.AdapterView
 
-
-
-
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     private lateinit var receiver: Account
 

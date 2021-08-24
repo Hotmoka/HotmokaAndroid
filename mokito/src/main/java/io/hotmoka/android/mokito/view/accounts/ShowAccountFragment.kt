@@ -23,20 +23,24 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentShowAccountBinding.inflate(inflater, container, false))
-        binding.accountName.setText(account.name)
+        binding.name.setText(account.name)
         binding.coinType.setSelection(account.coin.ordinal)
 
         // if the reference of the account is already set, we do not allow its modification;
         // if it is not set, we do not allow the modification of the name of the account
         if (account.reference != null) {
             getController().requestBip39Words(account)
-            binding.reference.isEnabled = false
+            binding.name.setText(account.name)
+            binding.nameImmutable.visibility = View.GONE
+            binding.reference.visibility = View.GONE
             binding.specifyReference.visibility = View.GONE
-            binding.reference.setText(account.reference.toString())
+            binding.referenceImmutable.text = account.reference.toString()
         }
         else {
-            binding.accountName.isEnabled = false
+            binding.nameImmutable.text = account.name
+            binding.name.visibility = View.GONE
             binding.reference.setText("")
+            binding.referenceImmutable.visibility = View.GONE
             binding.warning.visibility = View.GONE
         }
 
@@ -49,7 +53,7 @@ class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
         var newAccount = account
         var replace = false
 
-        val newName = binding.accountName.text.toString()
+        val newName = binding.name.text.toString()
         if (account.name != newName) {
             replace = true
             newAccount = newAccount.setName(newName)

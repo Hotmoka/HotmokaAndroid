@@ -31,7 +31,7 @@ class DeleteAccountConfirmationDialogFragment: AbstractDialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(context)
-            .setTitle(R.string.delete_question)
+            .setTitle(if (account.isKey()) R.string.delete_key_question else R.string.delete_account_question)
             .setIcon(R.drawable.ic_delete)
             .setMessage(
                 getString(

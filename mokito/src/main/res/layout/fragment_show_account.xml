@@ -30,15 +30,32 @@
             android:hint="@string/reference_of_the_account"
             android:inputType="text"
             android:minHeight="48dp"
+            android:textIsSelectable="true"
             android:textSize="16sp"
-            app:layout_constraintBottom_toTopOf="@+id/coin_type"
+            app:layout_constraintBottom_toTopOf="@+id/reference_immutable"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/specify_reference"
-            tools:text="@string/reference_of_the_account" />
+            tools:text="@string/reference_of_the_account"
+            tools:ignore="Autofill" />
+
+        <TextView
+            android:id="@+id/reference_immutable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:minHeight="48dp"
+            android:textAlignment="center"
+            android:textIsSelectable="true"
+            app:layout_constraintBottom_toTopOf="@+id/coin_type"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/reference" />
 
         <EditText
-            android:id="@+id/account_name"
+            android:id="@+id/name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -48,13 +65,14 @@
             android:hint="@string/account_name"
             android:inputType="textPersonName"
             android:minHeight="48dp"
-            app:layout_constraintBottom_toTopOf="@+id/specify_reference"
+            android:textIsSelectable="true"
+            app:layout_constraintBottom_toTopOf="@+id/name_immutable"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/progress_bar"
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintVertical_chainStyle="packed"
-            tools:text="Juliette" />
+            android:autofillHints="name" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -66,7 +84,7 @@
             android:indeterminate="true"
             android:indeterminateTint="@color/purple_700"
             android:max="100"
-            app:layout_constraintBottom_toTopOf="@+id/account_name"
+            app:layout_constraintBottom_toTopOf="@+id/name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -83,7 +101,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/warning">
-
         </TableLayout>
 
         <TextView
@@ -112,7 +129,7 @@
             app:layout_constraintBottom_toTopOf="@+id/reference"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/account_name" />
+            app:layout_constraintTop_toBottomOf="@+id/name_immutable" />
 
         <TextView
             android:id="@+id/preferred_coin_message"
@@ -125,6 +142,21 @@
             app:layout_constraintHorizontal_chainStyle="spread"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <TextView
+            android:id="@+id/name_immutable"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:minHeight="48dp"
+            android:textAlignment="center"
+            android:textIsSelectable="true"
+            app:layout_constraintBottom_toTopOf="@+id/specify_reference"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name" />
+
         <io.hotmoka.android.mokito.view.CoinSelectorSpinner
             android:id="@+id/coin_type"
             android:layout_width="wrap_content"
@@ -135,7 +167,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/preferred_coin_message"
-            app:layout_constraintTop_toBottomOf="@+id/reference" />
+            app:layout_constraintTop_toBottomOf="@+id/reference_immutable" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

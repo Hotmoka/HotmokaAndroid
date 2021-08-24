@@ -47,6 +47,7 @@ class Controller(private val mvc: MVC) {
 
     companion object {
         private const val TAG = "Controller"
+        @Suppress("ObjectPropertyName")
         private val _100_000 = BigInteger.valueOf(100_000L)
     }
 
@@ -491,22 +492,20 @@ class Controller(private val mvc: MVC) {
 
     private fun safeRunAsIO(task: () -> Unit) {
         working.incrementAndGet()
-        Log.d(TAG, "working becomes $working")
         mainScope.launch { mvc.view?.onBackgroundStart() }
 
         ioScope.launch {
             try {
                 task.invoke()
                 working.decrementAndGet()
-                Log.d(TAG, "working becomes $working")
                 mainScope.launch { mvc.view?.onBackgroundEnd() }
             }
             catch (t: Throwable) {
                 working.decrementAndGet()
-                Log.d(TAG, "working becomes $working")
-                mainScope.launch { mvc.view?.onBackgroundEnd() }
-                // if something goes wrong, we inform the user
-                mainScope.launch { mvc.view?.notifyException(t) }
+                mainScope.launch {
+                    mvc.view?.onBackgroundEnd()
+                    mvc.view?.notifyException(t)
+                }
             }
         }
     }

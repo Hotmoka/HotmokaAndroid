@@ -143,7 +143,10 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     override fun onAccountReplaced(old: Account, new: Account) {
-        notifyUser(getString(R.string.account_replaced_toast, new.name))
+        if (old.isKey())
+            notifyUser(getString(R.string.key_replaced_toast, new.name))
+        else
+            notifyUser(getString(R.string.account_replaced_toast, new.name))
     }
 
     override fun onQRScanCancelled() {

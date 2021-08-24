@@ -38,7 +38,7 @@ class EditAccountConfirmationDialogFragment: AbstractDialogFragment() {
         val binding = DialogFragmentEditAccountConfirmationBinding.inflate(layoutInflater)
 
         val builder = AlertDialog.Builder(context)
-            .setTitle(R.string.edit_question)
+            .setTitle(if (old.isKey()) R.string.edit_key_question else R.string.edit_account_question)
             .setIcon(R.drawable.ic_edit)
             .setView(binding.root)
             .setNegativeButton(R.string.dismiss) { _,_ -> }
