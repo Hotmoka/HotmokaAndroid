@@ -91,7 +91,6 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:ems="10"
-            android:hint="@string/destination_account_or_key"
             android:inputType="text"
             android:minHeight="48dp"
             android:text=""

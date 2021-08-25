@@ -41,6 +41,11 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                 getString(R.string.payment_from_faucet_message)
             else
                 getString(R.string.payment_message, payer.name)
+        binding.destination.hint =
+            if (payer is Faucet)
+                getString(R.string.destination_account)
+            else
+                getString(R.string.destination_account_or_key)
         binding.qrCode.setOnClickListener { readQrCode() }
         binding.pay.setOnClickListener { pay() }
 

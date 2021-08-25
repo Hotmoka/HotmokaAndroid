@@ -2,12 +2,12 @@
 buildscript {
     ext.kotlin_version = "1.5.20"
     repositories {
-        mavenLocal() // TODO: remove at the end
+        // mavenLocal() // TODO: remove at the end
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'com.android.tools.build:gradle:7.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.0"
 
@@ -18,10 +18,9 @@ buildscript {
 
 allprojects {
     repositories {
-        mavenLocal() // TODO: remove at the end
+        //mavenLocal() // TODO: remove at the end
         google()
         mavenCentral()
-        //jcenter() // Warning: this repository is going to shut down soon
     }
 }
 
