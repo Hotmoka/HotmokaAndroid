@@ -119,17 +119,11 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 binding.name.text = account.name
                 binding.reference.text = getString(R.string.waiting_for_payment_to_this_key)
                 binding.balance.visibility = GONE
-                binding.newAccount.visibility = GONE
-                binding.send.visibility = GONE
-                receiveIsVisible(account)
-                deleteIsVisible(account)
-                settingsIsVisible(account)
-
-                binding.menuButton.setOnClickListener { createMenuForKey(binding.menuButton, account) }
+                binding.menuButton.setOnClickListener { createMenuForKey(account) }
             }
 
-            private fun createMenuForKey(view: View, account: Account) {
-                val popup = PopupMenu(context, view)
+            private fun createMenuForKey(account: Account) {
+                val popup = PopupMenu(context, binding.menuButton)
                 popup.menuInflater.inflate(R.menu.key_actions, popup.menu)
                 popup.setOnMenuItemClickListener{ item -> clickListenerForKey(item, account) }
                 popup.show()
@@ -141,7 +135,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                         navigate(toReceiveCoins(account))
                         true
                     }
-                    R.id.action_show_key -> {
+                    R.id.action_show_or_edit_key -> {
                         navigate(toShowAccount(account))
                         true
                     }
@@ -161,17 +155,11 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 balanceIsVisible(account)
-                newIsVisible(account)
-                sendIsVisible(account)
-                receiveIsVisible(account)
-                binding.delete.visibility = GONE
-                binding.settings.visibility = GONE
-
-                binding.menuButton.setOnClickListener { createMenuForFaucet(binding.menuButton, account) }
+                binding.menuButton.setOnClickListener { createMenuForFaucet(account) }
             }
 
-            private fun createMenuForFaucet(view: View, account: Account) {
-                val popup = PopupMenu(context, view)
+            private fun createMenuForFaucet(account: Account) {
+                val popup = PopupMenu(context, binding.menuButton)
                 popup.menuInflater.inflate(R.menu.faucet_actions, popup.menu)
                 popup.setOnMenuItemClickListener{ item -> clickListenerForFaucet(item, account) }
                 popup.show()
@@ -203,11 +191,40 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 balanceIsVisible(account)
-                newIsVisible(account)
-                sendIsVisible(account)
-                receiveIsVisible(account)
-                deleteIsVisible(account)
-                settingsIsVisible(account)
+                binding.menuButton.setOnClickListener { createMenuForAccessible(account) }
+            }
+
+            private fun createMenuForAccessible(account: Account) {
+                val popup = PopupMenu(context, binding.menuButton)
+                popup.menuInflater.inflate(R.menu.accessible_account_actions, popup.menu)
+                popup.setOnMenuItemClickListener{ item -> clickListenerForAccessible(item, account) }
+                popup.show()
+            }
+
+            private fun clickListenerForAccessible(item: MenuItem, account: Account): Boolean {
+                return when (item.itemId) {
+                    R.id.action_new_account_from_account -> {
+                        navigate(toCreateNewAccount(account))
+                        true
+                    }
+                    R.id.action_receive_into_account -> {
+                        navigate(toReceiveCoins(account))
+                        true
+                    }
+                    R.id.action_send_from_account -> {
+                        navigate(toSendCoins(account))
+                        true
+                    }
+                    R.id.action_show_or_edit_account -> {
+                        navigate(toShowAccount(account))
+                        true
+                    }
+                    R.id.action_delete_account -> {
+                        DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
+                        true
+                    }
+                    else -> false
+                }
             }
 
             /**
@@ -218,48 +235,38 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 binding.balance.text = resources.getString(R.string.account_not_accessible)
-                binding.balance.visibility = VISIBLE
-                binding.newAccount.visibility = GONE
-                binding.send.visibility = GONE
-                binding.receive.visibility = GONE
-                deleteIsVisible(account)
-                settingsIsVisible(account)
+                binding.balance.visibility = GONE
+                binding.menuButton.setOnClickListener { createMenuForInaccessible(account) }
+            }
+
+            private fun createMenuForInaccessible(account: Account) {
+                val popup = PopupMenu(context, binding.menuButton)
+                popup.menuInflater.inflate(R.menu.inaccessible_account_actions, popup.menu)
+                popup.setOnMenuItemClickListener{ item -> clickListenerForInaccessible(item, account) }
+                popup.show()
+            }
+
+            private fun clickListenerForInaccessible(item: MenuItem, account: Account): Boolean {
+                return when (item.itemId) {
+                    R.id.action_show_or_edit_account -> {
+                        navigate(toShowAccount(account))
+                        true
+                    }
+                    R.id.action_delete_account -> {
+                        DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
+                        true
+                    }
+                    else -> false
+                }
             }
 
             private fun setCardBackground(color: Int) {
                 binding.card.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(context, color))
             }
 
-            private fun settingsIsVisible(account: Account) {
-                binding.settings.visibility = VISIBLE
-                binding.settings.setOnClickListener { navigate(toShowAccount(account)) }
-            }
-
-            private fun deleteIsVisible(account: Account) {
-                binding.delete.visibility = VISIBLE
-                binding.delete.setOnClickListener {
-                    DeleteAccountConfirmationDialogFragment.show(this@AccountsFragment, account)
-                }
-            }
-
-            private fun newIsVisible(account: Account) {
-                binding.newAccount.visibility = VISIBLE
-                binding.newAccount.setOnClickListener { navigate(toCreateNewAccount(account)) }
-            }
-
             private fun balanceIsVisible(account: Account) {
                 binding.balance.text = descriptionOfBalance(account.balance, account.coin)
                 binding.balance.visibility = VISIBLE
-            }
-
-            private fun sendIsVisible(account: Account) {
-                binding.send.visibility = VISIBLE
-                binding.send.setOnClickListener { navigate(toSendCoins(account)) }
-            }
-
-            private fun receiveIsVisible(account: Account) {
-                binding.receive.visibility = VISIBLE
-                binding.receive.setOnClickListener { navigate(toReceiveCoins(account)) }
             }
 
             private fun descriptionOfBalance(balance: BigInteger, coin: Coin): String {

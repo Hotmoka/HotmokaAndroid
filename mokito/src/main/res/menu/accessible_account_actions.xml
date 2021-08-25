@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_new_account_from_account"
+        android:orderInCategory="100"
+        android:icon="@drawable/ic_new"
+        android:title="@string/action_new_account_from_account"
+        android:tooltipText="@string/action_new_account_from_account_tooltip"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_receive_into_account"
+        android:orderInCategory="101"
+        android:icon="@drawable/ic_receive"
+        android:title="@string/action_receive_into_account"
+        android:tooltipText="@string/action_receive_into_account_tooltip"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_send_from_account"
+        android:orderInCategory="102"
+        android:icon="@drawable/ic_send"
+        android:title="@string/action_send_from_account"
+        android:tooltipText="@string/action_send_from_account_tooltip"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_show_or_edit_account"
+        android:orderInCategory="103"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/action_show_or_edit_account"
+        android:tooltipText="@string/action_show_or_edit_account_tooltip"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_delete_account"
+        android:orderInCategory="104"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/action_delete_account"
+        android:tooltipText="@string/action_delete_account_tooltip"
+        app:showAsAction="never" />
+</menu>

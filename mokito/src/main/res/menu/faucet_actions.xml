@@ -13,7 +13,7 @@
     <item
         android:id="@+id/action_receive_into_faucet"
         android:orderInCategory="101"
-        android:icon="@drawable/ic_send"
+        android:icon="@drawable/ic_receive"
         android:title="@string/action_receive_into_faucet"
         android:tooltipText="@string/action_receive_into_faucet_tooltip"
         app:showAsAction="never" />

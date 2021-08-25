@@ -5,17 +5,17 @@
     <item
         android:id="@+id/action_receive_into_key"
         android:orderInCategory="100"
-        android:icon="@drawable/ic_send"
+        android:icon="@drawable/ic_receive"
         android:title="@string/action_receive_into_key"
         android:tooltipText="@string/action_receive_into_key_tooltip"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_show_key"
+        android:id="@+id/action_show_or_edit_key"
         android:orderInCategory="101"
         android:icon="@drawable/ic_settings"
-        android:title="@string/action_show_key"
-        android:tooltipText="@string/action_show_key_tooltip"
+        android:title="@string/action_show_or_edit_key"
+        android:tooltipText="@string/action_show_or_edit_key_tooltip"
         app:showAsAction="never" />
 
     <item

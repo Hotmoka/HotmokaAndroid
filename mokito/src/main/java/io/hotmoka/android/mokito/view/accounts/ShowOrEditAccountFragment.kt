@@ -7,24 +7,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.TextView
-import io.hotmoka.android.mokito.databinding.FragmentShowAccountBinding
+import io.hotmoka.android.mokito.databinding.FragmentShowOrEditAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections
 import io.hotmoka.beans.Coin
 import io.hotmoka.crypto.BIP39Words
-import java.lang.IllegalArgumentException
 
-class ShowAccountFragment : AbstractFragment<FragmentShowAccountBinding>() {
+class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBinding>() {
     private lateinit var account: Account
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        account = ShowAccountFragmentArgs.fromBundle(requireArguments()).account
+        account = ShowOrEditAccountFragmentArgs.fromBundle(requireArguments()).account
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        setBinding(FragmentShowAccountBinding.inflate(inflater, container, false))
+        setBinding(FragmentShowOrEditAccountBinding.inflate(inflater, container, false))
         binding.name.setText(account.name)
         binding.coinType.setSelection(account.coin.ordinal)
 

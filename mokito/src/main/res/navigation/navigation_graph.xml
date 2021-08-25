@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_accounts" >
         <action
             android:id="@+id/to_show_account"
-            app:destination="@id/show_account" />
+            app:destination="@id/show_or_edit_account" />
         <action
             android:id="@+id/to_import_account"
             app:destination="@id/import_account" />
@@ -64,9 +64,9 @@
         android:label="@string/settings" />
 
     <fragment
-        android:id="@+id/show_account"
-        android:name="io.hotmoka.android.mokito.view.accounts.ShowAccountFragment"
-        android:label="@string/show_account" >
+        android:id="@+id/show_or_edit_account"
+        android:name="io.hotmoka.android.mokito.view.accounts.ShowOrEditAccountFragment"
+        android:label="@string/show_or_edit_account">
         <argument
             android:name="account"
             app:argType="io.hotmoka.android.mokito.model.Account" />
@@ -132,7 +132,7 @@
             app:argType="io.hotmoka.android.mokito.model.Account" />
         <action
             android:id="@+id/to_show_account"
-            app:destination="@id/show_account"
+            app:destination="@id/show_or_edit_account"
             app:popUpTo="@id/nav_accounts" />
     </fragment>
 
