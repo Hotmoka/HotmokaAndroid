@@ -1,7 +1,6 @@
 package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.accounts.CreateNewAccountFragmentDirections.toShowAccount
-import java.math.BigDecimal
 import java.math.BigInteger
 
 class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding>() {

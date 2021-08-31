@@ -187,7 +187,7 @@ class Controller(private val mvc: MVC) {
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
             val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference)
-            val bip39 = BIP39Words.of(acc, BIP39Dictionary.ENGLISH_DICTIONARY)
+            val bip39 = acc.bip39Words()
 
             mainScope.launch { mvc.view?.onBip39Available(account, bip39) }
         }
