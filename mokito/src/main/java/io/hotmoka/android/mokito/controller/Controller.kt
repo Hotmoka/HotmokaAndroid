@@ -20,9 +20,9 @@ import io.hotmoka.beans.values.BigIntegerValue
 import io.hotmoka.beans.values.BooleanValue
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.beans.values.StringValue
-import io.hotmoka.crypto.BIP39Dictionary
 import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.Base58
+import io.hotmoka.crypto.Entropy
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.remote.RemoteNodeConfig
 import io.hotmoka.views.AccountCreationHelper
@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 import java.math.BigInteger
 import java.security.KeyPair
 import java.security.PublicKey
-import java.security.SecureRandom
 import java.util.concurrent.atomic.AtomicInteger
 
 class Controller(private val mvc: MVC) {
@@ -42,7 +41,6 @@ class Controller(private val mvc: MVC) {
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val mainScope = CoroutineScope(Dispatchers.Main)
     private val signatureAlgorithmOfNewAccounts = SignatureAlgorithmForTransactionRequests.ed25519()
-    private val random = SecureRandom()
     private val working = AtomicInteger(0)
 
     companion object {
@@ -140,7 +138,7 @@ class Controller(private val mvc: MVC) {
             var newAccount = new
             new.reference?.let { newReference ->
                 val balance = getBalance(newReference)
-                newAccount = Account(newReference, new.name, new.getEntropy(), new.publicKey, balance, true, new.coin)
+                newAccount = Account(newReference, new.name, new.entropy, new.publicKey, balance, true, new.coin)
                 checkThatRemotePublicKeyMatches(newAccount)
             }
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -186,7 +184,7 @@ class Controller(private val mvc: MVC) {
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
-            val acc = io.hotmoka.crypto.Account(account.getEntropy(), account.reference)
+            val acc = io.hotmoka.crypto.Account(account.entropy, account.reference)
             val bip39 = acc.bip39Words()
 
             mainScope.launch { mvc.view?.onBip39Available(account, bip39) }
@@ -195,12 +193,11 @@ class Controller(private val mvc: MVC) {
 
     fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>, password: String) {
         safeRunAsIO {
-            val acc = BIP39Words.of(mnemonic, BIP39Dictionary.ENGLISH_DICTIONARY).toAccount()
+            val acc = BIP39Words.of(mnemonic).toAccount()
             ensureConnected()
-
             val balance = getBalance(acc.reference)
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(acc.entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
-            val importedAccount = Account(acc.reference, name, acc.entropy, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
+            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(acc.entropy, password)
+            val importedAccount = Account(acc.reference, name, acc, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
             checkThatRemotePublicKeyMatches(importedAccount)
 
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -213,9 +210,8 @@ class Controller(private val mvc: MVC) {
 
     fun requestNewKeyPair(password: String) {
         safeRunAsIO {
-            val entropy = ByteArray(16) // 128 bits of entropy
-            random.nextBytes(entropy)
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
+            val entropy = Entropy()
+            val keys = entropy.keys(password, signatureAlgorithmOfNewAccounts)
             val publicKeyBase58 = publicKeyBase58Encoded(keys)
             val publicKeyBase64 = publicKeyBase64Encoded(keys)
             Log.d(TAG, "created public key $publicKeyBase58")
@@ -358,7 +354,7 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun getKeysOf(account: Account, password: String): KeyPair {
-        return signatureAlgorithmOfNewAccounts.getKeyPair(account.getEntropy(), BIP39Dictionary.ENGLISH_DICTIONARY, password)
+        return account.entropy.keys(password, signatureAlgorithmOfNewAccounts)
     }
 
     private fun publicKeyBase64Encoded(keys: KeyPair): String {
@@ -396,8 +392,7 @@ class Controller(private val mvc: MVC) {
     }
 
     fun passwordIsCorrect(account: Account, password: String): Boolean {
-        val keys = signatureAlgorithmOfNewAccounts.getKeyPair(account.getEntropy(), BIP39Dictionary.ENGLISH_DICTIONARY, password)
-        return publicKeyBase64Encoded(keys) == account.publicKey
+        return publicKeyBase64Encoded(getKeysOf(account, password)) == account.publicKey
     }
 
     private fun reloadAccounts(): Accounts {
@@ -407,9 +402,8 @@ class Controller(private val mvc: MVC) {
     private fun createNewAccount(creator: (PublicKey) -> StorageReference, name: String, password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()
-            val entropy = ByteArray(16) // 128 bits of entropy
-            random.nextBytes(entropy)
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(entropy, BIP39Dictionary.ENGLISH_DICTIONARY, password)
+            val entropy = Entropy()
+            val keys = entropy.keys(password, signatureAlgorithmOfNewAccounts)
 
             // create an account with the public key
             val reference = creator(keys.public)

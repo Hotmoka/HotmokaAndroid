@@ -8,6 +8,7 @@ import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.crypto.Entropy
 import org.bouncycastle.util.encoders.Hex
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -56,15 +57,14 @@ open class Account: Comparable<Account>, Parcelable {
     val isAccessible: Boolean
 
     /**
-     * The entropy that was used to generate the key pair of the account. Only the
-     * public key of the key pair is stored in the Hotmoka node. Note that this entropy
+     * The entropy that was used to generate the key pair of the account. Note that this entropy
      * is useless if the associated password is not known, that, merged with this entropy,
      * allows one to reconstruct the key pair. The password is not stored anywhere, it should
      * be remembered by the user.
      */
-    private val entropy: ByteArray
+    val entropy: Entropy
 
-    constructor(reference: StorageReference?, name: String, entropy: ByteArray, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
+    constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
         this.entropy = entropy
@@ -79,7 +79,7 @@ open class Account: Comparable<Account>, Parcelable {
 
         var reference: StorageReference? = null
         var name: String? = null
-        var entropy: ByteArray? = null
+        var entropy: Entropy? = null
         var publicKey: String? = null
         var coin: String? = null
 
@@ -147,8 +147,9 @@ open class Account: Comparable<Account>, Parcelable {
         this.balance = parcel.readSerializable() as BigInteger
         this.isAccessible = parcel.readByte() != 0.toByte()
         this.publicKey = parcel.readString()!!
-        this.entropy = ByteArray(parcel.readInt())
-        parcel.readByteArray(this.entropy)
+        val entropy = ByteArray(parcel.readInt())
+        parcel.readByteArray(entropy)
+        this.entropy = Entropy(entropy)
         this.coin = Coin.valueOf(parcel.readString()!!)
     }
 
@@ -183,8 +184,8 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeSerializable(balance)
         out.writeByte(if (isAccessible) 1.toByte() else 0.toByte())
         out.writeString(publicKey)
-        out.writeInt(entropy.size)
-        out.writeByteArray(entropy)
+        out.writeInt(entropy.length())
+        out.writeByteArray(entropy.entropy)
         out.writeString(coin.name)
     }
 
@@ -208,15 +209,15 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     fun setName(newName: String): Account {
-        return Account(reference, newName, entropy.clone(), publicKey, balance, isAccessible, coin)
+        return Account(reference, newName, entropy, publicKey, balance, isAccessible, coin)
     }
 
     fun setReference(newReference: StorageReference): Account {
-        return Account(newReference, name, entropy.clone(), publicKey, balance, isAccessible, coin)
+        return Account(newReference, name, entropy, publicKey, balance, isAccessible, coin)
     }
 
     fun setCoin(newCoin: Coin): Account {
-        return Account(reference, name, entropy.clone(), publicKey, balance, isAccessible, newCoin)
+        return Account(reference, name, entropy, publicKey, balance, isAccessible, newCoin)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -244,11 +245,11 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
-    private fun readEntropy(parser: XmlPullParser): ByteArray {
+    private fun readEntropy(parser: XmlPullParser): Entropy {
         parser.require(XmlPullParser.START_TAG, null, "entropy")
         val entropy = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "entropy")
-        return Hex.decode(entropy)
+        return Entropy(Hex.decode(entropy))
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -337,7 +338,7 @@ open class Account: Comparable<Account>, Parcelable {
         serializer.endTag(null, "name")
 
         serializer.startTag(null, "entropy")
-        serializer.text(Hex.toHexString(entropy))
+        serializer.text(entropy.toString())
         serializer.endTag(null, "entropy")
 
         serializer.startTag(null, "publicKey")
@@ -352,7 +353,7 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     override fun compareTo(other: Account): Int {
-        val diff = compareEntropies(entropy, other.entropy)
+        val diff = entropy.compareTo(other.entropy)
         if (diff == 0)
             return 0
 
@@ -363,29 +364,11 @@ open class Account: Comparable<Account>, Parcelable {
             diff
     }
 
-    private fun compareEntropies(entropy1: ByteArray, entropy2: ByteArray): Int {
-        var diff: Int = entropy1.size - entropy2.size
-        if (diff != 0)
-            return diff
-
-        for (pos in entropy1.indices) {
-           diff = entropy1[pos] - entropy2[pos]
-           if (diff != 0)
-               return diff
-        }
-
-        return 0
-    }
-
     override fun equals(other: Any?): Boolean {
-        return other is Account && entropy.contentEquals(other.entropy)
+        return other is Account && entropy == other.entropy
     }
 
     override fun hashCode(): Int {
-        return entropy.contentHashCode()
-    }
-
-    fun getEntropy(): ByteArray {
-        return entropy.clone()
+        return entropy.hashCode()
     }
 }
