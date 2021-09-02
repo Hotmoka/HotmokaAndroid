@@ -196,7 +196,7 @@ class Controller(private val mvc: MVC) {
             val acc = BIP39Words.of(mnemonic).toAccount()
             ensureConnected()
             val balance = getBalance(acc.reference)
-            val keys = signatureAlgorithmOfNewAccounts.getKeyPair(acc.entropy, password)
+            val keys = acc.keys(password, signatureAlgorithmOfNewAccounts)
             val importedAccount = Account(acc.reference, name, acc, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
             checkThatRemotePublicKeyMatches(importedAccount)
 
