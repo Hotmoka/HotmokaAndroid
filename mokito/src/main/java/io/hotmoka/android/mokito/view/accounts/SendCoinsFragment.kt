@@ -12,11 +12,10 @@ import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.beans.Coin
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.views.AccountCreationHelper
+import io.hotmoka.helpers.AccountCreationHelper
 import java.math.BigInteger
 import io.hotmoka.android.mokito.view.accounts.SendCoinsFragmentDirections.*
 import io.hotmoka.beans.references.TransactionReference
-import io.hotmoka.beans.requests.TransactionRequest
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account

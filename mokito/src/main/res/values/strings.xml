@@ -1,5 +1,5 @@
 <resources>
-    <string name="version">Version 1.0 (25/8/2021)</string>
+    <string name="version">Version 1.1 (07/12/2021)</string>
     <string name="author">Author: fausto.spoto@hotmoka.io</string>
     <string name="app_name">Mokito</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -161,13 +161,13 @@
     <string name="action_receive_into_faucet_tooltip">Allows one to transfer coins into the faucet</string>
     <string name="action_send_from_faucet">Send coins</string>
     <string name="action_send_from_faucet_tooltip">Allows one to send coins from the faucet to another account or key</string>
-    <string name="action_new_account_from_faucet">Create a new account</string>
+    <string name="action_new_account_from_faucet">Create new account</string>
     <string name="action_new_account_from_faucet_tooltip">Allows one to create a new account and let the faucet pay</string>
     <string name="action_receive_into_account">Receive coins</string>
     <string name="action_receive_into_account_tooltip">Allows one to transfer coins into this account</string>
     <string name="action_send_from_account">Send coins</string>
     <string name="action_send_from_account_tooltip">Allows one to send coins from this account to another account or key</string>
-    <string name="action_new_account_from_account">Create a new account</string>
+    <string name="action_new_account_from_account">Create new account</string>
     <string name="action_new_account_from_account_tooltip">Allows one to create a new account and let this account pay</string>
     <string name="action_show_or_edit_account">Show or edit</string>
     <string name="action_show_or_edit_account_tooltip">Allows one to see and edit the details of this account</string>

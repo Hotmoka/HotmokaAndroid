@@ -24,9 +24,9 @@ import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.Entropy
 import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
+import io.hotmoka.helpers.AccountCreationHelper
+import io.hotmoka.helpers.SendCoinsHelper
 import io.hotmoka.remote.RemoteNodeConfig
-import io.hotmoka.views.AccountCreationHelper
-import io.hotmoka.views.SendCoinsHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

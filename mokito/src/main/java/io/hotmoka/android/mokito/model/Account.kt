@@ -67,7 +67,7 @@ open class Account: Comparable<Account>, Parcelable {
     constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
-        this.entropy = entropy
+        this.entropy = Entropy(entropy.entropy)
         this.publicKey = publicKey
         this.balance = balance
         this.isAccessible = accessible

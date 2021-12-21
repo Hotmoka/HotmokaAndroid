@@ -18,7 +18,7 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentReceiveCoinsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.views.AccountCreationHelper
+import io.hotmoka.helpers.AccountCreationHelper
 import java.io.UnsupportedEncodingException
 import java.util.*
 import android.widget.AdapterView
