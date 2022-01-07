@@ -2,6 +2,7 @@ package io.hotmoka.android.remote
 
 import android.util.Log
 import io.hotmoka.beans.InternalFailureException
+import io.hotmoka.beans.nodes.NodeInfo
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.*
 import io.hotmoka.beans.responses.TransactionResponse
@@ -73,6 +74,10 @@ class AndroidRemoteNode : Node {
         }
 
         return manifest!!
+    }
+
+    override fun getNodeInfo(): NodeInfo {
+        return callSafely(Node::getNodeInfo, "getNodeInfo")
     }
 
     override fun getNameOfSignatureAlgorithmForRequests(): String {
