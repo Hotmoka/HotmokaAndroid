@@ -72,7 +72,8 @@ class Controller(private val mvc: MVC) {
 
     private fun connect() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mvc)
-        var url = sharedPreferences.getString("url", "panarea.hotmoka.io")
+        var url = sharedPreferences.getString("url", mvc.getString(R.string.default_server))
+
         if (url!!.startsWith("http://"))
             url = url.substring("http://".length)
 
@@ -81,7 +82,15 @@ class Controller(private val mvc: MVC) {
             .setWebSockets(sharedPreferences.getBoolean("webSockets", false))
             .build()
 
-        node.connect(config)
+        try {
+            node.connect(config)
+        }
+        catch (t: Throwable) {
+            Log.d(TAG, "connection to $url failed")
+            mainScope.launch {
+                mvc.view?.notifyUser(mvc.getString(R.string.connection_failed, config.url))
+            }
+        }
         takamakaCode = node.takamakaCode
 
         mainScope.launch {
