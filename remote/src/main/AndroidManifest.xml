@@ -6,11 +6,6 @@
 
     <application>
         android:usesCleartextTraffic="true"
-
-        <service
-            android:name=".AndroidRemoteNode"
-            android:enabled="true"
-            android:exported="true"></service>
     </application>
 
 </manifest>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="version">Version 1.2 (Jan 8, 2022)</string>
+    <string name="version">Version 1.3 (Jun 21, 2022)</string>
     <string name="author">Author: fausto.spoto@hotmoka.io</string>
     <string name="app_name">Mokito</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -29,8 +29,8 @@
     <string name="new_account">New Account</string>
     <string name="storage_reference_constraints">A storage reference should consist of 64 hex digits followed by # and by a progressive number</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
-    <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the Hotmoka node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
-    <string name="delete_key_confirmation_message">Do you really want to delete key %1$s? The associated account (if any) might remain in the Hotmoka node, but this app will lose access to it.</string>
+    <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the remote node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
+    <string name="delete_key_confirmation_message">Do you really want to delete key %1$s? The associated account (if any) might remain in the remote node, but this app will lose access to it.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
     <string name="payment_message">Please specify the password of the paying account %1$s, the destination of the transfer and the amount of coins to transfer. You can also click on the QR-code button to import this data via QR-code.</string>
     <string name="receive_message">Please specify the requested amount that %1$s will receive, then click on the button to generate the QR-code and show that QR-code to the payer.</string>
@@ -135,7 +135,7 @@
     <string name="coins_sent_from_payer_receipt">An amount of %3$s has been sent from\n\n%1$s\n\nto\n\n%2$s.\n\nYou can find confirmation in %4$s.</string>
     <string name="coins_sent_from_payer_to_public_key_anonymously_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto an account with storage reference\n\n%2$s\n\nand key\n\n%3$s.\n\nYou can find confirmation in %5$s.\n\nSince the transfer was anonymous, who holds the key sees it bound now, automatically, to that storage reference and can already control the account.</string>
     <string name="coins_sent_from_payer_to_public_key_receipt">An amount of %4$s has been sent from\n\n%1$s\n\nto a new account with storage reference\n\n%2$s\n\nand key\n\n%3$s.\n\nYou can find confirmation in %5$s.\n\nWho holds the key can now bind it to that storage reference and control the account.</string>
-    <string name="share_subject">Hotmoka send receipt</string>
+    <string name="share_subject">Send receipt</string>
     <string name="share_using">Share using</string>
     <string name="receive_coins">Receive coins</string>
     <string name="scan_qr_code">Scan the QR code generated in the paying wallet</string>
