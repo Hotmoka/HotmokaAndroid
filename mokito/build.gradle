@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "io.hotmoka.android.mokito"
+        applicationId "it.vero4chain.android.bluewallet"
         minSdkVersion 24
         targetSdkVersion 31
         versionCode 4
