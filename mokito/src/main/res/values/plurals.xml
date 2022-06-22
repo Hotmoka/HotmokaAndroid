@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="panareas">
-        <item quantity="one">%s Panarea</item>
-        <item quantity="other">%s Panareas</item>
+        <item quantity="one">%s Coin</item>
+        <item quantity="other">%s Coins</item>
     </plurals>
     <plurals name="alicudis">
-        <item quantity="one">%s Alicudi</item>
-        <item quantity="other">%s Alicudis</item>
+        <item quantity="one">%s 10^3 Coint</item>
+        <item quantity="other">%s 10^3 Coins</item>
     </plurals>
     <plurals name="filicudis">
-        <item quantity="one">%s Filicudi</item>
-        <item quantity="other">%s Filicudis</item>
+        <item quantity="one">%s 10^6 Coin</item>
+        <item quantity="other">%s 10^6 Coins</item>
     </plurals>
     <plurals name="strombolis">
-        <item quantity="one">%s Stromboli</item>
-        <item quantity="other">%s Strombolis</item>
+        <item quantity="one">%s 10^9 Coin</item>
+        <item quantity="other">%s 10^9 Coins</item>
     </plurals>
     <plurals name="vulcanos">
-        <item quantity="one">%s Vulcano</item>
-        <item quantity="other">%s Vulcanos</item>
+        <item quantity="one">%s 10^12 Coin</item>
+        <item quantity="other">%s 10^12 Coins</item>
     </plurals>
     <plurals name="salinas">
-        <item quantity="one">%s Salina</item>
-        <item quantity="other">%s Salinas</item>
+        <item quantity="one">%s 10^15 Coin</item>
+        <item quantity="other">%s 10^15 Coins</item>
     </plurals>
     <plurals name="liparis">
-        <item quantity="one">%s Lipari</item>
-        <item quantity="other">%s Liparis</item>
+        <item quantity="one">%s 10^18 Coin</item>
+        <item quantity="other">%s 10^18 Coins</item>
     </plurals>
     <plurals name="mokas">
-        <item quantity="one">%s Moka</item>
-        <item quantity="other">%s Mokas</item>
+        <item quantity="one">%s 10^21 Coin</item>
+        <item quantity="other">%s 10^21 Coins</item>
     </plurals>
     <plurals name="transactions">
         <item quantity="one">transaction</item>

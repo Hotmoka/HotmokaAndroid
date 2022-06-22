@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="coin_types_array">
-        <item>Panareas</item>
-        <item>Alicudis</item>
-        <item>Filicudis</item>
-        <item>Strombolis</item>
-        <item>Vulcanos</item>
-        <item>Salinas</item>
-        <item>Liparis</item>
-        <item>Mokas</item>
+        <item>Coins</item>
+        <item>10^3 Coins</item>
+        <item>10^6 Coins</item>
+        <item>10^9 Coins</item>
+        <item>10^12 Coins</item>
+        <item>10^15 Coins</item>
+        <item>10^18 Coins</item>
+        <item>10^21 Coins</item>
     </string-array>
 </resources>
