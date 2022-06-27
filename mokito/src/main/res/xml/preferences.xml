@@ -5,12 +5,12 @@
 
     <EditTextPreference
         app:key="url"
-        app:title="URL of the Hotmoka node"
+        app:title="@string/url_of_the_remote_node"
         app:useSimpleSummaryProvider="true"
-        app:defaultValue="panarea.hotmoka.io"/>
+        app:defaultValue="@string/default_server"/>
 
     <SwitchPreferenceCompat
         app:key="webSockets"
-        app:title="Use websockets"/>
+        app:title="@string/use_websockets"/>
 
 </PreferenceScreen>

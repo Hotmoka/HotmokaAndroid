@@ -175,4 +175,6 @@
     <string name="action_show_or_edit_account_tooltip">Allows one to see and edit the details of this account</string>
     <string name="action_delete_account">Delete</string>
     <string name="action_delete_account_tooltip">Allows one to delete this account from the list of accounts</string>
+    <string name="url_of_the_remote_node">URL of the remote node</string>
+    <string name="use_websockets">Use websockets</string>
 </resources>
