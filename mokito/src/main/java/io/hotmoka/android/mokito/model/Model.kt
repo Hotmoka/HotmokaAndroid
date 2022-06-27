@@ -48,6 +48,7 @@ class Model(private val mvc: MVC) {
         manifest = null
         gamete = null
         accounts = null
+        accountsLedger = null
         states.clear()
     }
 

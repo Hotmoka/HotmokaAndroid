@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import io.hotmoka.beans.Coin
+import io.hotmoka.beans.TransactionException
 import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
@@ -112,8 +113,8 @@ open class Account: Comparable<Account>, Parcelable {
             try {
                 reference = getReferenceFromAccountsLedger(publicKey)
             }
-            catch (e: TransactionRejectedException) {
-                Log.d("Account", "cannot access the accounts ledger")
+            catch (e: Exception) {
+                Log.d("Account", "cannot find $publicKey in the accounts ledger", e)
             }
 
         if (reference != null) {
@@ -125,10 +126,10 @@ open class Account: Comparable<Account>, Parcelable {
                 balance = getBalance(reference)
                 accessible = true
             }
-            catch (e: TransactionRejectedException) {
+            catch (e: Exception) {
                 balance = BigInteger.ZERO
                 accessible = false
-                Log.d("Account", "cannot access account $reference")
+                Log.d("Account", "cannot access account $reference", e)
             }
 
             this.balance = balance
