@@ -46,10 +46,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.2'
-    implementation 'androidx.preference:preference:1.2.0'
-    implementation 'io.hotmoka:io-hotmoka-beans:1.0.8'
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'io.hotmoka:io-hotmoka-beans:1.0.9'
     implementation 'io.hotmoka:io-hotmoka-remote:1.0.8'
-    implementation 'io.hotmoka:io-hotmoka-crypto:1.0.8'
+    implementation 'io.hotmoka:io-hotmoka-crypto:1.0.9'
     implementation 'io.hotmoka:io-hotmoka-helpers:1.0.8'
     implementation project(path: ':remote')
     implementation 'com.google.zxing:core:3.4.1'
