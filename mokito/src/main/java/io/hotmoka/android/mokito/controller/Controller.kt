@@ -115,6 +115,12 @@ class Controller(private val mvc: MVC) {
         }
     }
 
+    fun requestOwnerTokensOf(reference: StorageReference) {
+        safeRunAsIO {
+            ensureConnected()
+        }
+    }
+
     fun requestStateOfManifest() {
         safeRunAsIO {
             ensureConnected()

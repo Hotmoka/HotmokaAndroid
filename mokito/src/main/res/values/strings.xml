@@ -17,6 +17,7 @@
     <string name="menu_show_manifest">Manifest</string>
     <string name="menu_settings">Settings</string>
     <string name="object_explorer">Object Explorer</string>
+    <string name="token_explorer">Token Explorer</string>
     <string name="class_description">"class %1$s"</string>
     <string name="jar_description">"from jar at %1$s"</string>
     <string name="field_description">"%1$s: %2$s"</string>
@@ -31,6 +32,7 @@
     <string name="new_account">New Account</string>
     <string name="storage_reference_constraints">A storage reference should consist of 64 hex digits followed by # and by a progressive number</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
+    <string name="insert_the_storage_reference_of_the_token">Insert the storage reference of the token</string>
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the remote node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>
     <string name="delete_key_confirmation_message">Do you really want to delete key %1$s? The associated account (if any) might remain in the remote node, but this app will lose access to it.</string>
     <string name="account_creation_message">A new account will be created, with the requested balance. Account %1$s will pay for that balance and for gas. Keep note of your new account password, since there is no way to recover it later.</string>
@@ -177,4 +179,7 @@
     <string name="action_delete_account_tooltip">Allows one to delete this account from the list of accounts</string>
     <string name="url_of_the_remote_node">URL of the remote node</string>
     <string name="use_websockets">Use websockets</string>
+    <string name="menu_show_token">Token explorer</string>
+    <string name="show_token">Show Token</string>
+    <string name="state_of_token">State of Token</string>
 </resources>

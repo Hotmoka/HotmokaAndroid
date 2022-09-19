@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_state"
             android:title="@string/menu_show_state" />
         <item
+            android:id="@+id/insert_token"
+            android:icon="@drawable/ic_state"
+            android:title="@string/menu_show_token" />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings"
             android:title="@string/menu_settings" />

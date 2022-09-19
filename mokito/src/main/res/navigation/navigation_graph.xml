@@ -38,6 +38,16 @@
     </fragment>
 
     <fragment
+        android:id="@+id/insert_token"
+        android:name="io.hotmoka.android.mokito.view.tokens.InsertTokenFragment"
+        android:label="@string/token_explorer"
+        tools:layout="@layout/fragment_insert_token" >
+        <action
+            android:id="@+id/to_show_token"
+            app:destination="@id/show_token" />
+    </fragment>
+
+    <fragment
         android:id="@+id/show_state"
         android:name="io.hotmoka.android.mokito.view.state.ShowStateFragment"
         android:label="@string/state_of_object" >
@@ -134,6 +144,15 @@
             android:id="@+id/to_show_account"
             app:destination="@id/show_or_edit_account"
             app:popUpTo="@id/nav_accounts" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/show_token"
+        android:name="io.hotmoka.android.mokito.view.tokens.ShowTokenFragment"
+        android:label="@string/state_of_token">
+        <argument
+            android:name="reference"
+            app:argType="io.hotmoka.beans.values.StorageReference" />
     </fragment>
 
 </navigation>

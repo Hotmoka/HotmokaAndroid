@@ -18,13 +18,16 @@
         <entry key="mokito/src/main/res/layout/fragment_create_new_account.xml" value="0.34479166666666666" />
         <entry key="mokito/src/main/res/layout/fragment_import_account.xml" value="0.3255208333333333" />
         <entry key="mokito/src/main/res/layout/fragment_insert_reference.xml" value="0.39166666666666666" />
+        <entry key="mokito/src/main/res/layout/fragment_insert_token.xml" value="0.4" />
         <entry key="mokito/src/main/res/layout/fragment_receive_coins.xml" value="0.35104166666666664" />
         <entry key="mokito/src/main/res/layout/fragment_send_coins.xml" value="0.39166666666666666" />
         <entry key="mokito/src/main/res/layout/fragment_send_coins_from_faucet.xml" value="0.4713541666666667" />
         <entry key="mokito/src/main/res/layout/fragment_sent_coins_receipt.xml" value="0.2890625" />
         <entry key="mokito/src/main/res/layout/fragment_show_account.xml" value="0.3255208333333333" />
         <entry key="mokito/src/main/res/layout/fragment_show_state.xml" value="0.34479166666666666" />
+        <entry key="mokito/src/main/res/layout/fragment_show_token.xml" value="0.428125" />
         <entry key="mokito/src/main/res/layout/nav_header_mokito.xml" value="0.3546875" />
+        <entry key="mokito/src/main/res/layout/token_owner_card.xml" value="0.428125" />
         <entry key="mokito/src/main/res/layout/update_card.xml" value="0.3640625" />
         <entry key="mokito/src/main/res/menu/Faucet_actions.xml" value="0.3546875" />
         <entry key="mokito/src/main/res/menu/accessible_account_actions.xml" value="0.3515625" />
