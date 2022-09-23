@@ -8,6 +8,7 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
+import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.Coin
 import io.hotmoka.beans.references.TransactionReference
@@ -15,11 +16,10 @@ import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.signatures.CodeSignature
 import io.hotmoka.beans.signatures.MethodSignature
+import io.hotmoka.beans.signatures.NonVoidMethodSignature
+import io.hotmoka.beans.types.BasicTypes
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.BigIntegerValue
-import io.hotmoka.beans.values.BooleanValue
-import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.beans.values.StringValue
+import io.hotmoka.beans.values.*
 import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.Entropy
@@ -47,6 +47,7 @@ class Controller(private val mvc: MVC) {
         private const val TAG = "Controller"
         @Suppress("ObjectPropertyName")
         private val _100_000 = BigInteger.valueOf(100_000L)
+        private val IERC20View = "io.takamaka.code.tokens.IERC20View";
     }
 
     fun isWorking() : Boolean {
@@ -118,7 +119,34 @@ class Controller(private val mvc: MVC) {
     fun requestOwnerTokensOf(reference: StorageReference) {
         safeRunAsIO {
             ensureConnected()
+            val size = getErc20Size(reference)
+            val ownerTokens = Array<OwnerTokens>(size) { i -> getOwnerTokens(reference, i) }
+            mvc.model.setErc20OwnerTokens(reference, ownerTokens)
         }
+    }
+
+    /**
+     * Yields the pair owner/amount for the ith owner of the given ERC20 contract.
+     *
+     * @param erc20Token the storage reference of the contract in blockchain
+     * @param the index of the owner (from 0 to token size minus 1)
+     * @return the pair owner/amount
+     */
+    private fun getOwnerTokens(erc20Token: StorageReference, i: Int): OwnerTokens {
+        // si modifichi il lato destro della riga seguente in modo da chiamare erc20Token.select(i)
+        // ci si ispiri a quanto scritto dentro getErc20Size() più sotto
+        val owner = erc20Token
+
+        // si modifichi il lato destro
+        // della riga seguente in modo da chiamare erc20Token.balanceOf(owner)
+        // in modo simile a quanto fatto sopra; si noti che il risultato sarà una storage
+        // reference di un oggetto in blockchain di tipo UnsignedBigInteger
+        val amount = null
+
+        // si modifichi il lato destro della riga seguente in modo da chiamare amount.toBigInteger()
+        // in modo simile a quanto fatto sopra
+        val amountAsBigInteger = BigInteger.valueOf(42L)
+        return OwnerTokens(owner, amountAsBigInteger)
     }
 
     fun requestStateOfManifest() {
@@ -470,6 +498,21 @@ class Controller(private val mvc: MVC) {
                 reference, _100_000, takamakaCode, MethodSignature.BALANCE, reference
             )
         ) as BigIntegerValue).value
+    }
+
+    private fun getErc20Size(reference: StorageReference): Int {
+        // we use the manifest as caller, since the call is free of charge
+        val manifest = getManifestCached()
+
+        return (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                manifest, _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "size",
+                    BasicTypes.INT
+                ), reference
+            )
+        ) as IntValue).value
     }
 
     private fun getReferenceFromAccountsLedger(publicKey: String): StorageReference? {

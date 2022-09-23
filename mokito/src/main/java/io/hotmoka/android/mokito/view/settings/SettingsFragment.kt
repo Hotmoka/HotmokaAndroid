@@ -8,6 +8,7 @@ import androidx.preference.PreferenceFragmentCompat
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
+import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.view.View
 import io.hotmoka.beans.references.TransactionReference
@@ -47,6 +48,9 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     }
 
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
+    }
+
+    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
     }
 
     override fun onAccountCreated(account: Account) {
