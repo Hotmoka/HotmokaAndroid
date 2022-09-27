@@ -2,6 +2,7 @@ package io.hotmoka.android.mokito.controller
 
 import android.util.Base64
 import android.util.Log
+import androidx.core.util.rangeTo
 import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
@@ -30,6 +31,7 @@ import io.hotmoka.remote.RemoteNodeConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import java.math.BigInteger
 import java.security.KeyPair
 import java.security.PublicKey
@@ -135,17 +137,32 @@ class Controller(private val mvc: MVC) {
     private fun getOwnerTokens(erc20Token: StorageReference, i: Int): OwnerTokens {
         // si modifichi il lato destro della riga seguente in modo da chiamare erc20Token.select(i)
         // ci si ispiri a quanto scritto dentro getErc20Size() più sotto
-        val owner = erc20Token
+        val owner = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                erc20Token, _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "size",
+                    BasicTypes.INT
+                ), erc20Token
+            )
+        ) as StorageReference)
+
+        //dove uso i ?
+
+
 
         // si modifichi il lato destro
         // della riga seguente in modo da chiamare erc20Token.balanceOf(owner)
         // in modo simile a quanto fatto sopra; si noti che il risultato sarà una storage
         // reference di un oggetto in blockchain di tipo UnsignedBigInteger
-        val amount = null
+        //val amount = null
+        val amount = getBalance(owner)
 
         // si modifichi il lato destro della riga seguente in modo da chiamare amount.toBigInteger()
         // in modo simile a quanto fatto sopra
-        val amountAsBigInteger = BigInteger.valueOf(42L)
+        //val amountAsBigInteger = BigInteger.valueOf(42L)
+        val amountAsBigInteger = amount.toBigDecimal().toBigInteger()
+
         return OwnerTokens(owner, amountAsBigInteger)
     }
 
