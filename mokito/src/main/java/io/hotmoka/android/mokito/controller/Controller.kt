@@ -19,6 +19,7 @@ import io.hotmoka.beans.signatures.CodeSignature
 import io.hotmoka.beans.signatures.MethodSignature
 import io.hotmoka.beans.signatures.NonVoidMethodSignature
 import io.hotmoka.beans.types.BasicTypes
+import io.hotmoka.beans.types.ClassType
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.*
 import io.hotmoka.crypto.BIP39Words
@@ -135,32 +136,47 @@ class Controller(private val mvc: MVC) {
      * @return the pair owner/amount
      */
     private fun getOwnerTokens(erc20Token: StorageReference, i: Int): OwnerTokens {
-        // si modifichi il lato destro della riga seguente in modo da chiamare erc20Token.select(i)
-        // ci si ispiri a quanto scritto dentro getErc20Size() più sotto
+        // call owner = erc20Token.select(i)
         val owner = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
                 getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
                     IERC20View,
-                    "owner",
+                    "select",
+                    ClassType.CONTRACT,
                     BasicTypes.INT
-                ), erc20Token
+                ),
+                erc20Token,
+                IntValue(i)
             )
-        ) as StorageReference)   // i ?
+        ) as StorageReference)
 
+        // call amount = erc20Token.balanceOf(owner)
+        // the resulting amount will be an UnsignedBigInteger
+        val amount = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "balanceOf",
+                    ClassType.UNSIGNED_BIG_INTEGER,
+                    ClassType.CONTRACT
+                ),
+                erc20Token,
+                owner
+            )
+        ) as StorageReference)
 
-
-
-        // si modifichi il lato destro
-        // della riga seguente in modo da chiamare erc20Token.balanceOf(owner)
-        // in modo simile a quanto fatto sopra; si noti che il risultato sarà una storage
-        // reference di un oggetto in blockchain di tipo UnsignedBigInteger
-        //val amount = null
-        val amount = getBalance(owner)
-
-        // si modifichi il lato destro della riga seguente in modo da chiamare amount.toBigInteger()
-        // in modo simile a quanto fatto sopra
-        //val amountAsBigInteger = BigInteger.valueOf(42L)
-        val amountAsBigInteger = amount.toBigDecimal().toBigInteger()
+        // call amountAsBigInteger = amount.toBigInteger()
+        // in order to extract the BigInteger inside amount
+        val amountAsBigInteger = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                    ClassType.UNSIGNED_BIG_INTEGER,
+                    "toBigInteger",
+                    ClassType.BIG_INTEGER
+                ),
+                amount
+            )
+        ) as BigIntegerValue).value
 
         return OwnerTokens(owner, amountAsBigInteger)
     }
