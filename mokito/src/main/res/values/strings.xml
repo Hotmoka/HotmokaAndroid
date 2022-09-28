@@ -12,6 +12,7 @@
     <string name="action_reload">Reload</string>
     <string name="action_reload_state_tooltip">Reload this object from the node</string>
     <string name="action_reload_accounts_tooltip">Reload the accounts information from the node</string>
+    <string name="action_reload_token_tooltip">Reload this token from the node</string>
     <string name="menu_accounts">Accounts</string>
     <string name="menu_show_state">Object explorer</string>
     <string name="menu_show_manifest">Manifest</string>

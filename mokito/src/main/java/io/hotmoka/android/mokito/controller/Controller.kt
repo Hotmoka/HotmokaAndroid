@@ -123,7 +123,7 @@ class Controller(private val mvc: MVC) {
         safeRunAsIO {
             ensureConnected()
             val size = getErc20Size(reference)
-            val ownerTokens = Array<OwnerTokens>(size) { i -> getOwnerTokens(reference, i) }
+            val ownerTokens = Array(size) { i -> getOwnerTokens(reference, i) }
             mvc.model.setErc20OwnerTokens(reference, ownerTokens)
         }
     }
