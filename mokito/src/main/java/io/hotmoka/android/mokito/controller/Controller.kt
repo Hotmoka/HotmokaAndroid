@@ -139,15 +139,14 @@ class Controller(private val mvc: MVC) {
         // ci si ispiri a quanto scritto dentro getErc20Size() più sotto
         val owner = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                erc20Token, _100_000, takamakaCode, NonVoidMethodSignature(
+                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
                     IERC20View,
-                    "size",
+                    "owner",
                     BasicTypes.INT
                 ), erc20Token
             )
-        ) as StorageReference)
+        ) as StorageReference)   // i ?
 
-        //dove uso i ?
 
 
 
