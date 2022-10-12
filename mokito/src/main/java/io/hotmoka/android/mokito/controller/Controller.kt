@@ -122,8 +122,10 @@ class Controller(private val mvc: MVC) {
     fun requestOwnerTokensOf(reference: StorageReference) {
         safeRunAsIO {
             ensureConnected()
-            val size = getErc20Size(reference)
-            val ownerTokens = Array(size) { i -> getOwnerTokens(reference, i) }
+            // we operate on a snapshot, to avoid race conditions
+            val snapshot = getERC20SnapshotOf(reference)
+            val size = getErc20Size(snapshot)
+            val ownerTokens = Array(size) { i -> getOwnerTokens(snapshot, i) }
             mvc.model.setErc20OwnerTokens(reference, ownerTokens)
         }
     }
@@ -530,6 +532,21 @@ class Controller(private val mvc: MVC) {
                 reference, _100_000, takamakaCode, MethodSignature.BALANCE, reference
             )
         ) as BigIntegerValue).value
+    }
+
+    private fun getERC20SnapshotOf(reference: StorageReference): StorageReference {
+        // we use the manifest as caller, since the call is free of charge
+        val manifest = getManifestCached()
+
+        return node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                manifest, _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "snapshot",
+                    ClassType(IERC20View)
+                ), reference
+            )
+        ) as StorageReference
     }
 
     private fun getErc20Size(reference: StorageReference): Int {
