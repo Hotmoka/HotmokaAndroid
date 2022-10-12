@@ -2,6 +2,7 @@ package io.hotmoka.android.mokito.view
 
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
+import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.updates.Update
@@ -40,6 +41,14 @@ interface View {
      * @param state the state of {@code reference} that has been changed
      */
     fun onStateChanged(reference: StorageReference, state: Array<Update>)
+
+    /**
+     * Called on the main thread when the state of an ERC20 contract has been changed.
+     *
+     * @param reference the reference to the ERC20 contract
+     * @param state the pairs of owners/amount of tokens contained in the contract
+     */
+    fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>)
 
     /**
      * Called when the set of accounts has changed.

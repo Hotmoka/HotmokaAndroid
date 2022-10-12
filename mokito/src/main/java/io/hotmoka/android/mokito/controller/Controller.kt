@@ -2,12 +2,14 @@ package io.hotmoka.android.mokito.controller
 
 import android.util.Base64
 import android.util.Log
+import androidx.core.util.rangeTo
 import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
+import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.Coin
 import io.hotmoka.beans.references.TransactionReference
@@ -15,11 +17,11 @@ import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.signatures.CodeSignature
 import io.hotmoka.beans.signatures.MethodSignature
+import io.hotmoka.beans.signatures.NonVoidMethodSignature
+import io.hotmoka.beans.types.BasicTypes
+import io.hotmoka.beans.types.ClassType
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.BigIntegerValue
-import io.hotmoka.beans.values.BooleanValue
-import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.beans.values.StringValue
+import io.hotmoka.beans.values.*
 import io.hotmoka.crypto.BIP39Words
 import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.Entropy
@@ -30,6 +32,7 @@ import io.hotmoka.remote.RemoteNodeConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import java.math.BigInteger
 import java.security.KeyPair
 import java.security.PublicKey
@@ -47,6 +50,7 @@ class Controller(private val mvc: MVC) {
         private const val TAG = "Controller"
         @Suppress("ObjectPropertyName")
         private val _100_000 = BigInteger.valueOf(100_000L)
+        private val IERC20View = "io.takamaka.code.tokens.IERC20View";
     }
 
     fun isWorking() : Boolean {
@@ -113,6 +117,70 @@ class Controller(private val mvc: MVC) {
             val state = node.getState(reference)
             mvc.model.setState(reference, state.toArray { arrayOfNulls<Update>(it) })
         }
+    }
+
+    fun requestOwnerTokensOf(reference: StorageReference) {
+        safeRunAsIO {
+            ensureConnected()
+            // we operate on a snapshot, to avoid race conditions
+            val snapshot = getERC20SnapshotOf(reference)
+            val size = getErc20Size(snapshot)
+            val ownerTokens = Array(size) { i -> getOwnerTokens(snapshot, i) }
+            mvc.model.setErc20OwnerTokens(reference, ownerTokens)
+        }
+    }
+
+    /**
+     * Yields the pair owner/amount for the ith owner of the given ERC20 contract.
+     *
+     * @param erc20Token the storage reference of the contract in blockchain
+     * @param the index of the owner (from 0 to token size minus 1)
+     * @return the pair owner/amount
+     */
+    private fun getOwnerTokens(erc20Token: StorageReference, i: Int): OwnerTokens {
+        // call owner = erc20Token.select(i)
+        val owner = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "select",
+                    ClassType.CONTRACT,
+                    BasicTypes.INT
+                ),
+                erc20Token,
+                IntValue(i)
+            )
+        ) as StorageReference)
+
+        // call amount = erc20Token.balanceOf(owner)
+        // the resulting amount will be an UnsignedBigInteger
+        val amount = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "balanceOf",
+                    ClassType.UNSIGNED_BIG_INTEGER,
+                    ClassType.CONTRACT
+                ),
+                erc20Token,
+                owner
+            )
+        ) as StorageReference)
+
+        // call amountAsBigInteger = amount.toBigInteger()
+        // in order to extract the BigInteger inside amount
+        val amountAsBigInteger = (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                    ClassType.UNSIGNED_BIG_INTEGER,
+                    "toBigInteger",
+                    ClassType.BIG_INTEGER
+                ),
+                amount
+            )
+        ) as BigIntegerValue).value
+
+        return OwnerTokens(owner, amountAsBigInteger)
     }
 
     fun requestStateOfManifest() {
@@ -464,6 +532,36 @@ class Controller(private val mvc: MVC) {
                 reference, _100_000, takamakaCode, MethodSignature.BALANCE, reference
             )
         ) as BigIntegerValue).value
+    }
+
+    private fun getERC20SnapshotOf(reference: StorageReference): StorageReference {
+        // we use the manifest as caller, since the call is free of charge
+        val manifest = getManifestCached()
+
+        return node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                manifest, _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "snapshot",
+                    ClassType(IERC20View)
+                ), reference
+            )
+        ) as StorageReference
+    }
+
+    private fun getErc20Size(reference: StorageReference): Int {
+        // we use the manifest as caller, since the call is free of charge
+        val manifest = getManifestCached()
+
+        return (node.runInstanceMethodCallTransaction(
+            InstanceMethodCallTransactionRequest(
+                manifest, _100_000, takamakaCode, NonVoidMethodSignature(
+                    IERC20View,
+                    "size",
+                    BasicTypes.INT
+                ), reference
+            )
+        ) as IntValue).value
     }
 
     private fun getReferenceFromAccountsLedger(publicKey: String): StorageReference? {

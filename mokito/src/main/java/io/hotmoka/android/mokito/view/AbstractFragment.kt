@@ -14,6 +14,7 @@ import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
+import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
@@ -116,6 +117,9 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
+    }
+
+    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
     }
 
     override fun onAccountsChanged(accounts: Accounts) {
