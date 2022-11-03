@@ -9,7 +9,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "it.vero4chain.android.bluewallet"
+        applicationId "it.vero4chain.android.bluewally"
         minSdkVersion 24
         targetSdkVersion 33
         versionCode 5

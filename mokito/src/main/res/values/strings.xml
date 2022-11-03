@@ -1,11 +1,11 @@
 <resources>
     <string name="version">Version 1.5 (Oct 12, 2022)</string>
     <string name="author">Author: fausto.spoto@vero4chain.it</string>
-    <string name="app_name">Bluewallet</string>
+    <string name="app_name">Bluewally</string>
     <string name="default_server">blueknot.vero4chain.it</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Bluewallet</string>
+    <string name="nav_header_title">Bluewally</string>
     <string name="nav_header_subtitle">The Blueknot mobile client</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
