@@ -20,7 +20,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.helpers.AccountCreationHelper
 import java.io.UnsupportedEncodingException
-import java.util.*
+import java.util.EnumMap
 import android.widget.AdapterView
 
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {

@@ -1,9 +1,7 @@
 package io.hotmoka.android.mokito.view.tokens
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.hotmoka.android.mokito.R

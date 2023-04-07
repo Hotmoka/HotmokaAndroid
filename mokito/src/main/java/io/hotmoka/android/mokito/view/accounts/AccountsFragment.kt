@@ -23,7 +23,6 @@ import java.math.BigInteger
 import android.view.MenuInflater
 import androidx.appcompat.widget.PopupMenu
 
-
 class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     private lateinit var adapter: RecyclerAdapter
 

@@ -11,7 +11,7 @@ import io.hotmoka.android.mokito.databinding.FragmentShowOrEditAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.beans.Coin
-import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.api.BIP39Mnemonic
 
 class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBinding>() {
     private lateinit var account: Account
@@ -83,7 +83,7 @@ class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBind
             popBackStack()
     }
 
-    override fun onBip39Available(account: Account, bip39: BIP39Words) {
+    override fun onBip39Available(account: Account, bip39: BIP39Mnemonic) {
         if (account == this.account) {
             binding.words.removeAllViews()
 

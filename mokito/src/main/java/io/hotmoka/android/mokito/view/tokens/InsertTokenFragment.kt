@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import io.hotmoka.android.mokito.databinding.FragmentInsertTokenBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
-import java.lang.IllegalArgumentException
 
 class InsertTokenFragment : AbstractFragment<FragmentInsertTokenBinding>() {
 

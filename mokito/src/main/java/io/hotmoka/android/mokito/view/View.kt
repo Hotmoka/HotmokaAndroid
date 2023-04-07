@@ -4,10 +4,9 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.beans.references.TransactionReference
-import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.api.BIP39Mnemonic
 import java.math.BigInteger
 
 interface View {
@@ -94,7 +93,7 @@ interface View {
      * @param account the account
      * @param bip39 the words computed for {@code account}
      */
-    fun onBip39Available(account: Account, bip39: BIP39Words)
+    fun onBip39Available(account: Account, bip39: BIP39Mnemonic)
 
     /**
      * Called when a QR code scan has been cancelled by the user.

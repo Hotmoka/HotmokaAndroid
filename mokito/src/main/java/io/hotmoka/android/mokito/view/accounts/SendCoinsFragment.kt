@@ -73,11 +73,10 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         if (parts.size != 3)
             notifyUser(getString(R.string.wrong_qr_code_data))
         else {
-            val anonymous: Boolean
-            if (parts[2] == "true")
-                anonymous = true
+            val anonymous: Boolean = if (parts[2] == "true")
+                true
             else if (parts[2] == "false")
-                anonymous = false
+                false
             else {
                 notifyUser(getString(R.string.wrong_qr_code_data))
                 return

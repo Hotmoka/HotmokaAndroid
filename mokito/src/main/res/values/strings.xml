@@ -1,5 +1,5 @@
 <resources>
-    <string name="version">Version 1.5 (Oct 12, 2022)</string>
+    <string name="version">Version 1.6 (April 7, 2023)</string>
     <string name="author">Author: fausto.spoto@vero4chain.it</string>
     <string name="app_name">Bluewally</string>
     <string name="default_server">blueknot.vero4chain.it</string>
