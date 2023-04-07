@@ -2,7 +2,6 @@ package io.hotmoka.android.mokito.controller
 
 import android.util.Base64
 import android.util.Log
-import androidx.core.util.rangeTo
 import androidx.preference.PreferenceManager
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.android.mokito.R
@@ -22,17 +21,16 @@ import io.hotmoka.beans.types.BasicTypes
 import io.hotmoka.beans.types.ClassType
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.*
-import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.BIP39Mnemonics
 import io.hotmoka.crypto.Base58
-import io.hotmoka.crypto.Entropy
-import io.hotmoka.crypto.SignatureAlgorithmForTransactionRequests
+import io.hotmoka.crypto.Entropies
+import io.hotmoka.nodes.SignatureAlgorithmForTransactionRequests
 import io.hotmoka.helpers.AccountCreationHelper
 import io.hotmoka.helpers.SendCoinsHelper
 import io.hotmoka.remote.RemoteNodeConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import java.math.BigInteger
 import java.security.KeyPair
 import java.security.PublicKey
@@ -50,7 +48,7 @@ class Controller(private val mvc: MVC) {
         private const val TAG = "Controller"
         @Suppress("ObjectPropertyName")
         private val _100_000 = BigInteger.valueOf(100_000L)
-        private val IERC20View = "io.takamaka.code.tokens.IERC20View";
+        private const val IERC20View = "io.takamaka.code.tokens.IERC20View"
     }
 
     fun isWorking() : Boolean {
@@ -134,7 +132,7 @@ class Controller(private val mvc: MVC) {
      * Yields the pair owner/amount for the ith owner of the given ERC20 contract.
      *
      * @param erc20Token the storage reference of the contract in blockchain
-     * @param the index of the owner (from 0 to token size minus 1)
+     * @param i the index of the owner (from 0 to token size minus 1)
      * @return the pair owner/amount
      */
     private fun getOwnerTokens(erc20Token: StorageReference, i: Int): OwnerTokens {
@@ -261,7 +259,7 @@ class Controller(private val mvc: MVC) {
 
     fun requestBip39Words(account: Account) {
         safeRunAsIO {
-            val acc = io.hotmoka.crypto.Account(account.entropy, account.reference)
+            val acc = io.hotmoka.nodes.Account(account.entropy, account.reference)
             val bip39 = acc.bip39Words()
 
             mainScope.launch { mvc.view?.onBip39Available(account, bip39) }
@@ -270,11 +268,16 @@ class Controller(private val mvc: MVC) {
 
     fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>, password: String) {
         safeRunAsIO {
-            val acc = BIP39Words.of(mnemonic).toAccount()
+            val acc = BIP39Mnemonics.of(mnemonic).toAccount { entropy, bytes ->
+                io.hotmoka.nodes.Account(
+                    entropy,
+                    bytes
+                )
+            }
             ensureConnected()
-            val balance = getBalance(acc.reference)
+            val balance = getBalance(acc.getReference())
             val keys = acc.keys(password, signatureAlgorithmOfNewAccounts)
-            val importedAccount = Account(acc.reference, name, acc, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
+            val importedAccount = Account(acc.getReference(), name, acc, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
             checkThatRemotePublicKeyMatches(importedAccount)
 
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -287,7 +290,7 @@ class Controller(private val mvc: MVC) {
 
     fun requestNewKeyPair(password: String) {
         safeRunAsIO {
-            val entropy = Entropy()
+            val entropy = Entropies.random()
             val keys = entropy.keys(password, signatureAlgorithmOfNewAccounts)
             val publicKeyBase58 = publicKeyBase58Encoded(keys)
             val publicKeyBase64 = publicKeyBase64Encoded(keys)
@@ -479,7 +482,7 @@ class Controller(private val mvc: MVC) {
     private fun createNewAccount(creator: (PublicKey) -> StorageReference, name: String, password: String, balance: BigInteger) {
         safeRunAsIO {
             ensureConnected()
-            val entropy = Entropy()
+            val entropy = Entropies.random()
             val keys = entropy.keys(password, signatureAlgorithmOfNewAccounts)
 
             // create an account with the public key

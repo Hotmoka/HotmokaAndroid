@@ -14,7 +14,7 @@ import io.hotmoka.android.mokito.view.View
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.api.BIP39Mnemonic
 import java.math.BigInteger
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, View {
@@ -72,7 +72,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onAccountsChanged(accounts: Accounts) {
     }
 
-    override fun onBip39Available(account: Account, bip39: BIP39Words) {
+    override fun onBip39Available(account: Account, bip39: BIP39Mnemonic) {
     }
 
     override fun onQRScanCancelled() {

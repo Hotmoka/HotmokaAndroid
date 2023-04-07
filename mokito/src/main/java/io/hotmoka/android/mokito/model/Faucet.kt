@@ -3,7 +3,7 @@ package io.hotmoka.android.mokito.model
 import android.os.Parcel
 import io.hotmoka.beans.Coin
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.crypto.Entropy
+import io.hotmoka.crypto.Entropies
 import org.xmlpull.v1.XmlSerializer
 import java.math.BigInteger
 
@@ -11,7 +11,7 @@ class Faucet: Account {
     val maxFaucet: BigInteger
 
     constructor(reference: StorageReference, maxFaucet: BigInteger, balance: BigInteger, accessible: Boolean):
-            super(reference, "Faucet", Entropy(ByteArray(16)),"", balance, accessible, Coin.MOKA) {
+            super(reference, "Faucet", Entropies.of(ByteArray(16)),"", balance, accessible, Coin.MOKA) {
         this.maxFaucet = maxFaucet
     }
 

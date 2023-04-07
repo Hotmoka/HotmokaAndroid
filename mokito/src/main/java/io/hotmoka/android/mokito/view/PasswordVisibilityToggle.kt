@@ -1,13 +1,10 @@
 package io.hotmoka.android.mokito.view
 
-import android.app.Activity
 import android.content.Context
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
 import io.hotmoka.android.mokito.R
 
 class PasswordVisibilityToggle constructor(

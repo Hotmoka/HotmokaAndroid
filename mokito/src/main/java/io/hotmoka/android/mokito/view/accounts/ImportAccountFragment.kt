@@ -9,7 +9,7 @@ import android.widget.AutoCompleteTextView
 import io.hotmoka.android.mokito.databinding.FragmentImportAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.crypto.BIP39Dictionary
+import io.hotmoka.crypto.BIP39Dictionaries
 
 class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
     private lateinit var viewsForWord: Array<AutoCompleteTextView>
@@ -28,7 +28,7 @@ class ImportAccountFragment : AbstractFragment<FragmentImportAccountBinding>() {
             binding.word29, binding.word30, binding.word31, binding.word32,
             binding.word33, binding.word34, binding.word35, binding.word36
         )
-        val allWords: Array<String> = BIP39Dictionary.ENGLISH_DICTIONARY.allWords.toArray { i -> arrayOfNulls(i) }
+        val allWords: Array<String> = BIP39Dictionaries.ENGLISH_DICTIONARY.allWords.toArray { i -> arrayOfNulls(i) }
         val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, allWords)
 
         for (viewForWord in viewsForWord)

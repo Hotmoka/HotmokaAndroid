@@ -4,12 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import io.hotmoka.beans.Coin
-import io.hotmoka.beans.TransactionException
-import io.hotmoka.beans.TransactionRejectedException
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.crypto.Entropy
+import io.hotmoka.crypto.Entropies
+import io.hotmoka.crypto.api.Entropy
 import org.bouncycastle.util.encoders.Hex
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -68,7 +67,7 @@ open class Account: Comparable<Account>, Parcelable {
     constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
-        this.entropy = Entropy(entropy.entropy)
+        this.entropy = Entropies.of(entropy.entropy)
         this.publicKey = publicKey
         this.balance = balance
         this.isAccessible = accessible
@@ -150,7 +149,7 @@ open class Account: Comparable<Account>, Parcelable {
         this.publicKey = parcel.readString()!!
         val entropy = ByteArray(parcel.readInt())
         parcel.readByteArray(entropy)
-        this.entropy = Entropy(entropy)
+        this.entropy = Entropies.of(entropy)
         this.coin = Coin.valueOf(parcel.readString()!!)
     }
 
@@ -250,7 +249,7 @@ open class Account: Comparable<Account>, Parcelable {
         parser.require(XmlPullParser.START_TAG, null, "entropy")
         val entropy = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "entropy")
-        return Entropy(Hex.decode(entropy))
+        return Entropies.of(Hex.decode(entropy))
     }
 
     @Throws(IOException::class, XmlPullParserException::class)

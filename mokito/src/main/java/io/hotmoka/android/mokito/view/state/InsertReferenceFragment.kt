@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import io.hotmoka.android.mokito.databinding.FragmentInsertReferenceBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections.toShowState
-import java.lang.IllegalArgumentException
 
 /**
  * A fragment used to insert the storage reference of an object

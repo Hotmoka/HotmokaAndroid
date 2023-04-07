@@ -1,7 +1,6 @@
 package io.hotmoka.android.remote
 
 import android.util.Log
-import io.hotmoka.beans.InternalFailureException
 import io.hotmoka.beans.nodes.NodeInfo
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.*
@@ -164,7 +163,7 @@ class AndroidRemoteNode : Node {
         node?.let {
             val result = task(it)
             if (result == null)
-                throw InternalFailureException("unexpected null result")
+                throw RuntimeException("unexpected null result")
             else {
                 Log.d(TAG, "$name => success")
                 return result

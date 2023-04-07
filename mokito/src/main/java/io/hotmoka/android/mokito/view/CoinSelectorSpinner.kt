@@ -6,7 +6,6 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import io.hotmoka.android.mokito.R
 import io.hotmoka.beans.Coin
-import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.math.BigInteger
 

@@ -18,7 +18,7 @@ import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.crypto.BIP39Words
+import io.hotmoka.crypto.api.BIP39Mnemonic
 import io.hotmoka.crypto.Base58
 import java.math.BigInteger
 
@@ -119,13 +119,13 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
     }
 
-    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
+    override fun onErc20Changed(reference: StorageReference, ownerTokens: Array<OwnerTokens>) {
     }
 
     override fun onAccountsChanged(accounts: Accounts) {
     }
 
-    override fun onBip39Available(account: Account, bip39: BIP39Words) {
+    override fun onBip39Available(account: Account, bip39: BIP39Mnemonic) {
     }
 
     override fun onAccountCreated(account: Account) {
