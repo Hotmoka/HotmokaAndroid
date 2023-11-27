@@ -63,10 +63,10 @@ class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
             onErc20Changed(reference, ownerTokens)
     }
 
-    override fun onErc20Changed(reference: StorageReference, ownerTokens: Array<OwnerTokens>) {
+    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
         if (reference == this.reference) {
             setSubtitle(reference.toString())
-            adapter.setOwnerTokens(ownerTokens)
+            adapter.setOwnerTokens(state)
         }
     }
 
