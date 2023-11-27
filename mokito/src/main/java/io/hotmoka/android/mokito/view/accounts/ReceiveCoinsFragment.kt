@@ -18,10 +18,10 @@ import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentReceiveCoinsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.helpers.AccountCreationHelper
 import java.io.UnsupportedEncodingException
 import java.util.EnumMap
 import android.widget.AdapterView
+import io.hotmoka.helpers.internal.AccountCreationHelperImpl
 
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     private lateinit var receiver: Account
@@ -42,7 +42,7 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
         if (receiver.isKey())
             binding.anonymousDescription.text = getString(
                 R.string.anonymous_description,
-                AccountCreationHelper.EXTRA_GAS_FOR_ANONYMOUS
+                AccountCreationHelperImpl.EXTRA_GAS_FOR_ANONYMOUS
             )
         else {
             binding.anonymousDescription.visibility = View.GONE

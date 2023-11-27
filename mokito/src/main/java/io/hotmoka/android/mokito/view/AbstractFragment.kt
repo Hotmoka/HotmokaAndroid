@@ -119,7 +119,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
     }
 
-    override fun onErc20Changed(reference: StorageReference, ownerTokens: Array<OwnerTokens>) {
+    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
     }
 
     override fun onAccountsChanged(accounts: Accounts) {

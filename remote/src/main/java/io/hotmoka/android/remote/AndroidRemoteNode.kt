@@ -9,10 +9,10 @@ import io.hotmoka.beans.updates.ClassTag
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.StorageReference
 import io.hotmoka.beans.values.StorageValue
-import io.hotmoka.nodes.Node
-import io.hotmoka.nodes.Node.CodeSupplier
-import io.hotmoka.nodes.Node.Subscription
-import io.hotmoka.nodes.Node.JarSupplier
+import io.hotmoka.node.api.Node
+import io.hotmoka.node.api.CodeSupplier
+import io.hotmoka.node.api.Subscription
+import io.hotmoka.node.api.JarSupplier
 import io.hotmoka.remote.RemoteNode
 import io.hotmoka.remote.RemoteNodeConfig
 import java.util.function.BiConsumer
