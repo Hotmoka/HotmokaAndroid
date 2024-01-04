@@ -1,7 +1,7 @@
 package io.hotmoka.android.remote
 
 import android.util.Log
-import io.hotmoka.beans.nodes.NodeInfo
+import io.hotmoka.beans.api.NodeInfo
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.*
 import io.hotmoka.beans.responses.TransactionResponse
@@ -13,8 +13,9 @@ import io.hotmoka.node.api.Node
 import io.hotmoka.node.api.CodeSupplier
 import io.hotmoka.node.api.Subscription
 import io.hotmoka.node.api.JarSupplier
-import io.hotmoka.remote.RemoteNode
-import io.hotmoka.remote.RemoteNodeConfig
+import io.hotmoka.node.remote.RemoteNodes
+import io.hotmoka.node.remote.api.RemoteNode
+import io.hotmoka.node.remote.api.RemoteNodeConfig
 import java.util.function.BiConsumer
 import java.util.stream.Stream
 
@@ -30,7 +31,7 @@ class AndroidRemoteNode : Node {
 
     fun connect(config: RemoteNodeConfig) {
         this.config = config
-        with (RemoteNode.of(config)) {
+        with (RemoteNodes.of(config)) {
             this@AndroidRemoteNode.node = this
             Log.d(TAG, "connected to ${config.url} through a ${this::class.simpleName}")
         }

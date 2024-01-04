@@ -11,6 +11,7 @@ import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.remote.AndroidRemoteNode
 import io.hotmoka.beans.Coin
+import io.hotmoka.beans.StorageTypes
 import io.hotmoka.beans.references.LocalTransactionReference
 import io.hotmoka.beans.references.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
@@ -18,8 +19,6 @@ import io.hotmoka.beans.requests.TransactionRequest
 import io.hotmoka.beans.signatures.CodeSignature
 import io.hotmoka.beans.signatures.MethodSignature
 import io.hotmoka.beans.signatures.NonVoidMethodSignature
-import io.hotmoka.beans.types.BasicTypes
-import io.hotmoka.beans.types.ClassType
 import io.hotmoka.beans.updates.Update
 import io.hotmoka.beans.values.*
 import io.hotmoka.crypto.BIP39Mnemonics
@@ -29,7 +28,7 @@ import io.hotmoka.crypto.HashingAlgorithms
 import io.hotmoka.crypto.SignatureAlgorithms
 import io.hotmoka.helpers.AccountCreationHelpers
 import io.hotmoka.helpers.SendCoinsHelpers
-import io.hotmoka.remote.RemoteNodeConfig
+import io.hotmoka.node.remote.RemoteNodeConfigBuilders
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,9 +80,9 @@ class Controller(private val mvc: MVC) {
         if (url!!.startsWith("http://"))
             url = url.substring("http://".length)
 
-        val config = RemoteNodeConfig.Builder()
+        val config = RemoteNodeConfigBuilders.defaults()
             .setURL(url)
-            .setWebSockets(sharedPreferences.getBoolean("webSockets", false))
+            .usesWebSockets(sharedPreferences.getBoolean("webSockets", false))
             .build()
 
         try {
@@ -144,8 +143,8 @@ class Controller(private val mvc: MVC) {
                 getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
                     IERC20View,
                     "select",
-                    ClassType.CONTRACT,
-                    BasicTypes.INT
+                    StorageTypes.CONTRACT,
+                    StorageTypes.INT
                 ),
                 erc20Token,
                 IntValue(i)
@@ -159,8 +158,8 @@ class Controller(private val mvc: MVC) {
                 getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
                     IERC20View,
                     "balanceOf",
-                    ClassType.UNSIGNED_BIG_INTEGER,
-                    ClassType.CONTRACT
+                    StorageTypes.UNSIGNED_BIG_INTEGER,
+                    StorageTypes.CONTRACT
                 ),
                 erc20Token,
                 owner
@@ -172,9 +171,9 @@ class Controller(private val mvc: MVC) {
         val amountAsBigInteger = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
                 getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
-                    ClassType.UNSIGNED_BIG_INTEGER,
+                    StorageTypes.UNSIGNED_BIG_INTEGER,
                     "toBigInteger",
-                    ClassType.BIG_INTEGER
+                    StorageTypes.BIG_INTEGER
                 ),
                 amount
             )
@@ -549,7 +548,7 @@ class Controller(private val mvc: MVC) {
                 manifest, _100_000, takamakaCode, NonVoidMethodSignature(
                     IERC20View,
                     "snapshot",
-                    ClassType(IERC20View)
+                    StorageTypes.classNamed(IERC20View)
                 ), reference
             )
         ) as StorageReference
@@ -564,7 +563,7 @@ class Controller(private val mvc: MVC) {
                 manifest, _100_000, takamakaCode, NonVoidMethodSignature(
                     IERC20View,
                     "size",
-                    BasicTypes.INT
+                    StorageTypes.INT
                 ), reference
             )
         ) as IntValue).value
