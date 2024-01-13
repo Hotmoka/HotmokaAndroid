@@ -67,7 +67,7 @@ open class Account: Comparable<Account>, Parcelable {
     constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
-        this.entropy = Entropies.of(entropy.entropy)
+        this.entropy = Entropies.copy(entropy)
         this.publicKey = publicKey
         this.balance = balance
         this.isAccessible = accessible
@@ -185,7 +185,7 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeByte(if (isAccessible) 1.toByte() else 0.toByte())
         out.writeString(publicKey)
         out.writeInt(entropy.length())
-        out.writeByteArray(entropy.entropy)
+        out.writeByteArray(entropy.entropyAsBytes)
         out.writeString(coin.name)
     }
 
