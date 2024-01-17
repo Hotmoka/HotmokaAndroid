@@ -3,7 +3,7 @@ package io.hotmoka.android.mokito.model
 import android.util.Log
 import io.hotmoka.android.mokito.MVC
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.api.values.StorageReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

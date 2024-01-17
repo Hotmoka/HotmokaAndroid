@@ -9,7 +9,7 @@ import io.hotmoka.android.mokito.databinding.FragmentShowTokenBinding
 import io.hotmoka.android.mokito.databinding.TokenOwnerCardBinding
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.api.values.StorageReference
 
 /**
  * A fragment used to show the state of an ERC20 token in the store of the Hotmoka node.

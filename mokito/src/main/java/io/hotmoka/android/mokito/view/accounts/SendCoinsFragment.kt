@@ -10,11 +10,11 @@ import io.hotmoka.android.mokito.databinding.FragmentSendCoinsBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.Coin
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.helpers.Coin
+import io.hotmoka.beans.api.values.StorageReference
 import java.math.BigInteger
 import io.hotmoka.android.mokito.view.accounts.SendCoinsFragmentDirections.*
-import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.api.transactions.TransactionReference
 import io.hotmoka.helpers.api.AccountCreationHelper
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {

@@ -17,7 +17,7 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.accounts.AccountsFragmentDirections.*
-import io.hotmoka.beans.Coin
+import io.hotmoka.helpers.Coin
 import java.math.BigDecimal
 import java.math.BigInteger
 import android.view.MenuInflater

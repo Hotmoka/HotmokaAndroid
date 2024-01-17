@@ -1,20 +1,19 @@
 package io.hotmoka.android.remote
 
 import android.util.Log
-import io.hotmoka.beans.api.NodeInfo
-import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.api.nodes.NodeInfo
+import io.hotmoka.beans.api.transactions.TransactionReference
 import io.hotmoka.beans.requests.*
 import io.hotmoka.beans.responses.TransactionResponse
 import io.hotmoka.beans.updates.ClassTag
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.StorageReference
-import io.hotmoka.beans.values.StorageValue
+import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.beans.api.values.StorageValue
 import io.hotmoka.node.api.Node
 import io.hotmoka.node.api.CodeSupplier
 import io.hotmoka.node.api.Subscription
 import io.hotmoka.node.api.JarSupplier
 import io.hotmoka.node.remote.RemoteNodes
-import io.hotmoka.node.remote.api.RemoteNode
 import io.hotmoka.node.remote.api.RemoteNodeConfig
 import java.util.function.BiConsumer
 import java.util.stream.Stream

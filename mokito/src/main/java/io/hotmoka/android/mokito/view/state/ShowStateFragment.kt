@@ -14,7 +14,7 @@ import io.hotmoka.android.mokito.databinding.UpdateCardBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.state.ShowStateFragmentDirections.toShowState
 import io.hotmoka.beans.updates.*
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.api.values.StorageReference
 
 /**
  * A fragment used to show the state of an object in the store of the Hotmoka node.

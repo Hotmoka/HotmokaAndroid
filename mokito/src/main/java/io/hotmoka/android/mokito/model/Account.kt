@@ -3,10 +3,11 @@ package io.hotmoka.android.mokito.model
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
-import io.hotmoka.beans.Coin
-import io.hotmoka.beans.references.LocalTransactionReference
-import io.hotmoka.beans.references.TransactionReference
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.StorageValues
+import io.hotmoka.beans.TransactionReferences
+import io.hotmoka.helpers.Coin
+import io.hotmoka.beans.api.transactions.TransactionReference
+import io.hotmoka.beans.api.values.StorageReference
 import io.hotmoka.crypto.Entropies
 import io.hotmoka.crypto.api.Entropy
 import org.bouncycastle.util.encoders.Hex
@@ -276,7 +277,7 @@ open class Account: Comparable<Account>, Parcelable {
         if (progressive == null)
             throw IllegalStateException("missing name tag in account")
 
-        return StorageReference(transaction, progressive)
+        return StorageValues.reference(transaction, progressive)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -284,7 +285,7 @@ open class Account: Comparable<Account>, Parcelable {
         parser.require(XmlPullParser.START_TAG, null, "transaction")
         val transaction = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "transaction")
-        return LocalTransactionReference(transaction)
+        return TransactionReferences.of(transaction)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -325,7 +326,7 @@ open class Account: Comparable<Account>, Parcelable {
         reference?.let {
             serializer.startTag(null, "reference")
             serializer.startTag(null, "transaction")
-            serializer.text(Hex.toHexString(reference.transaction.hashAsBytes))
+            serializer.text(Hex.toHexString(reference.transaction.hash))
             serializer.endTag(null, "transaction")
             serializer.startTag(null, "progressive")
             serializer.text(reference.progressive.toString())

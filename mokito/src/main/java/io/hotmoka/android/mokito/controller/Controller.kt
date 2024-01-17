@@ -10,17 +10,16 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.remote.AndroidRemoteNode
-import io.hotmoka.beans.Coin
+import io.hotmoka.beans.MethodSignatures
+import io.hotmoka.helpers.Coin
 import io.hotmoka.beans.StorageTypes
-import io.hotmoka.beans.references.LocalTransactionReference
-import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.StorageValues
+import io.hotmoka.beans.TransactionReferences
+import io.hotmoka.beans.api.transactions.TransactionReference
 import io.hotmoka.beans.requests.InstanceMethodCallTransactionRequest
 import io.hotmoka.beans.requests.TransactionRequest
-import io.hotmoka.beans.signatures.CodeSignature
-import io.hotmoka.beans.signatures.MethodSignature
-import io.hotmoka.beans.signatures.NonVoidMethodSignature
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.*
+import io.hotmoka.beans.api.values.*;
 import io.hotmoka.crypto.BIP39Mnemonics
 import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.Entropies
@@ -140,14 +139,14 @@ class Controller(private val mvc: MVC) {
         // call owner = erc20Token.select(i)
         val owner = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                getManifestCached(), _100_000, takamakaCode, MethodSignatures.of(
                     IERC20View,
                     "select",
                     StorageTypes.CONTRACT,
                     StorageTypes.INT
                 ),
                 erc20Token,
-                IntValue(i)
+                StorageValues.intOf(i)
             )
         ) as StorageReference)
 
@@ -155,7 +154,7 @@ class Controller(private val mvc: MVC) {
         // the resulting amount will be an UnsignedBigInteger
         val amount = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                getManifestCached(), _100_000, takamakaCode, MethodSignatures.of(
                     IERC20View,
                     "balanceOf",
                     StorageTypes.UNSIGNED_BIG_INTEGER,
@@ -170,7 +169,7 @@ class Controller(private val mvc: MVC) {
         // in order to extract the BigInteger inside amount
         val amountAsBigInteger = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                getManifestCached(), _100_000, takamakaCode, NonVoidMethodSignature(
+                getManifestCached(), _100_000, takamakaCode, MethodSignatures.of(
                     StorageTypes.UNSIGNED_BIG_INTEGER,
                     "toBigInteger",
                     StorageTypes.BIG_INTEGER
@@ -347,7 +346,7 @@ class Controller(private val mvc: MVC) {
     private fun toTransactions(requests: Array<TransactionRequest<*>>?): List<TransactionReference> {
         val hasher = HashingAlgorithms.sha256().getHasher(TransactionRequest<*>::toByteArray)
         requests?.let {
-            return it.map { request -> LocalTransactionReference(hasher.hash(request)) }
+            return it.map { request -> TransactionReferences.of(hasher.hash(request)) }
         }
 
         return emptyList()
@@ -515,7 +514,7 @@ class Controller(private val mvc: MVC) {
     private fun getFaucet(): StorageReference? {
         val manifest = getManifestCached()
         val hasFaucet = (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, _100_000, takamakaCode, MethodSignature.ALLOWS_UNSIGNED_FAUCET, manifest
+            manifest, _100_000, takamakaCode, MethodSignatures.ALLOWS_UNSIGNED_FAUCET, manifest
         )) as BooleanValue).value
 
         return if (hasFaucet)
@@ -527,14 +526,14 @@ class Controller(private val mvc: MVC) {
     private fun getMaxFaucet(): BigInteger {
         val manifest = getManifestCached()
         return (node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, _100_000, takamakaCode, MethodSignature.GET_MAX_FAUCET, getGameteCached()
+            manifest, _100_000, takamakaCode, MethodSignatures.GET_MAX_FAUCET, getGameteCached()
         )) as BigIntegerValue).value
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
         return (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                reference, _100_000, takamakaCode, MethodSignature.BALANCE, reference
+                reference, _100_000, takamakaCode, MethodSignatures.BALANCE, reference
             )
         ) as BigIntegerValue).value
     }
@@ -545,7 +544,7 @@ class Controller(private val mvc: MVC) {
 
         return node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                manifest, _100_000, takamakaCode, NonVoidMethodSignature(
+                manifest, _100_000, takamakaCode, MethodSignatures.of(
                     IERC20View,
                     "snapshot",
                     StorageTypes.classNamed(IERC20View)
@@ -560,7 +559,7 @@ class Controller(private val mvc: MVC) {
 
         return (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                manifest, _100_000, takamakaCode, NonVoidMethodSignature(
+                manifest, _100_000, takamakaCode, MethodSignatures.of(
                     IERC20View,
                     "size",
                     StorageTypes.INT
@@ -576,9 +575,9 @@ class Controller(private val mvc: MVC) {
         val result = (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
                 manifest, _100_000, takamakaCode,
-                CodeSignature.GET_FROM_ACCOUNTS_LEDGER,
+                MethodSignatures.GET_FROM_ACCOUNTS_LEDGER,
                 ledger,
-                StringValue(publicKey)
+                StorageValues.stringOf(publicKey)
             )
         ))
 
@@ -591,7 +590,7 @@ class Controller(private val mvc: MVC) {
     private fun getPublicKey(reference: StorageReference): String {
         return (node.runInstanceMethodCallTransaction(
             InstanceMethodCallTransactionRequest(
-                reference, _100_000, takamakaCode, MethodSignature.PUBLIC_KEY, reference
+                reference, _100_000, takamakaCode, MethodSignatures.PUBLIC_KEY, reference
             )
         ) as StringValue).value
     }
@@ -633,7 +632,7 @@ class Controller(private val mvc: MVC) {
 
         val manifest = getManifestCached()
         val gamete = node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, _100_000, takamakaCode, MethodSignature.GET_GAMETE, manifest
+            manifest, _100_000, takamakaCode, MethodSignatures.GET_GAMETE, manifest
         )) as StorageReference
 
         mvc.model.setGamete(gamete)
@@ -647,7 +646,7 @@ class Controller(private val mvc: MVC) {
 
         val manifest = getManifestCached()
         val accountsLedger = node.runInstanceMethodCallTransaction(InstanceMethodCallTransactionRequest(
-            manifest, _100_000, takamakaCode, MethodSignature.GET_ACCOUNTS_LEDGER, manifest
+            manifest, _100_000, takamakaCode, MethodSignatures.GET_ACCOUNTS_LEDGER, manifest
         )) as StorageReference
 
         mvc.model.setAccountsLedger(accountsLedger)

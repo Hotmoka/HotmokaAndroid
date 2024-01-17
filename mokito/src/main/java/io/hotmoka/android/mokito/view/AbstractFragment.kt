@@ -15,9 +15,10 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.android.mokito.model.OwnerTokens
-import io.hotmoka.beans.references.TransactionReference
+import io.hotmoka.beans.StorageValues
+import io.hotmoka.beans.api.transactions.TransactionReference
 import io.hotmoka.beans.updates.Update
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.api.values.StorageReference
 import io.hotmoka.crypto.api.BIP39Mnemonic
 import io.hotmoka.crypto.Base58
 import java.math.BigInteger
@@ -106,7 +107,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
      */
     protected fun validateStorageReference(s: String): StorageReference {
         try {
-            return StorageReference(s)
+            return StorageValues.reference(s)
         }
         catch (t: Throwable) {
             throw IllegalArgumentException(getString(R.string.storage_reference_constraints))
