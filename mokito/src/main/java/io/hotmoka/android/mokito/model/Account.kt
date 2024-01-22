@@ -3,10 +3,11 @@ package io.hotmoka.android.mokito.model
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
-import io.hotmoka.beans.Coin
-import io.hotmoka.beans.references.LocalTransactionReference
-import io.hotmoka.beans.references.TransactionReference
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.StorageValues
+import io.hotmoka.beans.TransactionReferences
+import io.hotmoka.helpers.Coin
+import io.hotmoka.beans.api.transactions.TransactionReference
+import io.hotmoka.beans.api.values.StorageReference
 import io.hotmoka.crypto.Entropies
 import io.hotmoka.crypto.api.Entropy
 import org.bouncycastle.util.encoders.Hex
@@ -67,7 +68,7 @@ open class Account: Comparable<Account>, Parcelable {
     constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
-        this.entropy = Entropies.of(entropy.entropy)
+        this.entropy = Entropies.copy(entropy)
         this.publicKey = publicKey
         this.balance = balance
         this.isAccessible = accessible
@@ -185,7 +186,7 @@ open class Account: Comparable<Account>, Parcelable {
         out.writeByte(if (isAccessible) 1.toByte() else 0.toByte())
         out.writeString(publicKey)
         out.writeInt(entropy.length())
-        out.writeByteArray(entropy.entropy)
+        out.writeByteArray(entropy.entropyAsBytes)
         out.writeString(coin.name)
     }
 
@@ -276,7 +277,7 @@ open class Account: Comparable<Account>, Parcelable {
         if (progressive == null)
             throw IllegalStateException("missing name tag in account")
 
-        return StorageReference(transaction, progressive)
+        return StorageValues.reference(transaction, progressive)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -284,7 +285,7 @@ open class Account: Comparable<Account>, Parcelable {
         parser.require(XmlPullParser.START_TAG, null, "transaction")
         val transaction = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "transaction")
-        return LocalTransactionReference(transaction)
+        return TransactionReferences.of(transaction)
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -325,7 +326,7 @@ open class Account: Comparable<Account>, Parcelable {
         reference?.let {
             serializer.startTag(null, "reference")
             serializer.startTag(null, "transaction")
-            serializer.text(Hex.toHexString(reference.transaction.hashAsBytes))
+            serializer.text(Hex.toHexString(reference.transaction.hash))
             serializer.endTag(null, "transaction")
             serializer.startTag(null, "progressive")
             serializer.text(reference.progressive.toString())

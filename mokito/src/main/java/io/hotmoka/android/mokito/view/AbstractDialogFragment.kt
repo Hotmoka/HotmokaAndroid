@@ -6,7 +6,8 @@ import androidx.fragment.app.DialogFragment
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Model
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.beans.StorageValues
+import io.hotmoka.beans.api.values.StorageReference
 
 abstract class AbstractDialogFragment: DialogFragment() {
 
@@ -35,7 +36,7 @@ abstract class AbstractDialogFragment: DialogFragment() {
      */
     protected fun validateStorageReference(s: String): StorageReference {
         try {
-            return StorageReference(s)
+            return StorageValues.reference(s)
         }
         catch (t: Throwable) {
             throw IllegalArgumentException(getString(R.string.storage_reference_constraints))

@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import io.hotmoka.android.mokito.R
-import io.hotmoka.beans.Coin
+import io.hotmoka.helpers.Coin
 import java.math.BigDecimal
 import java.math.BigInteger
 

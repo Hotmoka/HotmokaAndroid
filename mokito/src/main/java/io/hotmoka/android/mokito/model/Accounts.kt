@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import android.util.Xml
 import io.hotmoka.android.mokito.MVC
-import io.hotmoka.beans.TransactionRejectedException
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.node.api.TransactionRejectedException
+import io.hotmoka.beans.api.values.StorageReference
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.FileNotFoundException

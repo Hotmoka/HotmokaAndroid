@@ -1,8 +1,8 @@
 package io.hotmoka.android.mokito.model
 
 import android.os.Parcel
-import io.hotmoka.beans.Coin
-import io.hotmoka.beans.values.StorageReference
+import io.hotmoka.helpers.Coin
+import io.hotmoka.beans.api.values.StorageReference
 import io.hotmoka.crypto.Entropies
 import org.xmlpull.v1.XmlSerializer
 import java.math.BigInteger

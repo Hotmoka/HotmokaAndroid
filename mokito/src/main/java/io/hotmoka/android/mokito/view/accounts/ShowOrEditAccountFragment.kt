@@ -10,7 +10,7 @@ import android.widget.TextView
 import io.hotmoka.android.mokito.databinding.FragmentShowOrEditAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.Coin
+import io.hotmoka.helpers.Coin
 import io.hotmoka.crypto.api.BIP39Mnemonic
 
 class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBinding>() {

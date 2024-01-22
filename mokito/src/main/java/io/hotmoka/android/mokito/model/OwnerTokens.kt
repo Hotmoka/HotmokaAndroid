@@ -2,7 +2,7 @@ package io.hotmoka.android.mokito.model;
 
 import java.math.BigInteger;
 
-import io.hotmoka.beans.values.StorageReference;
+import io.hotmoka.beans.api.values.StorageReference;
 
 class OwnerTokens { //cosa fa: dichiara reference e amount, che sono le cose che voglio estrapolare e mettere nelle cards
     val reference: StorageReference
