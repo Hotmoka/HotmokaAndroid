@@ -13,7 +13,7 @@ import io.hotmoka.android.mokito.databinding.FragmentShowStateBinding
 import io.hotmoka.android.mokito.databinding.UpdateCardBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.state.ShowStateFragmentDirections.toShowState
-import io.hotmoka.beans.updates.*
+import io.hotmoka.beans.api.updates.*
 import io.hotmoka.beans.api.values.StorageReference
 
 /**

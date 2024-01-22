@@ -3,10 +3,10 @@ package io.hotmoka.android.remote
 import android.util.Log
 import io.hotmoka.beans.api.nodes.NodeInfo
 import io.hotmoka.beans.api.transactions.TransactionReference
-import io.hotmoka.beans.requests.*
-import io.hotmoka.beans.responses.TransactionResponse
-import io.hotmoka.beans.updates.ClassTag
-import io.hotmoka.beans.updates.Update
+import io.hotmoka.beans.api.requests.*
+import io.hotmoka.beans.api.responses.TransactionResponse
+import io.hotmoka.beans.api.updates.ClassTag
+import io.hotmoka.beans.api.updates.Update
 import io.hotmoka.beans.api.values.StorageReference
 import io.hotmoka.beans.api.values.StorageValue
 import io.hotmoka.node.api.Node

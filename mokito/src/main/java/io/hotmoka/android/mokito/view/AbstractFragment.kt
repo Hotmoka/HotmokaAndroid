@@ -17,7 +17,7 @@ import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.beans.StorageValues
 import io.hotmoka.beans.api.transactions.TransactionReference
-import io.hotmoka.beans.updates.Update
+import io.hotmoka.beans.api.updates.Update
 import io.hotmoka.beans.api.values.StorageReference
 import io.hotmoka.crypto.api.BIP39Mnemonic
 import io.hotmoka.crypto.Base58

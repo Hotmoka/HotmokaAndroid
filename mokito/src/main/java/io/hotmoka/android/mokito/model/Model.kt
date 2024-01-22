@@ -2,7 +2,7 @@ package io.hotmoka.android.mokito.model
 
 import android.util.Log
 import io.hotmoka.android.mokito.MVC
-import io.hotmoka.beans.updates.Update
+import io.hotmoka.beans.api.updates.Update
 import io.hotmoka.beans.api.values.StorageReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -143,7 +143,7 @@ class Model(private val mvc: MVC) {
      * Puts in cache the state of the given object.
      *
      * @param reference the reference of the object
-     * @param state the state of the object
+     * @param ownerTokens the owner/amount pairs of {@code reference}
      */
     fun setErc20OwnerTokens(reference: StorageReference, ownerTokens: Array<OwnerTokens>) {
         erc20OwnerTokens[reference] = ownerTokens
