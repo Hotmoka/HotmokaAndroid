@@ -6,8 +6,8 @@ import androidx.fragment.app.DialogFragment
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Model
-import io.hotmoka.beans.StorageValues
-import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.node.StorageValues
+import io.hotmoka.node.api.values.StorageReference
 
 abstract class AbstractDialogFragment: DialogFragment() {
 

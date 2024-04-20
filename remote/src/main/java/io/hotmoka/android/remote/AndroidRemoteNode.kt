@@ -1,45 +1,61 @@
 package io.hotmoka.android.remote
 
 import android.util.Log
-import io.hotmoka.beans.api.nodes.NodeInfo
-import io.hotmoka.beans.api.transactions.TransactionReference
-import io.hotmoka.beans.api.requests.*
-import io.hotmoka.beans.api.responses.TransactionResponse
-import io.hotmoka.beans.api.updates.ClassTag
-import io.hotmoka.beans.api.updates.Update
-import io.hotmoka.beans.api.values.StorageReference
-import io.hotmoka.beans.api.values.StorageValue
+import io.hotmoka.closeables.CloseHandlersManagers
+import io.hotmoka.closeables.api.OnCloseHandler
+import io.hotmoka.node.api.nodes.NodeInfo
+import io.hotmoka.node.api.transactions.TransactionReference
+import io.hotmoka.node.api.requests.*
+import io.hotmoka.node.api.responses.TransactionResponse
+import io.hotmoka.node.api.updates.ClassTag
+import io.hotmoka.node.api.updates.Update
+import io.hotmoka.node.api.values.StorageReference
+import io.hotmoka.node.api.values.StorageValue
 import io.hotmoka.node.api.Node
-import io.hotmoka.node.api.CodeSupplier
+import io.hotmoka.node.api.ConstructorFuture
 import io.hotmoka.node.api.Subscription
-import io.hotmoka.node.api.JarSupplier
+import io.hotmoka.node.api.JarFuture
+import io.hotmoka.node.api.MethodFuture
+import io.hotmoka.node.api.nodes.ConsensusConfig
 import io.hotmoka.node.remote.RemoteNodes
-import io.hotmoka.node.remote.api.RemoteNodeConfig
+import java.net.URI
+import java.util.Objects
+import java.util.Optional
 import java.util.function.BiConsumer
 import java.util.stream.Stream
 
 class AndroidRemoteNode : Node {
     private var node: Node? = null
-    private var config: RemoteNodeConfig? = null
+    private var uri: URI? = null
     private var manifest: StorageReference? = null
     private var takamakaCode: TransactionReference? = null
+    private var manager = CloseHandlersManagers.create()
 
     companion object {
         private const val TAG = "AndroidRemoteNode"
     }
 
-    fun connect(config: RemoteNodeConfig) {
-        this.config = config
-        with (RemoteNodes.of(config)) {
+    override fun addOnCloseHandler(handler: OnCloseHandler?) {
+        manager.addOnCloseHandler(handler)
+    }
+
+    override fun removeOnCloseHandler(handler: OnCloseHandler?) {
+        manager.removeOnCloseHandler(handler)
+    }
+
+    fun connect(uri: URI, timeout: Int) {
+        this.uri = uri
+
+        with (RemoteNodes.of(uri, timeout)) {
             this@AndroidRemoteNode.node = this
-            Log.d(TAG, "connected to ${config.url} through a ${this::class.simpleName}")
+            Log.d(TAG, "connected to $uri through a ${this::class.simpleName}")
         }
     }
 
     fun disconnect() {
         node?.let {
             close()
-            Log.d(TAG, "disconnected from ${config?.url}")
+            Log.d(TAG, "disconnected from $uri")
         }
     }
 
@@ -48,6 +64,7 @@ class AndroidRemoteNode : Node {
     }
 
     override fun close() {
+        manager.close()
         val node = this.node
         this.node = null
         this.manifest = null
@@ -79,8 +96,8 @@ class AndroidRemoteNode : Node {
         return callSafely(Node::getNodeInfo, "getNodeInfo")
     }
 
-    override fun getNameOfSignatureAlgorithmForRequests(): String {
-        return callSafely(Node::getNameOfSignatureAlgorithmForRequests, "getNameOfSignatureAlgorithmForRequests")
+    override fun getConfig(): ConsensusConfig<*, *> {
+        return callSafely(Node::getConfig, "getConfig")
     }
 
     override fun getClassTag(reference: StorageReference): ClassTag {
@@ -123,35 +140,35 @@ class AndroidRemoteNode : Node {
         return callSafely({ node -> node.addConstructorCallTransaction(request) }, "addConstructorCallTransaction")
     }
 
-    override fun addInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): StorageValue? {
-        return callSafelyAcceptsNull({ node -> node.addInstanceMethodCallTransaction(request) }, "addInstanceMethodCallTransaction")
+    override fun addInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): Optional<StorageValue> {
+        return callSafely({ node -> node.addInstanceMethodCallTransaction(request) }, "addInstanceMethodCallTransaction")
     }
 
-    override fun addStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): StorageValue? {
-        return callSafelyAcceptsNull({ node -> node.addStaticMethodCallTransaction(request) }, "addStaticMethodCallTransaction")
+    override fun addStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): Optional<StorageValue> {
+        return callSafely({ node -> node.addStaticMethodCallTransaction(request) }, "addStaticMethodCallTransaction")
     }
 
-    override fun runInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): StorageValue? {
-        return callSafelyAcceptsNull({ node -> node.runInstanceMethodCallTransaction(request) }, "runInstanceMethodCallTransaction")
+    override fun runInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): Optional<StorageValue> {
+        return callSafely({ node -> node.runInstanceMethodCallTransaction(request) }, "runInstanceMethodCallTransaction")
     }
 
-    override fun runStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): StorageValue? {
-        return callSafelyAcceptsNull({ node -> node.runStaticMethodCallTransaction(request) }, "runStaticMethodCallTransaction")
+    override fun runStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): Optional<StorageValue> {
+        return callSafely({ node -> node.runStaticMethodCallTransaction(request) }, "runStaticMethodCallTransaction")
     }
 
-    override fun postJarStoreTransaction(request: JarStoreTransactionRequest): JarSupplier {
+    override fun postJarStoreTransaction(request: JarStoreTransactionRequest): JarFuture {
         return callSafely({ node -> node.postJarStoreTransaction(request) }, "postJarStoreTransaction")
     }
 
-    override fun postConstructorCallTransaction(request: ConstructorCallTransactionRequest): CodeSupplier<StorageReference> {
+    override fun postConstructorCallTransaction(request: ConstructorCallTransactionRequest): ConstructorFuture {
         return callSafely({ node -> node.postConstructorCallTransaction(request) }, "postConstructorCallTransaction")
     }
 
-    override fun postInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): CodeSupplier<StorageValue> {
+    override fun postInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): MethodFuture {
         return callSafely({ node -> node.postInstanceMethodCallTransaction(request) }, "postInstanceMethodCallTransaction")
     }
 
-    override fun postStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): CodeSupplier<StorageValue> {
+    override fun postStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): MethodFuture {
         return callSafely({ node -> node.postStaticMethodCallTransaction(request) }, "postStaticMethodCallTransaction")
     }
 
@@ -161,25 +178,11 @@ class AndroidRemoteNode : Node {
 
     private fun <T> callSafely(task: (Node) -> T, name: String): T {
         node?.let {
-            val result = task(it)
-            if (result == null)
-                throw RuntimeException("unexpected null result")
-            else {
-                Log.d(TAG, "$name => success")
-                return result
-            }
-        }
-
-        throw IllegalStateException("remote node not connected")
-    }
-
-    private fun <T> callSafelyAcceptsNull(task: (Node) -> T?, name: String): T? {
-        node?.let {
-            val result = task(it)
+            val result = Objects.requireNonNull(task(it))
             Log.d(TAG, "$name => success")
             return result
         }
 
-        throw IllegalStateException("remote node not connected")
+        throw IllegalStateException("Remote node not connected")
     }
 }

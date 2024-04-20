@@ -9,7 +9,7 @@ import io.hotmoka.helpers.Coin
 import java.math.BigDecimal
 import java.math.BigInteger
 
-class CoinSelectorSpinner constructor(
+class CoinSelectorSpinner(
     context: Context, attrs: AttributeSet
 ) : androidx.appcompat.widget.AppCompatSpinner(context, attrs) {
 
