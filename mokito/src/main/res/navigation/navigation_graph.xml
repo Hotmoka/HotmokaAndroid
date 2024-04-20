@@ -53,7 +53,7 @@
         android:label="@string/state_of_object" >
         <argument
             android:name="reference"
-            app:argType="io.hotmoka.beans.api.values.StorageReference" />
+            app:argType="io.hotmoka.node.api.values.StorageReference" />
         <action
             android:id="@+id/to_show_state"
             app:destination="@id/show_state" />
@@ -109,7 +109,7 @@
             app:argType="io.hotmoka.android.mokito.model.Account" />
         <argument
             android:name="destination"
-            app:argType="io.hotmoka.beans.api.values.StorageReference" />
+            app:argType="io.hotmoka.node.api.values.StorageReference" />
         <argument
             android:name="publicKey"
             app:argType="string"
@@ -152,7 +152,7 @@
         android:label="@string/state_of_token">
         <argument
             android:name="reference"
-            app:argType="io.hotmoka.beans.api.values.StorageReference" />
+            app:argType="io.hotmoka.node.api.values.StorageReference" />
     </fragment>
 
 </navigation>

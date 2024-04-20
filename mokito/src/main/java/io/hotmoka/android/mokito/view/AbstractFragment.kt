@@ -15,10 +15,10 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
 import io.hotmoka.android.mokito.model.OwnerTokens
-import io.hotmoka.beans.StorageValues
-import io.hotmoka.beans.api.transactions.TransactionReference
-import io.hotmoka.beans.api.updates.Update
-import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.node.StorageValues
+import io.hotmoka.node.api.transactions.TransactionReference
+import io.hotmoka.node.api.updates.Update
+import io.hotmoka.node.api.values.StorageReference
 import io.hotmoka.crypto.api.BIP39Mnemonic
 import io.hotmoka.crypto.Base58
 import java.math.BigInteger

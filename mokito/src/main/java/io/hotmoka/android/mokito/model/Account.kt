@@ -3,11 +3,11 @@ package io.hotmoka.android.mokito.model
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
-import io.hotmoka.beans.StorageValues
-import io.hotmoka.beans.TransactionReferences
+import io.hotmoka.node.StorageValues
+import io.hotmoka.node.TransactionReferences
 import io.hotmoka.helpers.Coin
-import io.hotmoka.beans.api.transactions.TransactionReference
-import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.node.api.transactions.TransactionReference
+import io.hotmoka.node.api.values.StorageReference
 import io.hotmoka.crypto.Entropies
 import io.hotmoka.crypto.api.Entropy
 import org.bouncycastle.util.encoders.Hex

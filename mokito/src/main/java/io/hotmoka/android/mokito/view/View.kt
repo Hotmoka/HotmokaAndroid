@@ -3,9 +3,9 @@ package io.hotmoka.android.mokito.view
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.OwnerTokens
-import io.hotmoka.beans.api.transactions.TransactionReference
-import io.hotmoka.beans.api.updates.Update
-import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.node.api.transactions.TransactionReference
+import io.hotmoka.node.api.updates.Update
+import io.hotmoka.node.api.values.StorageReference
 import io.hotmoka.crypto.api.BIP39Mnemonic
 import java.math.BigInteger
 

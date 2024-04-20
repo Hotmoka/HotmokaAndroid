@@ -10,7 +10,7 @@ import io.hotmoka.android.mokito.databinding.FragmentSentCoinsReceiptBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.api.transactions.TransactionReference
+import io.hotmoka.node.api.transactions.TransactionReference
 import java.util.stream.Collectors
 
 class SentCoinsReceiptFragment: AbstractFragment<FragmentSentCoinsReceiptBinding>() {

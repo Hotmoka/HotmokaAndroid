@@ -2,13 +2,13 @@ package io.hotmoka.android.mokito.model
 
 import android.os.Parcel
 import io.hotmoka.helpers.Coin
-import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.node.api.values.StorageReference
 import io.hotmoka.crypto.Entropies
 import org.xmlpull.v1.XmlSerializer
 import java.math.BigInteger
 
 class Faucet: Account {
-    val maxFaucet: BigInteger
+    private val maxFaucet: BigInteger
 
     constructor(reference: StorageReference, maxFaucet: BigInteger, balance: BigInteger, accessible: Boolean):
             super(reference, "Faucet", Entropies.of(ByteArray(16)),"", balance, accessible, Coin.MOKA) {

@@ -4,13 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <EditTextPreference
+        app:defaultValue="@string/default_server"
         app:key="url"
-        app:title="@string/url_of_the_remote_node"
-        app:useSimpleSummaryProvider="true"
-        app:defaultValue="@string/default_server"/>
-
-    <SwitchPreferenceCompat
-        app:key="webSockets"
-        app:title="@string/use_websockets"/>
+        app:title="@string/uri_of_the_remote_node"
+        app:useSimpleSummaryProvider="true" />
 
 </PreferenceScreen>

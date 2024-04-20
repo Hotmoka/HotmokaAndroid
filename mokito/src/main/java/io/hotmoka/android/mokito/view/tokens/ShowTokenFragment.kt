@@ -9,7 +9,7 @@ import io.hotmoka.android.mokito.databinding.FragmentShowTokenBinding
 import io.hotmoka.android.mokito.databinding.TokenOwnerCardBinding
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.mokito.view.AbstractFragment
-import io.hotmoka.beans.api.values.StorageReference
+import io.hotmoka.node.api.values.StorageReference
 
 /**
  * A fragment used to show the state of an ERC20 token in the store of the Hotmoka node.
@@ -78,8 +78,7 @@ class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
             notifyDataSetChanged() // require Android to update the recycler view
         }
 
-        private inner class ViewHolder(val binding: TokenOwnerCardBinding) : RecyclerView.ViewHolder(binding.root) {
-        }
+        private inner class ViewHolder(val binding: TokenOwnerCardBinding) : RecyclerView.ViewHolder(binding.root)
 
         override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ShowTokenFragment.RecyclerAdapter.ViewHolder {
             return ViewHolder(
