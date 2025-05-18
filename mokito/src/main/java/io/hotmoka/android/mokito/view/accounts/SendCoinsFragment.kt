@@ -15,7 +15,6 @@ import io.hotmoka.node.api.values.StorageReference
 import java.math.BigInteger
 import io.hotmoka.android.mokito.view.accounts.SendCoinsFragmentDirections.*
 import io.hotmoka.node.api.transactions.TransactionReference
-import io.hotmoka.helpers.api.AccountCreationHelper
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account
@@ -33,7 +32,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentSendCoinsBinding.inflate(inflater, container, false))
         binding.accountPassword.hint = getString(R.string.payer_account_password, payer.name)
-        binding.anonymousDescription.text = getString(R.string.anonymous_description, AccountCreationHelper.EXTRA_GAS_FOR_ANONYMOUS)
+        binding.anonymousDescription.text = getString(R.string.anonymous_description, "500000")
         binding.amount.hint = getString(R.string.amount_to_pay)
         binding.heading.text =
             if (payer is Faucet)

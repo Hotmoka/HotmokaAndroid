@@ -48,7 +48,7 @@ class Controller(private val mvc: MVC) {
     companion object {
         private const val TAG = "Controller"
         private val _100_000 = BigInteger.valueOf(100_000L)
-        private const val IERC20View = "io.takamaka.code.tokens.IERC20View"
+        private val IERC20View = StorageTypes.classNamed("io.takamaka.code.tokens.IERC20View")
     }
 
     fun isWorking() : Boolean {
@@ -77,7 +77,7 @@ class Controller(private val mvc: MVC) {
         val uri = sharedPreferences.getString("url", mvc.getString(R.string.default_server))
 
         try {
-            node.connect(URI.create(uri), 20_000)
+            node.connect(URI.create(uri), 60_000)
         }
         catch (t: Throwable) {
             Log.d(TAG, "connection to $uri failed")
@@ -224,7 +224,6 @@ class Controller(private val mvc: MVC) {
                     signatureAlgorithmOfNewAccounts,
                     publicKey,
                     balance,
-                    BigInteger.ZERO
                 ) { }
         }, name, passwordOfNewAccount, balance)
     }
@@ -241,7 +240,6 @@ class Controller(private val mvc: MVC) {
                     signatureAlgorithmOfNewAccounts,
                     publicKey,
                     balance,
-                    BigInteger.ZERO,
                     false,
                     {},
                     {}
@@ -312,7 +310,7 @@ class Controller(private val mvc: MVC) {
             val keys = getKeysOf(payer, passwordOfPayer)
             ensureConnected()
             var savedRequests: Array<TransactionRequest<*>>? = null
-            SendCoinsHelpers.of(node).sendFromPayer(payer.reference, keys, destination, amount, BigInteger.ZERO, {}, {
+            SendCoinsHelpers.of(node).sendFromPayer(payer.reference, keys, destination, amount, {}, {
                 requests -> savedRequests = requests
             })
 
@@ -374,9 +372,8 @@ class Controller(private val mvc: MVC) {
                 payer.reference,
                 keysOfPayer,
                 signatureAlgorithmOfNewAccounts,
-                signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.decode(publicKey)),
+                signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.fromBase58String(publicKey)),
                 amount,
-                BigInteger.ZERO,
                 anonymous,
                 {},
                 {
@@ -407,7 +404,7 @@ class Controller(private val mvc: MVC) {
         safeRunAsIO {
             ensureConnected()
             var savedRequests: Array<TransactionRequest<*>>? = null
-            SendCoinsHelpers.of(node).sendFromFaucet(destination, amount, BigInteger.ZERO, {}, {
+            SendCoinsHelpers.of(node).sendFromFaucet(destination, amount, {}, {
                 requests -> savedRequests = requests
             })
             Log.d(TAG, "paid $amount from ${faucet.name} to account $destination")
@@ -435,7 +432,7 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun publicKeyBase58Encoded(keys: KeyPair): String {
-        return Base58.encode(signatureAlgorithmOfNewAccounts.encodingOf(keys.public))
+        return Base58.toBase58String(signatureAlgorithmOfNewAccounts.encodingOf(keys.public))
     }
 
     /**
@@ -539,7 +536,7 @@ class Controller(private val mvc: MVC) {
                 manifest, _100_000, takamakaCode, MethodSignatures.ofNonVoid(
                     IERC20View,
                     "snapshot",
-                    StorageTypes.classNamed(IERC20View)
+                    IERC20View
                 ), reference
             )
         ).get() as StorageReference

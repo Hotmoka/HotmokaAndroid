@@ -21,6 +21,7 @@ import io.hotmoka.node.api.updates.Update
 import io.hotmoka.node.api.values.StorageReference
 import io.hotmoka.crypto.api.BIP39Mnemonic
 import io.hotmoka.crypto.Base58
+import io.hotmoka.crypto.Base58ConversionException
 import java.math.BigInteger
 
 abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
@@ -194,8 +195,8 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     protected fun looksLikePublicKey(s: String): Boolean {
         return try {
-            return Base58.decode(s).size == 32 // ed25519 public keys are 32 bytes long
-        } catch (e: java.lang.IllegalArgumentException) {
+            return Base58.fromBase58String(s).size == 32 // ed25519 public keys are 32 bytes long
+        } catch (e: Base58ConversionException) {
             false
         }
     }

@@ -1,7 +1,7 @@
 package io.hotmoka.android.remote
 
 import android.util.Log
-import io.hotmoka.closeables.CloseHandlersManagers
+import io.hotmoka.closeables.OnCloseHandlersManagers
 import io.hotmoka.closeables.api.OnCloseHandler
 import io.hotmoka.node.api.nodes.NodeInfo
 import io.hotmoka.node.api.transactions.TransactionReference
@@ -29,7 +29,7 @@ class AndroidRemoteNode : Node {
     private var uri: URI? = null
     private var manifest: StorageReference? = null
     private var takamakaCode: TransactionReference? = null
-    private var manager = CloseHandlersManagers.create()
+    private var manager = OnCloseHandlersManagers.create()
 
     companion object {
         private const val TAG = "AndroidRemoteNode"
@@ -64,7 +64,7 @@ class AndroidRemoteNode : Node {
     }
 
     override fun close() {
-        manager.close()
+        manager.callCloseHandlers()
         val node = this.node
         this.node = null
         this.manifest = null
@@ -92,8 +92,8 @@ class AndroidRemoteNode : Node {
         return manifest!!
     }
 
-    override fun getNodeInfo(): NodeInfo {
-        return callSafely(Node::getNodeInfo, "getNodeInfo")
+    override fun getInfo(): NodeInfo {
+        return callSafely(Node::getInfo, "getNodeInfo")
     }
 
     override fun getConfig(): ConsensusConfig<*, *> {
