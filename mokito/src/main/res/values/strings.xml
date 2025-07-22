@@ -1,5 +1,5 @@
 <resources>
-    <string name="version">Version 1.12 (May 18, 2025)</string>
+    <string name="version">Version 1.13 (July 22, 2025)</string>
     <string name="author">Author: fausto.spoto@hotmoka.io</string>
     <string name="app_name">Mokito</string>
     <string name="default_server">ws://panarea.hotmoka.io:8001</string>

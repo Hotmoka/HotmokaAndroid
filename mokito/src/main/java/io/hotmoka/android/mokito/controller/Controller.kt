@@ -240,7 +240,6 @@ class Controller(private val mvc: MVC) {
                     signatureAlgorithmOfNewAccounts,
                     publicKey,
                     balance,
-                    false,
                     {},
                     {}
                 )
@@ -368,23 +367,38 @@ class Controller(private val mvc: MVC) {
             val keysOfPayer = getKeysOf(payer, password)
             ensureConnected()
             var savedRequests: Array<TransactionRequest<*>>? = null
-            val destination = AccountCreationHelpers.of(node).paidBy(
-                payer.reference,
-                keysOfPayer,
-                signatureAlgorithmOfNewAccounts,
-                signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.fromBase58String(publicKey)),
-                amount,
-                anonymous,
-                {},
-                {
-                   requests -> savedRequests = requests
-                }
-            )
+            val destination: StorageReference;
 
-            if (anonymous)
-                Log.d(TAG, "paid $amount anonymously to key $publicKey [destination is $destination]")
-            else
+            if (anonymous) {
+                destination = AccountCreationHelpers.of(node).paidToLedgerBy(
+                    payer.reference,
+                    keysOfPayer,
+                    signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.fromBase58String(publicKey)),
+                    amount,
+                    {},
+                    {
+                            requests -> savedRequests = requests
+                    }
+                )
+                Log.d(
+                    TAG,
+                    "paid $amount anonymously to key $publicKey [destination is $destination]"
+                )
+            }
+            else {
+                destination = AccountCreationHelpers.of(node).paidBy(
+                    payer.reference,
+                    keysOfPayer,
+                    signatureAlgorithmOfNewAccounts,
+                    signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.fromBase58String(publicKey)),
+                    amount,
+                    {},
+                    {
+                            requests -> savedRequests = requests
+                    }
+                )
                 Log.d(TAG, "paid $amount to key $publicKey [destination is $destination]")
+                }
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
