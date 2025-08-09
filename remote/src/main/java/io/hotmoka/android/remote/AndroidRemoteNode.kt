@@ -108,6 +108,10 @@ class AndroidRemoteNode : Node {
         return callSafely({ node -> node.getState(reference) }, "getState")
     }
 
+    override fun getIndex(reference: StorageReference): Stream<TransactionReference> {
+        return callSafely({ node -> node.getIndex(reference) }, "getIndex")
+    }
+
     override fun getRequest(reference: TransactionReference): TransactionRequest<*> {
         return callSafely({ node -> node.getRequest(reference) }, "getRequest")
     }
