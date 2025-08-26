@@ -28,6 +28,8 @@ import io.hotmoka.crypto.HashingAlgorithms
 import io.hotmoka.crypto.SignatureAlgorithms
 import io.hotmoka.helpers.AccountCreationHelpers
 import io.hotmoka.helpers.SendCoinsHelpers
+import io.hotmoka.helpers.UnexpectedVoidMethodException
+import io.hotmoka.helpers.UnexpectedValueException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,6 +38,7 @@ import java.net.URI
 import java.security.KeyPair
 import java.security.PublicKey
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Supplier
 
 class Controller(private val mvc: MVC) {
     private var node: AndroidRemoteNode = AndroidRemoteNode()
@@ -51,7 +54,7 @@ class Controller(private val mvc: MVC) {
         private val IERC20View = StorageTypes.classNamed("io.takamaka.code.tokens.IERC20View")
     }
 
-    fun isWorking() : Boolean {
+    fun isWorking(): Boolean {
         return working.get() > 0
     }
 
@@ -66,8 +69,7 @@ class Controller(private val mvc: MVC) {
                 }
                 Log.d(TAG, all)
             }
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Log.d(TAG, "no accounts.txt", e)
         }
     }
@@ -77,9 +79,8 @@ class Controller(private val mvc: MVC) {
         val uri = sharedPreferences.getString("url", mvc.getString(R.string.default_server))
 
         try {
-            node.connect(URI.create(uri), 60_000)
-        }
-        catch (t: Throwable) {
+            node.connect(URI.create(uri), 100_000)
+        } catch (t: Throwable) {
             Log.d(TAG, "connection to $uri failed")
             mainScope.launch {
                 mvc.view?.notifyUser(mvc.getString(R.string.connection_failed, uri))
@@ -205,7 +206,15 @@ class Controller(private val mvc: MVC) {
             var newAccount = new
             new.reference?.let { newReference ->
                 val balance = getBalance(newReference)
-                newAccount = Account(newReference, new.name, new.entropy, new.publicKey, balance, true, new.coin)
+                newAccount = Account(
+                    newReference,
+                    new.name,
+                    new.entropy,
+                    new.publicKey,
+                    balance,
+                    true,
+                    new.coin
+                )
                 checkThatRemotePublicKeyMatches(newAccount)
             }
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -217,7 +226,11 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestNewAccountFromFaucet(name: String, passwordOfNewAccount: String, balance: BigInteger) {
+    fun requestNewAccountFromFaucet(
+        name: String,
+        passwordOfNewAccount: String,
+        balance: BigInteger
+    ) {
         createNewAccount({ publicKey ->
             AccountCreationHelpers.of(node)
                 .paidByFaucet(
@@ -228,7 +241,13 @@ class Controller(private val mvc: MVC) {
         }, name, passwordOfNewAccount, balance)
     }
 
-    fun requestNewAccountFromAnotherAccount(payer: Account, passwordOfPayer: String, name: String, passwordOfNewAccount: String, balance: BigInteger) {
+    fun requestNewAccountFromAnotherAccount(
+        payer: Account,
+        passwordOfPayer: String,
+        name: String,
+        passwordOfNewAccount: String,
+        balance: BigInteger
+    ) {
         createNewAccount({ publicKey ->
             checkPassword(payer, passwordOfPayer)
             val keysOfPayer = getKeysOf(payer, passwordOfPayer)
@@ -255,7 +274,11 @@ class Controller(private val mvc: MVC) {
         }
     }
 
-    fun requestImportAccountFromBip39Words(name: String, mnemonic: Array<String>, password: String) {
+    fun requestImportAccountFromBip39Words(
+        name: String,
+        mnemonic: Array<String>,
+        password: String
+    ) {
         safeRunAsIO {
             val acc = BIP39Mnemonics.of(mnemonic).toAccount { entropy, bytes ->
                 io.hotmoka.node.Accounts.of(
@@ -266,7 +289,15 @@ class Controller(private val mvc: MVC) {
             ensureConnected()
             val balance = getBalance(acc.reference)
             val keys = acc.keys(password, signatureAlgorithmOfNewAccounts)
-            val importedAccount = Account(acc.reference, name, acc, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
+            val importedAccount = Account(
+                acc.reference,
+                name,
+                acc,
+                publicKeyBase64Encoded(keys),
+                balance,
+                true,
+                Coin.PANAREA
+            )
             checkThatRemotePublicKeyMatches(importedAccount)
 
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
@@ -286,7 +317,15 @@ class Controller(private val mvc: MVC) {
             Log.d(TAG, "created public key $publicKeyBase58")
 
             // it is not a fully functional account yet, since it misses the reference
-            val newAccount = Account(null, publicKeyBase58, entropy, publicKeyBase64, BigInteger.ZERO, false, Coin.PANAREA)
+            val newAccount = Account(
+                null,
+                publicKeyBase58,
+                entropy,
+                publicKeyBase64,
+                BigInteger.ZERO,
+                false,
+                Coin.PANAREA
+            )
             ensureConnected()
             val accounts = mvc.model.getAccounts() ?: reloadAccounts()
             accounts.add(newAccount)
@@ -303,15 +342,21 @@ class Controller(private val mvc: MVC) {
      * @param amount to amount to transfer to {@code destination}
      * @param passwordOfPayer the password of {@code payer}
      */
-    fun requestPayment(payer: Account, destination: StorageReference, amount: BigInteger, passwordOfPayer: String) {
+    fun requestPayment(
+        payer: Account,
+        destination: StorageReference,
+        amount: BigInteger,
+        passwordOfPayer: String
+    ) {
         safeRunAsIO {
             checkPassword(payer, passwordOfPayer)
             val keys = getKeysOf(payer, passwordOfPayer)
             ensureConnected()
             var savedRequests: Array<TransactionRequest<*>>? = null
-            SendCoinsHelpers.of(node).sendFromPayer(payer.reference, keys, destination, amount, {}, {
-                requests -> savedRequests = requests
-            })
+            SendCoinsHelpers.of(node)
+                .sendFromPayer(payer.reference, keys, destination, amount, {}, { requests ->
+                    savedRequests = requests
+                })
 
             Log.d(TAG, "paid $amount to account $destination")
 
@@ -361,7 +406,13 @@ class Controller(private val mvc: MVC) {
      *                  created, with {@code publicKey} as public key
      * @param password the password of {@code payer}
      */
-    fun requestPaymentToPublicKey(payer: Account, publicKey: String, amount: BigInteger, anonymous: Boolean, password: String) {
+    fun requestPaymentToPublicKey(
+        payer: Account,
+        publicKey: String,
+        amount: BigInteger,
+        anonymous: Boolean,
+        password: String
+    ) {
         safeRunAsIO {
             checkPassword(payer, password)
             val keysOfPayer = getKeysOf(payer, password)
@@ -373,67 +424,82 @@ class Controller(private val mvc: MVC) {
                 destination = AccountCreationHelpers.of(node).paidToLedgerBy(
                     payer.reference,
                     keysOfPayer,
-                    signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.fromBase58String(publicKey)),
+                    signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(
+                        Base58.fromBase58String(
+                            publicKey
+                        )
+                    ),
                     amount,
                     {},
-                    {
-                            requests -> savedRequests = requests
+                    { requests ->
+                        savedRequests = requests
                     }
                 )
                 Log.d(
                     TAG,
                     "paid $amount anonymously to key $publicKey [destination is $destination]"
                 )
-            }
-            else {
+            } else {
                 destination = AccountCreationHelpers.of(node).paidBy(
                     payer.reference,
                     keysOfPayer,
                     signatureAlgorithmOfNewAccounts,
-                    signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(Base58.fromBase58String(publicKey)),
+                    signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(
+                        Base58.fromBase58String(
+                            publicKey
+                        )
+                    ),
                     amount,
                     {},
-                    {
-                            requests -> savedRequests = requests
+                    { requests ->
+                        savedRequests = requests
                     }
                 )
                 Log.d(TAG, "paid $amount to key $publicKey [destination is $destination]")
-                }
+            }
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(
-                payer,
-                destination,
-                publicKey,
-                amount,
-                anonymous,
-                toTransactions(savedRequests)
-            ) }
+            mainScope.launch {
+                mvc.view?.onPaymentCompleted(
+                    payer,
+                    destination,
+                    publicKey,
+                    amount,
+                    anonymous,
+                    toTransactions(savedRequests)
+                )
+            }
         }
     }
 
-    fun requestPaymentFromFaucet(faucet: Faucet, destination: StorageReference, amount: BigInteger) {
+    fun requestPaymentFromFaucet(
+        faucet: Faucet,
+        destination: StorageReference,
+        amount: BigInteger
+    ) {
         safeRunAsIO {
             ensureConnected()
             var savedRequests: Array<TransactionRequest<*>>? = null
-            SendCoinsHelpers.of(node).sendFromFaucet(destination, amount, {}, {
-                requests -> savedRequests = requests
+            SendCoinsHelpers.of(node).sendFromFaucet(destination, amount, {}, { requests ->
+                savedRequests = requests
             })
             Log.d(TAG, "paid $amount from ${faucet.name} to account $destination")
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
-            mainScope.launch { mvc.view?.onPaymentCompleted(
-                faucet,
-                destination,
-                null,
-                amount,
-                false,
-                toTransactions(savedRequests)
-            ) }
+            mainScope.launch {
+                mvc.view?.onPaymentCompleted(
+                    faucet,
+                    destination,
+                    null,
+                    amount,
+                    false,
+                    toTransactions(savedRequests)
+                )
+            }
         }
     }
 
@@ -442,7 +508,10 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun publicKeyBase64Encoded(keys: KeyPair): String {
-        return Base64.encodeToString(signatureAlgorithmOfNewAccounts.encodingOf(keys.public), Base64.NO_WRAP)
+        return Base64.encodeToString(
+            signatureAlgorithmOfNewAccounts.encodingOf(keys.public),
+            Base64.NO_WRAP
+        )
     }
 
     private fun publicKeyBase58Encoded(keys: KeyPair): String {
@@ -480,10 +549,21 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun reloadAccounts(): Accounts {
-        return Accounts(mvc, getFaucet(), getMaxFaucet(), this::getBalance, this::getReferenceFromAccountsLedger)
+        return Accounts(
+            mvc,
+            getFaucet(),
+            getMaxFaucet(),
+            this::getBalance,
+            this::getReferenceFromAccountsLedger
+        )
     }
 
-    private fun createNewAccount(creator: (PublicKey) -> StorageReference, name: String, password: String, balance: BigInteger) {
+    private fun createNewAccount(
+        creator: (PublicKey) -> StorageReference,
+        name: String,
+        password: String,
+        balance: BigInteger
+    ) {
         safeRunAsIO {
             ensureConnected()
             val entropy = Entropies.random()
@@ -501,7 +581,15 @@ class Controller(private val mvc: MVC) {
             // we force a reload of the accounts, so that their balances reflect the changes;
             // this is important, in particular, to update the balance of the payer
             val accounts = reloadAccounts()
-            val newAccount = Account(reference, name, entropy, publicKeyBase64Encoded(keys), balance, true, Coin.PANAREA)
+            val newAccount = Account(
+                reference,
+                name,
+                entropy,
+                publicKeyBase64Encoded(keys),
+                balance,
+                true,
+                Coin.PANAREA
+            )
             accounts.add(newAccount)
             accounts.writeIntoInternalStorage(mvc)
             mainScope.launch { mvc.view?.onAccountCreated(newAccount) }
@@ -516,9 +604,11 @@ class Controller(private val mvc: MVC) {
      */
     private fun getFaucet(): StorageReference? {
         val manifest = getManifestCached()
-        val hasFaucet = (node.runInstanceMethodCallTransaction(TransactionRequests.instanceViewMethodCall(
-            manifest, _100_000, takamakaCode, MethodSignatures.ALLOWS_UNSIGNED_FAUCET, manifest
-        )).get() as BooleanValue).value
+        val hasFaucet = (node.runInstanceMethodCallTransaction(
+            TransactionRequests.instanceViewMethodCall(
+                manifest, _100_000, takamakaCode, MethodSignatures.ALLOWS_UNSIGNED_FAUCET, manifest
+            )
+        ).get() as BooleanValue).value
 
         return if (hasFaucet)
             getGameteCached()
@@ -528,9 +618,11 @@ class Controller(private val mvc: MVC) {
 
     private fun getMaxFaucet(): BigInteger {
         val manifest = getManifestCached()
-        return (node.runInstanceMethodCallTransaction(TransactionRequests.instanceViewMethodCall(
-            manifest, _100_000, takamakaCode, MethodSignatures.GET_MAX_FAUCET, getGameteCached()
-        )).get() as BigIntegerValue).value
+        return (node.runInstanceMethodCallTransaction(
+            TransactionRequests.instanceViewMethodCall(
+                manifest, _100_000, takamakaCode, MethodSignatures.GET_MAX_FAUCET, getGameteCached()
+            )
+        ).get() as BigIntegerValue).value
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
@@ -591,11 +683,13 @@ class Controller(private val mvc: MVC) {
     }
 
     private fun getPublicKey(reference: StorageReference): String {
-        return (node.runInstanceMethodCallTransaction(
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 reference, _100_000, takamakaCode, MethodSignatures.PUBLIC_KEY, reference
             )
-        ).get() as StringValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.PUBLIC_KEY) }
+            .asReturnedString(MethodSignatures.PUBLIC_KEY, ::UnexpectedValueException)
     }
 
     private fun safeRunAsIO(task: () -> Unit) {

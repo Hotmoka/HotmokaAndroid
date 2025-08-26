@@ -98,12 +98,12 @@ open class Account: Comparable<Account>, Parcelable {
             }
         }
 
-        this.name = name ?: throw IllegalStateException("missing name in account")
-        this.entropy = entropy ?: throw IllegalStateException("missing entropy in account")
-        this.publicKey = publicKey ?: throw IllegalStateException("missing public key in account")
+        this.name = name ?: throw IllegalStateException("Missing name in account")
+        this.entropy = entropy ?: throw IllegalStateException("Missing entropy in account")
+        this.publicKey = publicKey ?: throw IllegalStateException("Missing public key in account")
         this.coin = if (coin != null)
             Coin.valueOf(coin)
-            else throw IllegalStateException("missing coin unit in account")
+            else throw IllegalStateException("Missing coin unit in account")
 
         // the reference is null if the account is still a key waiting for the
         // corresponding account to be created; in that case, we consult the
@@ -114,7 +114,7 @@ open class Account: Comparable<Account>, Parcelable {
                 reference = getReferenceFromAccountsLedger(publicKey)
             }
             catch (e: Exception) {
-                Log.d("Account", "cannot find $publicKey in the accounts ledger", e)
+                Log.w("Account", "Cannot find $publicKey in the accounts ledger")
             }
 
         if (reference != null) {
@@ -129,7 +129,7 @@ open class Account: Comparable<Account>, Parcelable {
             catch (e: Exception) {
                 balance = BigInteger.ZERO
                 accessible = false
-                Log.d("Account", "cannot access account $reference", e)
+                Log.w("Account", "Cannot access account $reference")
             }
 
             this.balance = balance

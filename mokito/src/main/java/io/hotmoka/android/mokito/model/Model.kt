@@ -58,6 +58,7 @@ class Model(private val mvc: MVC) {
         accounts = null
         accountsLedger = null
         states.clear()
+        erc20OwnerTokens.clear()
     }
 
     fun getManifest(): StorageReference? = manifest

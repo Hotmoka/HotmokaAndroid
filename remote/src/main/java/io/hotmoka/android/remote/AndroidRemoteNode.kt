@@ -18,6 +18,7 @@ import io.hotmoka.node.api.JarFuture
 import io.hotmoka.node.api.MethodFuture
 import io.hotmoka.node.api.nodes.ConsensusConfig
 import io.hotmoka.node.remote.RemoteNodes
+import io.hotmoka.node.remote.api.RemoteNode
 import java.net.URI
 import java.util.Objects
 import java.util.Optional
@@ -25,7 +26,7 @@ import java.util.function.BiConsumer
 import java.util.stream.Stream
 
 class AndroidRemoteNode : Node {
-    private var node: Node? = null
+    private var node: RemoteNode? = null
     private var uri: URI? = null
     private var manifest: StorageReference? = null
     private var takamakaCode: TransactionReference? = null
