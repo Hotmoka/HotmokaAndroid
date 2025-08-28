@@ -70,7 +70,7 @@ class Controller(private val mvc: MVC) {
                 Log.d(TAG, all)
             }
         } catch (e: Exception) {
-            Log.d(TAG, "no accounts.txt", e)
+            Log.w(TAG, "I could not read the accounts.txt file: " + e.message)
         }
     }
 
@@ -80,16 +80,16 @@ class Controller(private val mvc: MVC) {
 
         try {
             node.connect(URI.create(uri), 100_000)
+            takamakaCode = node.takamakaCode
+
+            mainScope.launch {
+                mvc.view?.notifyUser(mvc.getString(R.string.connected, uri))
+            }
         } catch (t: Throwable) {
-            Log.d(TAG, "connection to $uri failed")
+            Log.w(TAG, "connection to $uri failed: " + t.message)
             mainScope.launch {
                 mvc.view?.notifyUser(mvc.getString(R.string.connection_failed, uri))
             }
-        }
-        takamakaCode = node.takamakaCode
-
-        mainScope.launch {
-            mvc.view?.notifyUser(mvc.getString(R.string.connected, uri))
         }
     }
 
@@ -385,15 +385,6 @@ class Controller(private val mvc: MVC) {
 
         return emptyList()
     }
-
-    /*private fun notifyGasConsumption(requests: Array<TransactionRequest<*>>) {
-        val counter = GasCounter(node, *requests)
-        Log.d(TAG, "total: " + counter.total)
-        Log.d(TAG, "forCPU: " + counter.forCPU)
-        Log.d(TAG, "forRAM: " + counter.forRAM)
-        Log.d(TAG, "forStorage: " + counter.forStorage)
-        Log.d(TAG, "forPenalty: " + counter.forPenalty)
-    }*/
 
     /**
      * Request a payment to a public key.

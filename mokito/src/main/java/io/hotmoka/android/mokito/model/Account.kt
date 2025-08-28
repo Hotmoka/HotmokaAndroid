@@ -117,8 +117,9 @@ open class Account: Comparable<Account>, Parcelable {
                 Log.w("Account", "Cannot find $publicKey in the accounts ledger")
             }
 
+        this.reference = reference;
+
         if (reference != null) {
-            this.reference = reference
             var balance: BigInteger
             var accessible: Boolean
 
@@ -129,14 +130,13 @@ open class Account: Comparable<Account>, Parcelable {
             catch (e: Exception) {
                 balance = BigInteger.ZERO
                 accessible = false
-                Log.w("Account", "Cannot access account $reference")
+                Log.w("Account", "Cannot access the balance of account $reference")
             }
 
             this.balance = balance
             this.isAccessible = accessible
         }
         else {
-            this.reference = null
             this.balance = BigInteger.ZERO
             this.isAccessible = false
         }
@@ -271,13 +271,10 @@ open class Account: Comparable<Account>, Parcelable {
             }
         }
 
-        if (transaction == null)
-            throw IllegalStateException("missing transaction tag in account")
-
-        if (progressive == null)
-            throw IllegalStateException("missing name tag in account")
-
-        return StorageValues.reference(transaction, progressive)
+        return StorageValues.reference(
+            transaction ?: throw IllegalStateException("missing transaction tag in account"),
+            progressive ?: throw IllegalStateException("missing progressive tag in account")
+        )
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
@@ -312,12 +309,13 @@ open class Account: Comparable<Account>, Parcelable {
             throw IllegalStateException()
 
         var depth = 1
-        while (depth != 0) {
+        do {
             when (parser.next()) {
                 XmlPullParser.END_TAG -> depth--
                 XmlPullParser.START_TAG -> depth++
             }
         }
+        while (depth != 0)
     }
 
     open fun writeWith(serializer: XmlSerializer) {

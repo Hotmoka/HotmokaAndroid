@@ -3,6 +3,7 @@ package io.hotmoka.android.mokito.view.state
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -23,14 +24,19 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
     private var reference: StorageReference? = null
     private lateinit var adapter: RecyclerAdapter
 
+    companion object {
+        const val TAG = "ShowStateFragment"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
         // the arguments might be missing if this fragment is actually a ShowManifestFragment;
         // in that case, reference will be set later, when the state of the manifest will be ready
-        if (arguments != null)
-            reference = ShowStateFragmentArgs.fromBundle(requireArguments()).reference
+        arguments?.let {
+            reference = ShowStateFragmentArgs.fromBundle(it).reference
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -49,11 +55,12 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_reload)
+        if (item.itemId == R.id.action_reload) {
             reference?.let {
                 getController().requestStateOf(it)
-                return true
             }
+            return true
+        }
 
         return super.onOptionsItemSelected(item)
     }
@@ -123,6 +130,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
                 notifyDataSetChanged()
             }
             catch (e: NoSuchElementException) {
+                Log.d(TAG, "Missing class tag in the state of object $reference")
                 notifyUser(getString(R.string.missing_class_tag))
             }
         }

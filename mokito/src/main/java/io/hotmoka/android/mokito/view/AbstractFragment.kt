@@ -156,12 +156,10 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     }
 
     override fun onQRScanCancelled() {
-        Log.d(TAG, getString(R.string.qr_scan_cancelled))
         notifyUser(getString(R.string.qr_scan_cancelled))
     }
 
     override fun onQRScanAvailable(data: String) {
-        Log.d(TAG, getString(R.string.qr_scan_successful))
         notifyUser(getString(R.string.qr_scan_successful))
     }
 

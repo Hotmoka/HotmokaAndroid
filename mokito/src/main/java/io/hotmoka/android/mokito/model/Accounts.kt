@@ -45,7 +45,7 @@ class Accounts(
         }
         catch (e: FileNotFoundException) {
             // this is fine: initially the file of the accounts is missing
-            Log.d("Accounts", "no $accountsFilename")
+            Log.w("Accounts", "missing file $accountsFilename: it will be created from scratch")
         }
 
         faucet?.let {
@@ -59,7 +59,7 @@ class Accounts(
             catch (e: TransactionRejectedException) {
                 balance = BigInteger.ZERO
                 accessible = false
-                Log.d("Accounts", "cannot access the faucet")
+                Log.d("Accounts", "cannot access the faucet: " + e.message)
             }
 
             add(Faucet(faucet, maxFaucet, balance, accessible))
@@ -87,12 +87,13 @@ class Accounts(
             throw IllegalStateException()
         }
         var depth = 1
-        while (depth != 0) {
+        do {
             when (parser.next()) {
                 XmlPullParser.END_TAG -> depth--
                 XmlPullParser.START_TAG -> depth++
             }
         }
+        while (depth != 0)
     }
 
     /**
@@ -123,17 +124,14 @@ class Accounts(
     }
 
     fun writeIntoInternalStorage(context: Context) {
-        //val old = File(context.filesDir, accountsFilename)
-        //old.delete()
-
-        context.openFileOutput(accountsFilename, Context.MODE_PRIVATE).use { file ->
+        context.openFileOutput(accountsFilename, Context.MODE_PRIVATE).use {
             val serializer = Xml.newSerializer()
-            serializer.setOutput(file, "UTF-8")
+            serializer.setOutput(it, "UTF-8")
             serializer.startDocument(null, true)
             serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true)
 
             serializer.startTag(null, "accounts")
-            accounts.forEach { it.writeWith(serializer) }
+            accounts.forEach { account -> account.writeWith(serializer) }
             serializer.endTag(null, "accounts")
 
             serializer.endDocument()

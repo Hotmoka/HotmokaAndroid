@@ -102,7 +102,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
             cause = t2.cause
         }
 
-        Log.d(TAG, "action failed with the following exception", t)
+        Log.d(TAG, "Action failed with the following exception", t)
         Toast.makeText(context, t2.message, Toast.LENGTH_LONG).show()
     }
 
@@ -118,11 +118,10 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
         findPreference<Preference>("url")?.onPreferenceChangeListener = this
-        findPreference<Preference>("webSockets")?.onPreferenceChangeListener = this
     }
 
     override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-        if (preference.key == "url" || preference.key == "webSockets")
+        if (preference.key == "url")
             context.applicationContext.controller.requestReconnect()
 
         return true
