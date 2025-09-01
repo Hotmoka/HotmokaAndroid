@@ -90,6 +90,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         Log.i(TAG, "QR scan available")
     }
 
+    @UiThread
     override fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,

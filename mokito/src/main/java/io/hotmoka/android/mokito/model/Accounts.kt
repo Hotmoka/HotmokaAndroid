@@ -50,19 +50,19 @@ class Accounts(
 
         faucet?.let {
             var balance: BigInteger
-            var accessible: Boolean
+            var isAccessible: Boolean
 
             try {
                 balance = getBalance(faucet)
-                accessible = true
+                isAccessible = true
             }
             catch (e: TransactionRejectedException) {
                 balance = BigInteger.ZERO
-                accessible = false
-                Log.d("Accounts", "cannot access the faucet: " + e.message)
+                isAccessible = false
+                Log.w("Accounts", "cannot access the faucet: $e")
             }
 
-            add(Faucet(faucet, maxFaucet, balance, accessible))
+            add(Faucet(faucet, maxFaucet, balance, isAccessible))
         }
     }
 
@@ -83,9 +83,9 @@ class Accounts(
 
     @Throws(XmlPullParserException::class, IOException::class)
     private fun skip(parser: XmlPullParser) {
-        if (parser.eventType != XmlPullParser.START_TAG) {
-            throw IllegalStateException()
-        }
+        if (parser.eventType != XmlPullParser.START_TAG)
+            throw IllegalStateException("skip() was meant to be called on a START XML tag")
+
         var depth = 1
         do {
             when (parser.next()) {

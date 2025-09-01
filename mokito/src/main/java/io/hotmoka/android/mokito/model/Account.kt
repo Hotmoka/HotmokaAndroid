@@ -43,7 +43,7 @@ open class Account: Comparable<Account>, Parcelable {
     val publicKey: String
 
     /**
-     * The coin level preferred for the representation of the balance of this account.
+     * The preferred coin level for the representation of the balance of this account.
      */
     val coin: Coin
 
@@ -65,13 +65,13 @@ open class Account: Comparable<Account>, Parcelable {
      */
     val entropy: Entropy
 
-    constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, accessible: Boolean, coin: Coin) {
+    constructor(reference: StorageReference?, name: String, entropy: Entropy, publicKey: String, balance: BigInteger, isAccessible: Boolean, coin: Coin) {
         this.reference = reference
         this.name = name
-        this.entropy = Entropies.copy(entropy)
+        this.entropy = entropy
         this.publicKey = publicKey
         this.balance = balance
-        this.isAccessible = accessible
+        this.isAccessible = isAccessible
         this.coin = coin
     }
 
@@ -98,12 +98,12 @@ open class Account: Comparable<Account>, Parcelable {
             }
         }
 
-        this.name = name ?: throw IllegalStateException("Missing name in account")
-        this.entropy = entropy ?: throw IllegalStateException("Missing entropy in account")
-        this.publicKey = publicKey ?: throw IllegalStateException("Missing public key in account")
+        this.name = name ?: throw IOException("Missing name in account")
+        this.entropy = entropy ?: throw IOException("Missing entropy in account")
+        this.publicKey = publicKey ?: throw IOException("Missing public key in account")
         this.coin = if (coin != null)
             Coin.valueOf(coin)
-            else throw IllegalStateException("Missing coin unit in account")
+            else throw IOException("Missing coin unit in account")
 
         // the reference is null if the account is still a key waiting for the
         // corresponding account to be created; in that case, we consult the
@@ -117,24 +117,24 @@ open class Account: Comparable<Account>, Parcelable {
                 Log.w("Account", "Cannot find $publicKey in the accounts ledger")
             }
 
-        this.reference = reference;
+        this.reference = reference
 
         if (reference != null) {
             var balance: BigInteger
-            var accessible: Boolean
+            var isAccessible: Boolean
 
             try {
                 balance = getBalance(reference)
-                accessible = true
+                isAccessible = true
             }
             catch (e: Exception) {
                 balance = BigInteger.ZERO
-                accessible = false
-                Log.w("Account", "Cannot access the balance of account $reference")
+                isAccessible = false
+                Log.w("Account", "Cannot access the balance of account $reference: $e")
             }
 
             this.balance = balance
-            this.isAccessible = accessible
+            this.isAccessible = isAccessible
         }
         else {
             this.balance = BigInteger.ZERO
@@ -155,7 +155,8 @@ open class Account: Comparable<Account>, Parcelable {
     }
 
     /**
-     * Determines if this account is just a key, waiting for the creation of an account for that key.
+     * Determines if this account is just a key, waiting for the creation of
+     * a corresponding account.
      */
     fun isKey(): Boolean {
         return reference == null
@@ -272,8 +273,8 @@ open class Account: Comparable<Account>, Parcelable {
         }
 
         return StorageValues.reference(
-            transaction ?: throw IllegalStateException("missing transaction tag in account"),
-            progressive ?: throw IllegalStateException("missing progressive tag in account")
+            transaction ?: throw IOException("Missing transaction tag in account"),
+            progressive ?: throw IOException("Missing progressive tag in account")
         )
     }
 
@@ -306,7 +307,7 @@ open class Account: Comparable<Account>, Parcelable {
     @Throws(XmlPullParserException::class, IOException::class)
     private fun skip(parser: XmlPullParser) {
         if (parser.eventType != XmlPullParser.START_TAG)
-            throw IllegalStateException()
+            throw IllegalStateException("skip() was meant to be called on a START XML tag")
 
         var depth = 1
         do {

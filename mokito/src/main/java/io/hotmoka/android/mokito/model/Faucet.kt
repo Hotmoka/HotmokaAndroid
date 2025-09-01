@@ -10,8 +10,8 @@ import java.math.BigInteger
 class Faucet: Account {
     private val maxFaucet: BigInteger
 
-    constructor(reference: StorageReference, maxFaucet: BigInteger, balance: BigInteger, accessible: Boolean):
-            super(reference, "Faucet", Entropies.of(ByteArray(16)),"", balance, accessible, Coin.MOKA) {
+    constructor(reference: StorageReference, maxFaucet: BigInteger, balance: BigInteger, isAccessible: Boolean):
+            super(reference, "Faucet", Entropies.of(ByteArray(16)),"", balance, isAccessible, Coin.MOKA) {
         this.maxFaucet = maxFaucet
     }
 
