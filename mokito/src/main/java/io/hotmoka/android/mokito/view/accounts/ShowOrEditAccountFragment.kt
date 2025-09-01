@@ -14,6 +14,7 @@ import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.helpers.Coin
 import io.hotmoka.crypto.api.BIP39Mnemonic
+import io.hotmoka.node.StorageValues
 
 class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBinding>() {
     private lateinit var account: Account
@@ -68,12 +69,12 @@ class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBind
         val newReferenceInput = binding.reference.text.toString()
         if (account.reference == null && newReferenceInput.isNotEmpty()) {
             try {
-                newAccount = newAccount.setReference(validateStorageReference(newReferenceInput))
+                newAccount = newAccount.setReference(StorageValues.reference(newReferenceInput))
                 replace = true
             }
             catch (e: IllegalArgumentException) {
                 notifyUser(getString(R.string.storage_reference_constraints))
-                Log.w(TAG, "Illegal storage reference: $e")
+                Log.w(TAG, "Illegal storage reference: ${e.message}")
                 return
             }
         }

@@ -34,35 +34,34 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         private const val TAG = "AbstractFragment"
     }
 
-    protected fun setBinding(binding: V) {
+    @UiThread protected fun setBinding(binding: V) {
         _binding = binding
         progressBar = binding.root.findViewById(R.id.progress_bar)
         if (!getController().isWorking())
             progressBar?.visibility = android.view.View.GONE
     }
 
-    override fun onStart() {
+    @UiThread override fun onStart() {
         super.onStart()
         context.applicationContext.view = this
         setSubtitle("")
     }
 
-    override fun onStop() {
+    @UiThread override fun onStop() {
         context.applicationContext.view = null
         closeKeyboard()
         super.onStop()
     }
 
-    @UiThread
-    override fun onBackgroundStart() {
+    @UiThread override fun onBackgroundStart() {
         progressBar?.visibility = android.view.View.VISIBLE
     }
 
-    override fun onBackgroundEnd() {
+    @UiThread override fun onBackgroundEnd() {
         progressBar?.visibility = android.view.View.GONE
     }
 
-    protected fun closeKeyboard() {
+    @UiThread protected fun closeKeyboard() {
         val inputMethodManager: InputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
 
@@ -72,7 +71,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
             }
     }
 
-    override fun onDestroyView() {
+    @UiThread override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
@@ -101,27 +100,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         return context.applicationContext.model
     }
 
-    /**
-     * Checks that the given string is syntactically a storage reference.
-     *
-     * @param s the string representation of the potential storage reference
-     * @return the corresponding storage reference
-     *
-     */
-    protected fun validateStorageReference(s: String): StorageReference {
-        try {
-            return StorageValues.reference(s)
-        }
-        catch (t: Throwable) {
-            throw IllegalArgumentException(getString(R.string.storage_reference_constraints))
-        }
-    }
-
-    @UiThread
-    override fun onManifestChanged(manifest: StorageReference) {
-    }
-
-    override fun onAccountCreated(account: Account) {
+    @UiThread override fun onAccountCreated(account: Account) {
         if (account.isKey()) {
             notifyUser(getString(R.string.key_created_toast, account.name))
             Log.i(TAG, "Created key ${account.name}")
@@ -132,44 +111,44 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         }
     }
 
-    override fun onAccountImported(account: Account) {
+    @UiThread override fun onAccountImported(account: Account) {
         notifyUser(getString(R.string.account_imported_toast, account.name))
-        Log.i(TAG, "Imported account $account.name")
+        Log.i(TAG, "Imported account ${account.name}")
     }
 
-    override fun onAccountDeleted(account: Account) {
+    @UiThread override fun onAccountDeleted(account: Account) {
         if (account.isKey()) {
             notifyUser(getString(R.string.key_deleted_toast, account.name))
-            Log.i(TAG, "Deleted key $account.name")
+            Log.i(TAG, "Deleted key ${account.name}")
         }
         else {
             notifyUser(getString(R.string.account_deleted_toast, account.name))
-            Log.i(TAG, "Deleted account $account.name")
+            Log.i(TAG, "Deleted account ${account.name}")
         }
     }
 
-    override fun onAccountReplaced(old: Account, new: Account) {
+    @UiThread override fun onAccountReplaced(old: Account, new: Account) {
         if (old.isKey()) {
             notifyUser(getString(R.string.key_replaced_toast, new.name))
-            Log.i(TAG, "Replaced key $old.name with $new.name")
+            Log.i(TAG, "Replaced key ${old.name} with ${new.name}")
         }
         else {
             notifyUser(getString(R.string.account_replaced_toast, new.name))
-            Log.i(TAG, "Replaced account $old.name with $new.name")
+            Log.i(TAG, "Replaced account ${old.name} with ${new.name}")
         }
     }
 
-    override fun onQRScanCancelled() {
+    @UiThread override fun onQRScanCancelled() {
         notifyUser(getString(R.string.qr_scan_cancelled))
         Log.i(TAG, "QR scan cancelled")
     }
 
-    override fun onQRScanAvailable(data: String) {
+    @UiThread override fun onQRScanAvailable(data: String) {
         notifyUser(getString(R.string.qr_scan_successful))
         Log.i(TAG, "QR scan available")
     }
 
-    override fun onPaymentCompleted(
+    @UiThread override fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
         publicKey: String?,
@@ -181,24 +160,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         Log.i(TAG, "Completed payment of $amount coins from $payer to $destination")
     }
 
-    override fun notifyUser(message: String) {
+    @UiThread override fun notifyUser(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-    }
-
-    protected fun looksLikePublicKey(s: String): Boolean {
-        return try {
-            return Base58.fromBase58String(s).size == 32 // ed25519 public keys are 32 bytes long
-        } catch (e: Base58ConversionException) {
-            false
-        }
-    }
-
-    protected fun looksLikeStorageReference(s: String): Boolean {
-        return try {
-            validateStorageReference(s)
-            true
-        } catch (e: java.lang.IllegalArgumentException) {
-            false
-        }
     }
 }

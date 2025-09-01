@@ -27,7 +27,7 @@ class Mokito : AppCompatActivity() {
         setSupportActionBar(binding.appBarMokito.toolbar)
 
         // passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        // menu should be considered as top level destination
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_accounts, R.id.insert_reference,
@@ -62,7 +62,7 @@ class Mokito : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Log.d("Mokito", "view = ${applicationContext.view}")
+        Log.d("Mokito", "started view ${applicationContext.view}")
 
         // we can notify the view only when the activity has been fully waken up and its view
         // reconstructed, hence inside onStart()

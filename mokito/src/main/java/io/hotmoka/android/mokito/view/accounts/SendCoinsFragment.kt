@@ -15,6 +15,9 @@ import io.hotmoka.helpers.Coin
 import io.hotmoka.node.api.values.StorageReference
 import java.math.BigInteger
 import io.hotmoka.android.mokito.view.accounts.SendCoinsFragmentDirections.*
+import io.hotmoka.crypto.Base58
+import io.hotmoka.crypto.Base58ConversionException
+import io.hotmoka.node.StorageValues
 import io.hotmoka.node.api.transactions.TransactionReference
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
@@ -132,7 +135,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
 
         if (looksLikeStorageReference(input)) {
             // first we check if the destination looks like a storage reference
-            val destination = validateStorageReference(input)
+            val destination = StorageValues.reference(input)
             payer.let {
                 if (it is Faucet)
                     getController().requestPaymentFromFaucet(it, destination, amount)
@@ -140,13 +143,12 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                     getController().requestPayment(it, destination, amount, password)
             }
         }
-        else if (looksLikePublicKey(input))
+        else if (looksLikePublicKey(input)) {
             // otherwise, if might looks like a public key
             if (payer is Faucet) {
                 notifyUser(getString(R.string.payment_to_key_not_implemented_for_faucet))
-                Log.w(TAG, "Payment to key is not currently implemented for the faucet")
-            }
-            else
+                Log.w(TAG, "Payment to key is currently not implemented for the faucet")
+            } else
                 getController().requestPaymentToPublicKey(
                     payer,
                     input,
@@ -154,6 +156,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                     binding.anonymous.isChecked,
                     password
                 )
+        }
         else if (payer is Faucet) {
             notifyUser(getString(R.string.destination_syntax_for_faucet_error))
             Log.w(TAG, "The destination is not a storage reference")
@@ -161,6 +164,23 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         else {
             notifyUser(getString(R.string.destination_syntax_error))
             Log.w(TAG, "The destination is not a storage reference nor a Base58-encoded key")
+        }
+    }
+
+    private fun looksLikePublicKey(s: String): Boolean {
+        return try {
+            return Base58.fromBase58String(s).size == 32 // ed25519 public keys are 32 bytes long
+        } catch (e: Base58ConversionException) {
+            false
+        }
+    }
+
+    private fun looksLikeStorageReference(s: String): Boolean {
+        return try {
+            StorageValues.reference(s)
+            true
+        } catch (e: java.lang.IllegalArgumentException) {
+            false
         }
     }
 
