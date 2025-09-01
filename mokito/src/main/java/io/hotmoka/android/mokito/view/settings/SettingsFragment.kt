@@ -43,11 +43,11 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onAccountCreated(account: Account) {
         if (account.isKey()) {
             notifyUser(getString(R.string.key_created_toast, account.name))
-            Log.i(TAG, "Created key $account.name")
+            Log.i(TAG, "Created key ${account.name}")
         }
         else {
             notifyUser(getString(R.string.account_created_toast, account.name))
-            Log.i(TAG, "Created account $account.name")
+            Log.i(TAG, "Created account ${account.name}")
         }
     }
 
