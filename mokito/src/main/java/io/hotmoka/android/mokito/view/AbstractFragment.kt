@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
@@ -30,7 +31,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
     protected val binding get() = _binding!!
 
     companion object {
-        const val TAG = "AbstractFragment"
+        private const val TAG = "AbstractFragment"
     }
 
     protected fun setBinding(binding: V) {
@@ -52,6 +53,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         super.onStop()
     }
 
+    @UiThread
     override fun onBackgroundStart() {
         progressBar?.visibility = android.view.View.VISIBLE
     }
@@ -115,52 +117,56 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         }
     }
 
+    @UiThread
     override fun onManifestChanged(manifest: StorageReference) {
     }
 
-    override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
-    }
-
-    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
-    }
-
-    override fun onAccountsChanged(accounts: Accounts) {
-    }
-
-    override fun onBip39Available(account: Account, bip39: BIP39Mnemonic) {
-    }
-
     override fun onAccountCreated(account: Account) {
-        if (account.isKey())
+        if (account.isKey()) {
             notifyUser(getString(R.string.key_created_toast, account.name))
-        else
+            Log.i(TAG, "Created key $account.name")
+        }
+        else {
             notifyUser(getString(R.string.account_created_toast, account.name))
+            Log.i(TAG, "Created account $account.name")
+        }
     }
 
     override fun onAccountImported(account: Account) {
         notifyUser(getString(R.string.account_imported_toast, account.name))
+        Log.i(TAG, "Imported account $account.name")
     }
 
     override fun onAccountDeleted(account: Account) {
-        if (account.isKey())
+        if (account.isKey()) {
             notifyUser(getString(R.string.key_deleted_toast, account.name))
-        else
+            Log.i(TAG, "Deleted key $account.name")
+        }
+        else {
             notifyUser(getString(R.string.account_deleted_toast, account.name))
+            Log.i(TAG, "Deleted account $account.name")
+        }
     }
 
     override fun onAccountReplaced(old: Account, new: Account) {
-        if (old.isKey())
+        if (old.isKey()) {
             notifyUser(getString(R.string.key_replaced_toast, new.name))
-        else
+            Log.i(TAG, "Replaced key $old.name with $new.name")
+        }
+        else {
             notifyUser(getString(R.string.account_replaced_toast, new.name))
+            Log.i(TAG, "Replaced account $old.name with $new.name")
+        }
     }
 
     override fun onQRScanCancelled() {
         notifyUser(getString(R.string.qr_scan_cancelled))
+        Log.i(TAG, "QR scan cancelled")
     }
 
     override fun onQRScanAvailable(data: String) {
         notifyUser(getString(R.string.qr_scan_successful))
+        Log.i(TAG, "QR scan available")
     }
 
     override fun onPaymentCompleted(
@@ -172,22 +178,10 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
         transactions: List<TransactionReference>
     ) {
         notifyUser(getString(R.string.payment_completed))
-    }
-
-    override fun notifyException(t: Throwable) {
-        var t2: Throwable = t
-        var cause = t2.cause
-        while (cause != null) {
-            t2 = cause
-            cause = t2.cause
-        }
-
-        Log.d(TAG, "action failed with the following exception", t)
-        Toast.makeText(context, t2.message, Toast.LENGTH_LONG).show()
+        Log.i(TAG, "Completed payment of $amount coins from $payer to $destination")
     }
 
     override fun notifyUser(message: String) {
-        Log.d(TAG, message)
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 

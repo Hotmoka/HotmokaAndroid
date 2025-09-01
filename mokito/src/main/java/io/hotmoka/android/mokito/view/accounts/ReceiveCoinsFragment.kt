@@ -25,6 +25,10 @@ import android.widget.AdapterView
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     private lateinit var receiver: Account
 
+    companion object {
+        const val TAG = "ReceiveCoinsFragment"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         receiver = ReceiveCoinsFragmentArgs.fromBundle(requireArguments()).receiver
@@ -81,13 +85,14 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
             val receiverName = if (receiver.isKey())
                 receiver.name else receiver.reference.toString()
             val message = "$receiverName&$amount&${binding.anonymous.isChecked}"
-            Log.d("Receive", "data in the QR code: $message")
+            Log.d(TAG, "data in the QR code: $message")
             binding.bitmap.setImageBitmap(
                 createQRCode(message, binding.bitmap.width, binding.bitmap.width)
             )
         }
         catch (e: NumberFormatException) {
             notifyUser(getString(R.string.illegal_amount_to_receive))
+            Log.w(TAG, "Illegal amount to receive: $e")
             return
         }
     }

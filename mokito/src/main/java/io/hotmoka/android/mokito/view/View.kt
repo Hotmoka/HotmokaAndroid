@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.view
 
+import androidx.annotation.UiThread
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.OwnerTokens
@@ -19,48 +20,55 @@ interface View {
     /**
      * Called whenever a background task has started.
      */
-    fun onBackgroundStart()
+    @UiThread
+    fun onBackgroundStart() {}
 
     /**
-     * Called whenever a background task has completed.
+     * Called on the main thread whenever a background task has completed.
      */
-    fun onBackgroundEnd()
+    @UiThread
+    fun onBackgroundEnd() {}
 
     /**
-     * Called on the main thread when the manifest has been changed.
+     * Called when the manifest has been changed.
      *
      * @param manifest the new value of the manifest
      */
-    fun onManifestChanged(manifest: StorageReference)
+    @UiThread
+    fun onManifestChanged(manifest: StorageReference) {}
 
     /**
-     * Called on the main thread when the state of an object has been changed.
+     * Called when the state of an object has been changed.
      *
      * @param reference the reference of the object
      * @param state the state of {@code reference} that has been changed
      */
-    fun onStateChanged(reference: StorageReference, state: Array<Update>)
+    @UiThread
+    fun onStateChanged(reference: StorageReference, state: Array<Update>) {}
 
     /**
-     * Called on the main thread when the state of an ERC20 contract has been changed.
+     * Called when the state of an ERC20 contract has been changed.
      *
      * @param reference the reference to the ERC20 contract
      * @param state the pairs of owners/amount of tokens contained in the contract
      */
-    fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>)
+    @UiThread
+    fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {}
 
     /**
      * Called when the set of accounts has changed.
      *
      * @param accounts the updated set of accounts
      */
-    fun onAccountsChanged(accounts: Accounts)
+    @UiThread
+    fun onAccountsChanged(accounts: Accounts) {}
 
     /**
      * Called when a new account has been created.
      *
      * @param account the new account
      */
+    @UiThread
     fun onAccountCreated(account: Account)
 
     /**
@@ -68,6 +76,7 @@ interface View {
      *
      * @param account the imported account
      */
+    @UiThread
     fun onAccountImported(account: Account)
 
     /**
@@ -75,6 +84,7 @@ interface View {
      *
      * @param account the deleted account
      */
+    @UiThread
     fun onAccountDeleted(account: Account)
 
     /**
@@ -84,6 +94,7 @@ interface View {
      * @param old the old account
      * @param new the new account, that replaces {@code old}
      */
+    @UiThread
     fun onAccountReplaced(old: Account, new: Account)
 
     /**
@@ -93,11 +104,13 @@ interface View {
      * @param account the account
      * @param bip39 the words computed for {@code account}
      */
-    fun onBip39Available(account: Account, bip39: BIP39Mnemonic)
+    @UiThread
+    fun onBip39Available(account: Account, bip39: BIP39Mnemonic) {}
 
     /**
      * Called when a QR code scan has been cancelled by the user.
      */
+    @UiThread
     fun onQRScanCancelled()
 
     /**
@@ -105,6 +118,7 @@ interface View {
      *
      * @param data the data read from the QR code
      */
+    @UiThread
     fun onQRScanAvailable(data: String)
 
     /**
@@ -117,6 +131,7 @@ interface View {
      * @param anonymous true if and only if the transfer was an anonymous transfer to a key
      * @param transactions the transactions that have been used to perform the payment
      */
+    @UiThread
     fun onPaymentCompleted(
         payer: Account,
         destination: StorageReference,
@@ -126,7 +141,6 @@ interface View {
         transactions: List<TransactionReference>
     )
 
-    fun notifyException(t: Throwable)
-
+    @UiThread
     fun notifyUser(message: String)
 }

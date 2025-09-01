@@ -562,7 +562,7 @@ class Controller(private val mvc: MVC) {
 
             // create an account with the public key
             val reference = creator(keys.public)
-            Log.d(TAG, "created new account $reference")
+            Log.i(TAG, "created new account $reference")
 
             // currently, the progressive number of the created accounts will be #0,
             // but we better check against future unexpected changes in the server's behavior
@@ -690,15 +690,14 @@ class Controller(private val mvc: MVC) {
         ioScope.launch {
             try {
                 task.invoke()
-                working.decrementAndGet()
-                mainScope.launch { mvc.view?.onBackgroundEnd() }
             }
             catch (t: Throwable) {
+                Log.w(TAG, "Background IO action failed", t)
+                mainScope.launch { mvc.view?.notifyUser(t.toString()) }
+            }
+            finally {
                 working.decrementAndGet()
-                mainScope.launch {
-                    mvc.view?.onBackgroundEnd()
-                    mvc.view?.notifyException(t)
-                }
+                mainScope.launch { mvc.view?.onBackgroundEnd() }
             }
         }
     }

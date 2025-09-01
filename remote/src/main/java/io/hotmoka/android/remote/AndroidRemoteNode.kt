@@ -49,14 +49,14 @@ class AndroidRemoteNode : Node {
 
         with (RemoteNodes.of(uri, timeout)) {
             this@AndroidRemoteNode.node = this
-            Log.d(TAG, "connected to $uri through a ${this::class.simpleName}")
+            Log.i(TAG, "Connected to $uri")
         }
     }
 
     fun disconnect() {
         node?.let {
             close()
-            Log.d(TAG, "disconnected from $uri")
+            Log.i(TAG, "Disconnected from $uri")
         }
     }
 

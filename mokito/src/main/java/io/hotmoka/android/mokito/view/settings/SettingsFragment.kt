@@ -3,12 +3,14 @@ package io.hotmoka.android.mokito.view.settings
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.UiThread
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.OwnerTokens
+import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.Mokito
 import io.hotmoka.android.mokito.view.View
 import io.hotmoka.node.api.transactions.TransactionReference
@@ -20,7 +22,7 @@ import java.math.BigInteger
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, View {
 
     companion object {
-        const val TAG = "SettingsFragment"
+        private const val TAG = "SettingsFragment"
     }
 
     override fun onStart() {
@@ -38,49 +40,54 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         return super.getContext() as Mokito
     }
 
-    override fun onBackgroundStart() {
-    }
-
-    override fun onBackgroundEnd() {
-    }
-
-    override fun onManifestChanged(manifest: StorageReference) {
-    }
-
-    override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
-    }
-
-    override fun onErc20Changed(reference: StorageReference, state: Array<OwnerTokens>) {
-    }
-
     override fun onAccountCreated(account: Account) {
-        notifyUser(getString(R.string.account_created_toast, account.name))
+        if (account.isKey()) {
+            notifyUser(getString(R.string.key_created_toast, account.name))
+            Log.i(TAG, "Created key $account.name")
+        }
+        else {
+            notifyUser(getString(R.string.account_created_toast, account.name))
+            Log.i(TAG, "Created account $account.name")
+        }
     }
 
     override fun onAccountImported(account: Account) {
         notifyUser(getString(R.string.account_imported_toast, account.name))
+        Log.i(TAG, "Imported account $account.name")
     }
 
     override fun onAccountDeleted(account: Account) {
-        notifyUser(getString(R.string.account_deleted_toast, account.name))
+        if (account.isKey()) {
+            notifyUser(getString(R.string.key_deleted_toast, account.name))
+            Log.i(TAG, "Deleted key $account.name")
+        }
+        else {
+            notifyUser(getString(R.string.account_deleted_toast, account.name))
+            Log.i(TAG, "Deleted account $account.name")
+        }
     }
 
     override fun onAccountReplaced(old: Account, new: Account) {
-        notifyUser(getString(R.string.account_replaced_toast, new.name))
+        if (old.isKey()) {
+            notifyUser(getString(R.string.key_replaced_toast, new.name))
+            Log.i(TAG, "Replaced key $old.name with $new.name")
+        }
+        else {
+            notifyUser(getString(R.string.account_replaced_toast, new.name))
+            Log.i(TAG, "Replaced account $old.name with $new.name")
+        }
     }
 
-    override fun onAccountsChanged(accounts: Accounts) {
-    }
-
-    override fun onBip39Available(account: Account, bip39: BIP39Mnemonic) {
-    }
-
+    @UiThread
     override fun onQRScanCancelled() {
         notifyUser(getString(R.string.qr_scan_cancelled))
+        Log.i(TAG, "QR scan cancelled")
     }
 
+    @UiThread
     override fun onQRScanAvailable(data: String) {
         notifyUser(getString(R.string.qr_scan_successful))
+        Log.i(TAG, "QR scan available")
     }
 
     override fun onPaymentCompleted(
@@ -92,22 +99,10 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         transactions: List<TransactionReference>
     ) {
         notifyUser(getString(R.string.payment_completed))
-    }
-
-    override fun notifyException(t: Throwable) {
-        var t2: Throwable = t
-        var cause = t2.cause
-        while (cause != null) {
-            t2 = cause
-            cause = t2.cause
-        }
-
-        Log.d(TAG, "Action failed with the following exception", t)
-        Toast.makeText(context, t2.message, Toast.LENGTH_LONG).show()
+        Log.i(TAG, "Completed payment of $amount coins from $payer to $destination")
     }
 
     override fun notifyUser(message: String) {
-        Log.d(TAG, message)
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 

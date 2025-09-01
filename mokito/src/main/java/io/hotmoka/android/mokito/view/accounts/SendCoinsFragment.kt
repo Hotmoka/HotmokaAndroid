@@ -1,6 +1,7 @@
 package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,10 @@ import io.hotmoka.node.api.transactions.TransactionReference
 
 class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account
+
+    companion object {
+        const val TAG = "SendCoinsFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,8 +74,10 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
 
     override fun onQRScanAvailable(data: String) {
         val parts = data.split('&')
-        if (parts.size != 3)
+        if (parts.size != 3) {
             notifyUser(getString(R.string.wrong_qr_code_data))
+            Log.w(TAG, "The QR code data contains an unexpected number of snippets: $parts.size instead of 3")
+        }
         else {
             val anonymous: Boolean = if (parts[2] == "true")
                 true
@@ -78,6 +85,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                 false
             else {
                 notifyUser(getString(R.string.wrong_qr_code_data))
+                Log.w(TAG, "The QR code data does not report a Boolean as anonymous")
                 return
             }
 
@@ -98,11 +106,13 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         }
         catch (e: NumberFormatException) {
             notifyUser(getString(R.string.illegal_amount_to_pay))
+            Log.w(TAG, "Illegal amount to pay: $e")
             return
         }
 
         if (amount.signum() < 0) {
             notifyUser(getString(R.string.coins_cant_be_negative))
+            Log.w(TAG, "Illegal negative amount to pay")
             return
         }
 
@@ -110,11 +120,13 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         if (amount.subtract(max).signum() > 0) {
             val maxPanareas = resources.getQuantityString(R.plurals.panareas, max.toInt(), max)
             notifyUser(getString(R.string.amount_too_high, payer.name, maxPanareas))
+            Log.w(TAG, "The amount to pay is too big: $amount against a maximum of $max")
             return
         }
 
         if (payer !is Faucet && !getController().passwordIsCorrect(payer, password)) {
             notifyUser(getString(R.string.incorrect_password))
+            Log.w(TAG, "Incorrect password")
             return
         }
 
@@ -130,8 +142,10 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
         }
         else if (looksLikePublicKey(input))
             // otherwise, if might looks like a public key
-            if (payer is Faucet)
+            if (payer is Faucet) {
                 notifyUser(getString(R.string.payment_to_key_not_implemented_for_faucet))
+                Log.w(TAG, "Payment to key is not currently implemented for the faucet")
+            }
             else
                 getController().requestPaymentToPublicKey(
                     payer,
@@ -140,10 +154,14 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
                     binding.anonymous.isChecked,
                     password
                 )
-        else if (payer is Faucet)
+        else if (payer is Faucet) {
             notifyUser(getString(R.string.destination_syntax_for_faucet_error))
-        else
+            Log.w(TAG, "The destination is not a storage reference")
+        }
+        else {
             notifyUser(getString(R.string.destination_syntax_error))
+            Log.w(TAG, "The destination is not a storage reference nor a Base58-encoded key")
+        }
     }
 
     override fun onPaymentCompleted(

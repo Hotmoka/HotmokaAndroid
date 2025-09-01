@@ -1,6 +1,7 @@
 package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,10 @@ import java.math.BigInteger
 
 class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding>() {
     private lateinit var payer: Account
+
+    companion object {
+        const val TAG = "CreateNewAccountFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +52,11 @@ class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding
             if (balanceOfNewAccount.subtract(max).signum() > 0) {
                 val maxPanareas = resources.getQuantityString(R.plurals.panareas, if (max == BigInteger.ONE) 1 else 10, max)
                 notifyUser(getString(R.string.amount_too_high, payer.name, maxPanareas))
+                if (payer is Faucet)
+                    Log.i(TAG, "Payment of $balanceOfNewAccount coins from the faucet rejected: request is too high")
+                else
+                    Log.i(TAG, "Payment of $balanceOfNewAccount coins from $payer rejected: not enough funds")
+
                 return
             }
 
@@ -60,6 +70,7 @@ class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding
                 val passwordOfPayer = binding.payerPassword.text.toString()
                 if (!getController().passwordIsCorrect(payer, passwordOfPayer)) {
                     notifyUser(getString(R.string.incorrect_password))
+                    Log.i(TAG, "Creation of new account rejected: incorrect password")
                     return
                 }
 
@@ -74,6 +85,7 @@ class CreateNewAccountFragment: AbstractFragment<FragmentCreateNewAccountBinding
         }
         catch (e: java.lang.NumberFormatException) {
             notifyUser(getString(R.string.illegal_balance_for_new_account))
+            Log.w(TAG, "Illegal balance for new account: $e")
         }
     }
 

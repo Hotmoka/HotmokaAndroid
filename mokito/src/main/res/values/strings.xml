@@ -31,7 +31,7 @@
     <string name="settings">Settings</string>
     <string name="accounts">Accounts</string>
     <string name="new_account">New Account</string>
-    <string name="storage_reference_constraints">A storage reference should consist of 64 hex digits followed by # and by a progressive number</string>
+    <string name="storage_reference_constraints">A storage reference consists of 64 hex digits, a # and a progressive number</string>
     <string name="insert_the_storage_reference_of_the_object">Insert the storage reference of the object</string>
     <string name="insert_the_storage_reference_of_the_token">Insert the storage reference of the token</string>
     <string name="delete_confirmation_message">Do you really want to delete account %1$s? It will remain in the remote node, but this app will lose access to the account, unless you later add it again to this app by providing the mnemonic phrase of the account.</string>

@@ -1,12 +1,14 @@
 package io.hotmoka.android.mokito.view.accounts
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TableRow
 import android.widget.TextView
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentShowOrEditAccountBinding
 import io.hotmoka.android.mokito.model.Account
 import io.hotmoka.android.mokito.view.AbstractFragment
@@ -15,6 +17,10 @@ import io.hotmoka.crypto.api.BIP39Mnemonic
 
 class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBinding>() {
     private lateinit var account: Account
+
+    companion object {
+        const val TAG = "ShowOrEditAccountFragment"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +72,8 @@ class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBind
                 replace = true
             }
             catch (e: IllegalArgumentException) {
-                notifyException(e)
+                notifyUser(getString(R.string.storage_reference_constraints))
+                Log.w(TAG, "Illegal storage reference: $e")
                 return
             }
         }

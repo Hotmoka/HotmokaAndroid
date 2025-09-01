@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.View
+import androidx.annotation.UiThread
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -87,6 +88,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
         }
     }
 
+    @UiThread
     override fun onStateChanged(reference: StorageReference, state: Array<Update>) {
         if (this.reference == null && reference == getModel().getManifest())
             this.reference = reference
@@ -130,7 +132,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
                 notifyDataSetChanged()
             }
             catch (e: NoSuchElementException) {
-                Log.d(TAG, "Missing class tag in the state of object $reference")
+                Log.w(TAG, "Missing class tag in the state of object $reference")
                 notifyUser(getString(R.string.missing_class_tag))
             }
         }

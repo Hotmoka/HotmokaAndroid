@@ -1,9 +1,11 @@
 package io.hotmoka.android.mokito.view.state
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.databinding.FragmentInsertReferenceBinding
 import io.hotmoka.android.mokito.view.AbstractFragment
 import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections.toShowState
@@ -14,6 +16,10 @@ import io.hotmoka.android.mokito.view.state.InsertReferenceFragmentDirections.to
  */
 class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>() {
 
+    companion object {
+        const val TAG = "InsertReferenceFragment"
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         setBinding(FragmentInsertReferenceBinding.inflate(inflater, container, false))
 
@@ -22,7 +28,8 @@ class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>
                 navigate(toShowState(validateStorageReference(binding.reference.text.toString())))
             }
             catch (e: IllegalArgumentException) {
-                notifyException(e)
+                notifyUser(getString(R.string.storage_reference_constraints))
+                Log.w(TAG, "Illegal storage reference: $e")
             }
         }
 
