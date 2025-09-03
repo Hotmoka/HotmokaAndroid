@@ -667,10 +667,7 @@ class Controller(private val mvc: MVC) {
             )
         )).get()
 
-        return if (result is StorageReference)
-            result
-        else
-            null
+        return result as? StorageReference
     }
 
     private fun getPublicKey(reference: StorageReference): String {
