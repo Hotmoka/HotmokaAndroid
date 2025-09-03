@@ -595,11 +595,13 @@ class Controller(private val mvc: MVC) {
      */
     private fun getFaucet(): StorageReference? {
         val manifest = getManifestCached()
-        val hasFaucet = (node.runInstanceMethodCallTransaction(
+        val hasFaucet = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 manifest, _100_000, takamakaCode, MethodSignatures.ALLOWS_UNSIGNED_FAUCET, manifest
             )
-        ).get() as BooleanValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.ALLOWS_UNSIGNED_FAUCET) }
+            .asReturnedBoolean(MethodSignatures.ALLOWS_UNSIGNED_FAUCET, ::UnexpectedValueException)
 
         return if (hasFaucet)
             getGameteCached()
@@ -609,65 +611,85 @@ class Controller(private val mvc: MVC) {
 
     private fun getMaxFaucet(): BigInteger {
         val manifest = getManifestCached()
-        return (node.runInstanceMethodCallTransaction(
+
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 manifest, _100_000, takamakaCode, MethodSignatures.GET_MAX_FAUCET, getGameteCached()
             )
-        ).get() as BigIntegerValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.GET_MAX_FAUCET) }
+            .asReturnedBigInteger(MethodSignatures.GET_MAX_FAUCET, ::UnexpectedValueException)
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
-        return (node.runInstanceMethodCallTransaction(
+        val manifest = getManifestCached()
+
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                reference, _100_000, takamakaCode, MethodSignatures.BALANCE, reference
+                manifest, _100_000, takamakaCode, MethodSignatures.BALANCE, reference
             )
-        ).get() as BigIntegerValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.BALANCE) }
+            .asReturnedBigInteger(MethodSignatures.BALANCE, ::UnexpectedValueException)
     }
 
     private fun getERC20SnapshotOf(reference: StorageReference): StorageReference {
         // we use the manifest as caller, since the call is free of charge
         val manifest = getManifestCached()
 
+        val erc20ViewSnapshot = MethodSignatures.ofNonVoid(
+            IERC20View,
+            "snapshot",
+            IERC20View
+        )
+
         return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                manifest, _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    IERC20View,
-                    "snapshot",
-                    IERC20View
-                ), reference
+                manifest, _100_000, takamakaCode, erc20ViewSnapshot, reference
             )
-        ).get() as StorageReference
+        )
+            .orElseThrow { UnexpectedVoidMethodException(erc20ViewSnapshot) }
+            .asReturnedReference(erc20ViewSnapshot, ::UnexpectedValueException)
     }
 
     private fun getErc20Size(reference: StorageReference): Int {
         // we use the manifest as caller, since the call is free of charge
         val manifest = getManifestCached()
 
-        return (node.runInstanceMethodCallTransaction(
+        val erc20ViewSize = MethodSignatures.ofNonVoid(
+            IERC20View,
+            "size",
+            StorageTypes.INT
+        )
+
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                manifest, _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    IERC20View,
-                    "size",
-                    StorageTypes.INT
-                ), reference
+                manifest, _100_000, takamakaCode, erc20ViewSize, reference
             )
-        ).get() as IntValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(erc20ViewSize) }
+            .asReturnedInt(erc20ViewSize, ::UnexpectedValueException)
     }
 
     private fun getReferenceFromAccountsLedger(publicKey: String): StorageReference? {
-        Log.d(TAG, "looking in the ledger for $publicKey")
+        Log.d(TAG, "Looking in the accounts ledger for the account bound to $publicKey")
         val manifest = getManifestCached()
         val ledger = getAccountsLedgerCached()
-        val result = (node.runInstanceMethodCallTransaction(
+
+        val result = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 manifest, _100_000, takamakaCode,
                 MethodSignatures.GET_FROM_ACCOUNTS_LEDGER,
                 ledger,
                 StorageValues.stringOf(publicKey)
             )
-        )).get()
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.GET_FROM_ACCOUNTS_LEDGER) }
+            as? StorageReference // it might also be a NullValue, that as? transforms into null
 
-        return result as? StorageReference
+        Log.d(TAG, "Found $result bound in the accounts ledger to $publicKey")
+
+        return result
     }
 
     private fun getPublicKey(reference: StorageReference): String {
