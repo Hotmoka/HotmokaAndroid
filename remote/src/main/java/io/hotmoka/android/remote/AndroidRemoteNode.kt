@@ -102,11 +102,11 @@ class AndroidRemoteNode : Node {
     }
 
     override fun getClassTag(reference: StorageReference): ClassTag {
-        return callSafely({ node -> node.getClassTag(reference) }, "getClassTag")
+        return callSafely({ node -> node.getClassTag(reference) }, "getClassTag of $reference")
     }
 
     override fun getState(reference: StorageReference): Stream<Update> {
-        return callSafely({ node -> node.getState(reference) }, "getState")
+        return callSafely({ node -> node.getState(reference) }, "getState of $reference")
     }
 
     override fun getIndex(reference: StorageReference): Stream<TransactionReference> {
@@ -142,23 +142,23 @@ class AndroidRemoteNode : Node {
     }
 
     override fun addConstructorCallTransaction(request: ConstructorCallTransactionRequest): StorageReference {
-        return callSafely({ node -> node.addConstructorCallTransaction(request) }, "addConstructorCallTransaction")
+        return callSafely({ node -> node.addConstructorCallTransaction(request) }, "addConstructorCallTransaction ${request.staticTarget.definingClass}()")
     }
 
     override fun addInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): Optional<StorageValue> {
-        return callSafely({ node -> node.addInstanceMethodCallTransaction(request) }, "addInstanceMethodCallTransaction")
+        return callSafely({ node -> node.addInstanceMethodCallTransaction(request) }, "addInstanceMethodCallTransaction ${request.staticTarget.definingClass}.${request.staticTarget.name}()")
     }
 
     override fun addStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): Optional<StorageValue> {
-        return callSafely({ node -> node.addStaticMethodCallTransaction(request) }, "addStaticMethodCallTransaction")
+        return callSafely({ node -> node.addStaticMethodCallTransaction(request) }, "addStaticMethodCallTransaction ${request.staticTarget.definingClass}.${request.staticTarget.name}()")
     }
 
     override fun runInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): Optional<StorageValue> {
-        return callSafely({ node -> node.runInstanceMethodCallTransaction(request) }, "runInstanceMethodCallTransaction")
+        return callSafely({ node -> node.runInstanceMethodCallTransaction(request) }, "runInstanceMethodCallTransaction ${request.staticTarget.definingClass}.${request.staticTarget.name}()")
     }
 
     override fun runStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): Optional<StorageValue> {
-        return callSafely({ node -> node.runStaticMethodCallTransaction(request) }, "runStaticMethodCallTransaction")
+        return callSafely({ node -> node.runStaticMethodCallTransaction(request) }, "runStaticMethodCallTransaction ${request.staticTarget.definingClass}.${request.staticTarget.name}()")
     }
 
     override fun postJarStoreTransaction(request: JarStoreTransactionRequest): JarFuture {
@@ -166,15 +166,15 @@ class AndroidRemoteNode : Node {
     }
 
     override fun postConstructorCallTransaction(request: ConstructorCallTransactionRequest): ConstructorFuture {
-        return callSafely({ node -> node.postConstructorCallTransaction(request) }, "postConstructorCallTransaction")
+        return callSafely({ node -> node.postConstructorCallTransaction(request) }, "postConstructorCallTransaction ${request.staticTarget.definingClass}()")
     }
 
     override fun postInstanceMethodCallTransaction(request: InstanceMethodCallTransactionRequest): MethodFuture {
-        return callSafely({ node -> node.postInstanceMethodCallTransaction(request) }, "postInstanceMethodCallTransaction")
+        return callSafely({ node -> node.postInstanceMethodCallTransaction(request) }, "postInstanceMethodCallTransaction ${request.staticTarget.definingClass}.${request.staticTarget.name}()")
     }
 
     override fun postStaticMethodCallTransaction(request: StaticMethodCallTransactionRequest): MethodFuture {
-        return callSafely({ node -> node.postStaticMethodCallTransaction(request) }, "postStaticMethodCallTransaction")
+        return callSafely({ node -> node.postStaticMethodCallTransaction(request) }, "postStaticMethodCallTransaction ${request.staticTarget.definingClass}.${request.staticTarget.name}()")
     }
 
     override fun subscribeToEvents(creator: StorageReference?, handler: BiConsumer<StorageReference, StorageReference>): Subscription {

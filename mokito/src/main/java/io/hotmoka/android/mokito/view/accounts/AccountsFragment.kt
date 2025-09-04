@@ -236,7 +236,7 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
                 binding.name.text = account.name
                 binding.reference.text = account.reference.toString()
                 binding.balance.text = resources.getString(R.string.account_not_accessible)
-                binding.balance.visibility = GONE
+                binding.balance.visibility = VISIBLE
                 binding.menuButton.setOnClickListener { createMenuForInaccessible(account) }
             }
 

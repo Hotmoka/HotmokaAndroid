@@ -21,12 +21,14 @@ import io.hotmoka.android.mokito.view.AbstractFragment
 import java.io.UnsupportedEncodingException
 import java.util.EnumMap
 import android.widget.AdapterView
+import java.math.BigInteger
+import androidx.core.graphics.createBitmap
 
 class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     private lateinit var receiver: Account
 
     companion object {
-        const val TAG = "ReceiveCoinsFragment"
+        private const val TAG = "ReceiveCoinsFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,21 +82,24 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
     }
 
     private fun showQrCode() {
+        val amount: BigInteger;
+
         try {
-            val amount = binding.coinType.asPanareas()
-            val receiverName = if (receiver.isKey())
-                receiver.name else receiver.reference.toString()
-            val message = "$receiverName&$amount&${binding.anonymous.isChecked}"
-            Log.d(TAG, "data in the QR code: $message")
-            binding.bitmap.setImageBitmap(
-                createQRCode(message, binding.bitmap.width, binding.bitmap.width)
-            )
+            amount = binding.coinType.asPanareas()
         }
         catch (e: NumberFormatException) {
             notifyUser(getString(R.string.illegal_amount_to_receive))
             Log.w(TAG, "Illegal amount to receive: $e")
             return
         }
+
+        val receiverName = if (receiver.isKey())
+            receiver.name else receiver.reference.toString()
+        val message = "$receiverName&$amount&${binding.anonymous.isChecked}"
+        Log.d(TAG, "Data in the QR code: $message")
+        binding.bitmap.setImageBitmap(
+            createQRCode(message, binding.bitmap.width, binding.bitmap.width)
+        )
     }
 
     @Throws(UnsupportedEncodingException::class, WriterException::class)
@@ -116,7 +121,7 @@ class ReceiveCoinsFragment: AbstractFragment<FragmentReceiveCoinsBinding>() {
         for (y in 0 until height) for (x in 0 until width)
             pixels[pos++] = if (matrix.get(x, y)) BLACK else WHITE
 
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height)
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
         return bitmap
     }

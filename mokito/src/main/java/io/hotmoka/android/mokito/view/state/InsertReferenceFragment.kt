@@ -18,7 +18,7 @@ import io.hotmoka.node.StorageValues
 class InsertReferenceFragment : AbstractFragment<FragmentInsertReferenceBinding>() {
 
     companion object {
-        const val TAG = "InsertReferenceFragment"
+        private const val TAG = "InsertReferenceFragment"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

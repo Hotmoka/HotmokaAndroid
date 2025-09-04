@@ -1,5 +1,6 @@
 package io.hotmoka.android.mokito.view.tokens
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,7 +18,7 @@ import io.hotmoka.node.api.values.StorageReference
 
 class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
     private lateinit var reference: StorageReference
-    private lateinit var adapter: ShowTokenFragment.RecyclerAdapter
+    private lateinit var adapter: RecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +42,12 @@ class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
 
     @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_reload)
+        if (item.itemId == R.id.action_reload) {
             getController().requestOwnerTokensOf(reference)
-
-        return super.onOptionsItemSelected(item)
+            return true;
+        }
+        else
+            return super.onOptionsItemSelected(item)
     }
 
     override fun onStart() {
@@ -73,6 +76,7 @@ class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
     private inner class RecyclerAdapter: RecyclerView.Adapter<ShowTokenFragment.RecyclerAdapter.ViewHolder>() {
         private var state = emptyArray<OwnerTokens>()
 
+        @SuppressLint("NotifyDataSetChanged")
         fun setOwnerTokens(state: Array<OwnerTokens>) {
             this.state = state
             notifyDataSetChanged() // require Android to update the recycler view
@@ -80,7 +84,7 @@ class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
 
         private inner class ViewHolder(val binding: TokenOwnerCardBinding) : RecyclerView.ViewHolder(binding.root)
 
-        override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ShowTokenFragment.RecyclerAdapter.ViewHolder {
+        override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
             return ViewHolder(
                 TokenOwnerCardBinding.inflate(
                     LayoutInflater.from(viewGroup.context),
@@ -90,9 +94,9 @@ class ShowTokenFragment : AbstractFragment<FragmentShowTokenBinding>() {
             )
         }
 
-        override fun onBindViewHolder(viewHolder: ShowTokenFragment.RecyclerAdapter.ViewHolder, i: Int) {
+        override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
             val ownerTokens = state[i]
-            viewHolder.binding.owner.text = ownerTokens.reference.toString().substring(0, 40) + "..."
+            viewHolder.binding.owner.text = "${ownerTokens.reference.toString().substring(0, 40)}..."
             viewHolder.binding.amount.text = ownerTokens.amount.toString()
         }
 

@@ -33,6 +33,10 @@ class Accounts(
      */
     private val accounts = TreeSet<Account>()
 
+    companion object {
+        private const val TAG = "Accounts"
+    }
+
     init {
         try {
             mvc.openFileInput(accountsFilename).use {
@@ -103,6 +107,7 @@ class Accounts(
      */
     fun add(account: Account) {
         accounts.add(account)
+        Log.i(TAG, "Added account $account")
     }
 
     /**
@@ -112,6 +117,7 @@ class Accounts(
      */
     fun delete(account: Account) {
         accounts.remove(account)
+        Log.i(TAG, "Deleted account $account")
     }
 
     /**

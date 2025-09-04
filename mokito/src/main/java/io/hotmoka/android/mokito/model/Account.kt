@@ -371,4 +371,8 @@ open class Account: Comparable<Account>, Parcelable {
     override fun hashCode(): Int {
         return entropy.hashCode()
     }
+
+    override fun toString(): String {
+        return "$name, reference: $reference, key: $publicKey, balance: $balance, accessible: $isAccessible";
+    }
 }

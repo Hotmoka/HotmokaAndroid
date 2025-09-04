@@ -55,7 +55,7 @@
     <string name="new_account_balance">New account balance</string>
     <string name="new_account_password">New account password</string>
     <string name="payer_account_password">Password of %1$s</string>
-    <string name="dismiss">dismiss</string>
+    <string name="dismiss">Dismiss</string>
     <string name="warning_about_words">Please write down on paper the following mnemonic phrase of 36 words, in their sequential order. You will need them if you want to (re)install the account in this or another application. If you delete the account and lose these words, you will lose access to this account for ever!</string>
     <string name="action_import">Import account</string>
     <string name="action_import_account_tooltip">Import an account into this application</string>
@@ -63,6 +63,7 @@
     <string name="action_create_key_tooltip">Create a new public key for a new account</string>
     <string name="import_account">Import Account</string>
     <string name="description_about_words_to_insert">Insert the 36 words that have been provided at time of creation of the account, in their sequential order.</string>
+    <string name="operation_timed_out">The operation timed-out!</string>
     <string name="word1">word 1</string>
     <string name="word2">word 2</string>
     <string name="word3">word 3</string>
@@ -102,14 +103,14 @@
     <string name="show_or_edit_account">Show or edit account</string>
     <string name="ok">OK</string>
     <string name="pay">pay</string>
-    <string name="account_imported_toast">Account %1$s imported</string>
-    <string name="account_created_toast">Account %1$s created</string>
-    <string name="key_created_toast">Account %1$s created</string>
-    <string name="account_deleted_toast">Account %1$s deleted</string>
-    <string name="key_deleted_toast">Key %1$s deleted</string>
-    <string name="account_replaced_toast">Account %1$s edited</string>
-    <string name="key_replaced_toast">Key %1$s edited</string>
-    <string name="account_not_accessible">Account not accessible</string>
+    <string name="account_imported_toast">Imported account %1$s</string>
+    <string name="account_created_toast">Created account %1$s</string>
+    <string name="key_created_toast">Created key %1$s</string>
+    <string name="account_deleted_toast">Deleted account %1$s</string>
+    <string name="key_deleted_toast">Deleted key %1$s</string>
+    <string name="account_replaced_toast">Edited account %1$s</string>
+    <string name="key_replaced_toast">Edited key %1$s</string>
+    <string name="account_not_accessible">The account is not accessible</string>
     <string name="account_password">Account password</string>
     <string name="reference_of_the_account">Reference of the account</string>
     <string name="new_key_password">New key password</string>
@@ -182,4 +183,5 @@
     <string name="menu_show_token">Token explorer</string>
     <string name="show_token">Show Token</string>
     <string name="state_of_token">State of Token</string>
+    <string name="operation_timeout">The operation timed-out!</string>
 </resources>

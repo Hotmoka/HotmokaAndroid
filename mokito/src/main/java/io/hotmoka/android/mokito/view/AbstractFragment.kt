@@ -13,16 +13,9 @@ import androidx.viewbinding.ViewBinding
 import io.hotmoka.android.mokito.R
 import io.hotmoka.android.mokito.controller.Controller
 import io.hotmoka.android.mokito.model.Account
-import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Model
-import io.hotmoka.android.mokito.model.OwnerTokens
-import io.hotmoka.node.StorageValues
 import io.hotmoka.node.api.transactions.TransactionReference
-import io.hotmoka.node.api.updates.Update
 import io.hotmoka.node.api.values.StorageReference
-import io.hotmoka.crypto.api.BIP39Mnemonic
-import io.hotmoka.crypto.Base58
-import io.hotmoka.crypto.Base58ConversionException
 import java.math.BigInteger
 
 abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
@@ -140,7 +133,7 @@ abstract class AbstractFragment<V: ViewBinding> : Fragment(), View {
 
     @UiThread override fun onQRScanCancelled() {
         notifyUser(getString(R.string.qr_scan_cancelled))
-        Log.i(TAG, "QR scan cancelled")
+        Log.i(TAG, "QR code scan cancelled")
     }
 
     @UiThread override fun onQRScanAvailable(data: String) {
