@@ -1,5 +1,5 @@
 <resources>
-    <string name="version">Version 1.16 (September XX, 2025)</string>
+    <string name="version">Version 1.16 (September 4, 2025)</string>
     <string name="author">Author: fausto.spoto@hotmoka.io</string>
     <string name="app_name">Mokito</string>
     <string name="default_server">ws://panarea.hotmoka.io:8001</string>
