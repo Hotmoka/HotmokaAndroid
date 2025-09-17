@@ -272,9 +272,11 @@ open class Account: Comparable<Account>, Parcelable {
             }
         }
 
+        parser.require(XmlPullParser.END_TAG, null, "reference")
+
         return StorageValues.reference(
-            transaction ?: throw IOException("Missing transaction tag in account"),
-            progressive ?: throw IOException("Missing progressive tag in account")
+            transaction ?: throw XmlPullParserException("Missing transaction tag in account"),
+            progressive ?: throw XmlPullParserException("Missing progressive tag in account")
         )
     }
 
@@ -291,7 +293,17 @@ open class Account: Comparable<Account>, Parcelable {
         parser.require(XmlPullParser.START_TAG, null, "progressive")
         val progressive = readText(parser)
         parser.require(XmlPullParser.END_TAG, null, "progressive")
-        return BigInteger(progressive)
+
+        try {
+            val result = BigInteger(progressive)
+            if (result.signum() < 0)
+                throw XmlPullParserException("The progressive of a storage reference cannot be negative")
+
+            return result
+        }
+        catch (e: NumberFormatException) {
+            throw XmlPullParserException(e.message)
+        }
     }
 
     @Throws(IOException::class, XmlPullParserException::class)
