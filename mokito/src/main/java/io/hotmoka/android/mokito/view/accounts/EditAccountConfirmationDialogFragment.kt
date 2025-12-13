@@ -41,7 +41,7 @@ class EditAccountConfirmationDialogFragment: AbstractDialogFragment() {
             .setTitle(if (old.isKey()) R.string.edit_key_question else R.string.edit_account_question)
             .setIcon(R.drawable.ic_edit)
             .setView(binding.root)
-            .setNegativeButton(R.string.dismiss) { _,_ -> }
+            .setNegativeButton(R.string.dismiss) { _, _ -> }
             .setPositiveButton(R.string.edit) {
                 _, _ -> getController().requestReplace(old, new, binding.accountPassword.text.toString())
             }

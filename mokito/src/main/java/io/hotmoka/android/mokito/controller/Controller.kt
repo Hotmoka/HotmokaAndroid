@@ -10,26 +10,25 @@ import io.hotmoka.android.mokito.model.Accounts
 import io.hotmoka.android.mokito.model.Faucet
 import io.hotmoka.android.mokito.model.OwnerTokens
 import io.hotmoka.android.remote.AndroidRemoteNode
-import io.hotmoka.node.MethodSignatures
-import io.hotmoka.helpers.Coin
-import io.hotmoka.node.StorageTypes
-import io.hotmoka.node.StorageValues
-import io.hotmoka.node.TransactionReferences
-import io.hotmoka.node.TransactionRequests
-import io.hotmoka.node.api.values.StorageReference
-import io.hotmoka.node.api.transactions.TransactionReference
-import io.hotmoka.node.api.requests.TransactionRequest
-import io.hotmoka.node.api.updates.Update
-import io.hotmoka.node.api.values.*
 import io.hotmoka.crypto.BIP39Mnemonics
 import io.hotmoka.crypto.Base58
 import io.hotmoka.crypto.Entropies
 import io.hotmoka.crypto.HashingAlgorithms
 import io.hotmoka.crypto.SignatureAlgorithms
 import io.hotmoka.helpers.AccountCreationHelpers
+import io.hotmoka.helpers.Coin
 import io.hotmoka.helpers.SendCoinsHelpers
-import io.hotmoka.helpers.UnexpectedVoidMethodException
 import io.hotmoka.helpers.UnexpectedValueException
+import io.hotmoka.helpers.UnexpectedVoidMethodException
+import io.hotmoka.node.MethodSignatures
+import io.hotmoka.node.StorageTypes
+import io.hotmoka.node.StorageValues
+import io.hotmoka.node.TransactionReferences
+import io.hotmoka.node.TransactionRequests
+import io.hotmoka.node.api.requests.TransactionRequest
+import io.hotmoka.node.api.transactions.TransactionReference
+import io.hotmoka.node.api.updates.Update
+import io.hotmoka.node.api.values.StorageReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,8 +36,8 @@ import java.math.BigInteger
 import java.net.URI
 import java.security.KeyPair
 import java.security.PublicKey
+import java.util.concurrent.TimeoutException
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.function.Supplier
 
 class Controller(private val mvc: MVC) {
     private var node: AndroidRemoteNode = AndroidRemoteNode()
@@ -62,7 +61,7 @@ class Controller(private val mvc: MVC) {
         if (!node.isConnected())
             connect()
 
-        try {
+        /*try {
             mvc.openFileInput("accounts.txt").bufferedReader().useLines { lines ->
                 val all = lines.fold("") { some, text ->
                     "$some\n$text"
@@ -71,7 +70,7 @@ class Controller(private val mvc: MVC) {
             }
         } catch (e: Exception) {
             Log.w(TAG, "I could not read the accounts.txt file: " + e.message)
-        }
+        }*/
     }
 
     private fun connect() {
@@ -79,17 +78,12 @@ class Controller(private val mvc: MVC) {
         val uri = sharedPreferences.getString("url", mvc.getString(R.string.default_server))
 
         try {
-            node.connect(URI.create(uri), 100_000)
+            node.connect(URI.create(uri), 200_000)
             takamakaCode = node.takamakaCode
-
-            mainScope.launch {
-                mvc.view?.notifyUser(mvc.getString(R.string.connected, uri))
-            }
+            mainScope.launch { mvc.view?.notifyUser(mvc.getString(R.string.connected, uri)) }
         } catch (t: Throwable) {
-            Log.w(TAG, "connection to $uri failed: " + t.message)
-            mainScope.launch {
-                mvc.view?.notifyUser(mvc.getString(R.string.connection_failed, uri))
-            }
+            Log.w(TAG, "Connection to $uri failed: " + t.message)
+            mainScope.launch { mvc.view?.notifyUser(mvc.getString(R.string.connection_failed, uri)) }
         }
     }
 
@@ -130,46 +124,54 @@ class Controller(private val mvc: MVC) {
      */
     private fun getOwnerTokens(erc20Token: StorageReference, i: Int): OwnerTokens {
         // call owner = erc20Token.select(i)
-        val owner = (node.runInstanceMethodCallTransaction(
+        val select = MethodSignatures.ofNonVoid(
+            IERC20View,
+            "select",
+            StorageTypes.CONTRACT,
+            StorageTypes.INT
+        )
+        val owner = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                getManifestCached(), _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    IERC20View,
-                    "select",
-                    StorageTypes.CONTRACT,
-                    StorageTypes.INT
-                ),
+                getManifestCached(), _100_000, takamakaCode, select,
                 erc20Token,
                 StorageValues.intOf(i)
             )
-        ).get() as StorageReference)
+        )
+            .orElseThrow { UnexpectedVoidMethodException(select) }
+            .asReturnedReference(select, ::UnexpectedValueException)
 
         // call amount = erc20Token.balanceOf(owner)
         // the resulting amount will be an UnsignedBigInteger
-        val amount = (node.runInstanceMethodCallTransaction(
+        val balanceOf = MethodSignatures.ofNonVoid(
+            IERC20View,
+            "balanceOf",
+            StorageTypes.UNSIGNED_BIG_INTEGER,
+            StorageTypes.CONTRACT
+        )
+        val amount = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                getManifestCached(), _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    IERC20View,
-                    "balanceOf",
-                    StorageTypes.UNSIGNED_BIG_INTEGER,
-                    StorageTypes.CONTRACT
-                ),
+                getManifestCached(), _100_000, takamakaCode, balanceOf,
                 erc20Token,
                 owner
             )
-        ).get() as StorageReference)
+        )
+            .orElseThrow { UnexpectedVoidMethodException(balanceOf) }
+            .asReturnedReference(balanceOf, ::UnexpectedValueException)
 
         // call amountAsBigInteger = amount.toBigInteger()
         // in order to extract the BigInteger inside amount
-        val amountAsBigInteger = (node.runInstanceMethodCallTransaction(
+        val toBigInteger = MethodSignatures.ofNonVoid(
+            StorageTypes.UNSIGNED_BIG_INTEGER,
+            "toBigInteger",
+            StorageTypes.BIG_INTEGER
+        )
+        val amountAsBigInteger = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                getManifestCached(), _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    StorageTypes.UNSIGNED_BIG_INTEGER,
-                    "toBigInteger",
-                    StorageTypes.BIG_INTEGER
-                ),
-                amount
+                getManifestCached(), _100_000, takamakaCode, toBigInteger, amount
             )
-        ).get() as BigIntegerValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(toBigInteger) }
+            .asReturnedBigInteger(toBigInteger, ::UnexpectedValueException)
 
         return OwnerTokens(owner, amountAsBigInteger)
     }
@@ -314,7 +316,7 @@ class Controller(private val mvc: MVC) {
             val keys = entropy.keys(password, signatureAlgorithmOfNewAccounts)
             val publicKeyBase58 = publicKeyBase58Encoded(keys)
             val publicKeyBase64 = publicKeyBase64Encoded(keys)
-            Log.d(TAG, "created public key $publicKeyBase58")
+            Log.d(TAG, "Created public key $publicKeyBase58")
 
             // it is not a fully functional account yet, since it misses the reference
             val newAccount = Account(
@@ -408,45 +410,34 @@ class Controller(private val mvc: MVC) {
             checkPassword(payer, password)
             val keysOfPayer = getKeysOf(payer, password)
             ensureConnected()
-            var savedRequests: Array<TransactionRequest<*>>? = null
-            val destination: StorageReference;
+            var transactions: List<TransactionReference>? = null
+            val destination: StorageReference
 
             if (anonymous) {
                 destination = AccountCreationHelpers.of(node).paidToLedgerBy(
                     payer.reference,
                     keysOfPayer,
                     signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(
-                        Base58.fromBase58String(
-                            publicKey
-                        )
+                        Base58.fromBase58String(publicKey)
                     ),
                     amount,
                     {},
-                    { requests ->
-                        savedRequests = requests
-                    }
+                    { requests -> transactions = toTransactions(requests) }
                 )
-                Log.d(
-                    TAG,
-                    "paid $amount anonymously to key $publicKey [destination is $destination]"
-                )
+                Log.i(TAG, "Paid $amount anonymously to key $publicKey [destination is $destination]")
             } else {
                 destination = AccountCreationHelpers.of(node).paidBy(
                     payer.reference,
                     keysOfPayer,
                     signatureAlgorithmOfNewAccounts,
                     signatureAlgorithmOfNewAccounts.publicKeyFromEncoding(
-                        Base58.fromBase58String(
-                            publicKey
-                        )
+                        Base58.fromBase58String(publicKey)
                     ),
                     amount,
                     {},
-                    { requests ->
-                        savedRequests = requests
-                    }
+                    { requests -> transactions = toTransactions(requests) }
                 )
-                Log.d(TAG, "paid $amount to key $publicKey [destination is $destination]")
+                Log.i(TAG, "Paid $amount to key $publicKey [destination is $destination]")
             }
 
             // we reload the accounts, since the payer will see its balance decrease
@@ -459,7 +450,7 @@ class Controller(private val mvc: MVC) {
                     publicKey,
                     amount,
                     anonymous,
-                    toTransactions(savedRequests)
+                    transactions!!
                 )
             }
         }
@@ -472,15 +463,17 @@ class Controller(private val mvc: MVC) {
     ) {
         safeRunAsIO {
             ensureConnected()
-            var savedRequests: Array<TransactionRequest<*>>? = null
+            var transactions: List<TransactionReference>? = null
+
             SendCoinsHelpers.of(node).sendFromFaucet(destination, amount, {}, { requests ->
-                savedRequests = requests
+                transactions = toTransactions(requests)
             })
-            Log.d(TAG, "paid $amount from ${faucet.name} to account $destination")
+            Log.i(TAG, "Paid $amount from ${faucet.name} to account $destination")
 
             // we reload the accounts, since the payer will see its balance decrease
             val accounts = reloadAccounts()
             mvc.model.setAccounts(accounts)
+
             mainScope.launch {
                 mvc.view?.onPaymentCompleted(
                     faucet,
@@ -488,7 +481,7 @@ class Controller(private val mvc: MVC) {
                     null,
                     amount,
                     false,
-                    toTransactions(savedRequests)
+                    transactions!!
                 )
             }
         }
@@ -562,7 +555,7 @@ class Controller(private val mvc: MVC) {
 
             // create an account with the public key
             val reference = creator(keys.public)
-            Log.i(TAG, "created new account $reference")
+            Log.i(TAG, "Created new account $reference")
 
             // currently, the progressive number of the created accounts will be #0,
             // but we better check against future unexpected changes in the server's behavior
@@ -595,11 +588,13 @@ class Controller(private val mvc: MVC) {
      */
     private fun getFaucet(): StorageReference? {
         val manifest = getManifestCached()
-        val hasFaucet = (node.runInstanceMethodCallTransaction(
+        val hasFaucet = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 manifest, _100_000, takamakaCode, MethodSignatures.ALLOWS_UNSIGNED_FAUCET, manifest
             )
-        ).get() as BooleanValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.ALLOWS_UNSIGNED_FAUCET) }
+            .asReturnedBoolean(MethodSignatures.ALLOWS_UNSIGNED_FAUCET, ::UnexpectedValueException)
 
         return if (hasFaucet)
             getGameteCached()
@@ -609,68 +604,85 @@ class Controller(private val mvc: MVC) {
 
     private fun getMaxFaucet(): BigInteger {
         val manifest = getManifestCached()
-        return (node.runInstanceMethodCallTransaction(
+
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 manifest, _100_000, takamakaCode, MethodSignatures.GET_MAX_FAUCET, getGameteCached()
             )
-        ).get() as BigIntegerValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.GET_MAX_FAUCET) }
+            .asReturnedBigInteger(MethodSignatures.GET_MAX_FAUCET, ::UnexpectedValueException)
     }
 
     private fun getBalance(reference: StorageReference): BigInteger {
-        return (node.runInstanceMethodCallTransaction(
+        val manifest = getManifestCached()
+
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                reference, _100_000, takamakaCode, MethodSignatures.BALANCE, reference
+                manifest, _100_000, takamakaCode, MethodSignatures.BALANCE, reference
             )
-        ).get() as BigIntegerValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.BALANCE) }
+            .asReturnedBigInteger(MethodSignatures.BALANCE, ::UnexpectedValueException)
     }
 
     private fun getERC20SnapshotOf(reference: StorageReference): StorageReference {
         // we use the manifest as caller, since the call is free of charge
         val manifest = getManifestCached()
 
+        val erc20ViewSnapshot = MethodSignatures.ofNonVoid(
+            IERC20View,
+            "snapshot",
+            IERC20View
+        )
+
         return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                manifest, _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    IERC20View,
-                    "snapshot",
-                    IERC20View
-                ), reference
+                manifest, _100_000, takamakaCode, erc20ViewSnapshot, reference
             )
-        ).get() as StorageReference
+        )
+            .orElseThrow { UnexpectedVoidMethodException(erc20ViewSnapshot) }
+            .asReturnedReference(erc20ViewSnapshot, ::UnexpectedValueException)
     }
 
     private fun getErc20Size(reference: StorageReference): Int {
         // we use the manifest as caller, since the call is free of charge
         val manifest = getManifestCached()
 
-        return (node.runInstanceMethodCallTransaction(
+        val erc20ViewSize = MethodSignatures.ofNonVoid(
+            IERC20View,
+            "size",
+            StorageTypes.INT
+        )
+
+        return node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
-                manifest, _100_000, takamakaCode, MethodSignatures.ofNonVoid(
-                    IERC20View,
-                    "size",
-                    StorageTypes.INT
-                ), reference
+                manifest, _100_000, takamakaCode, erc20ViewSize, reference
             )
-        ).get() as IntValue).value
+        )
+            .orElseThrow { UnexpectedVoidMethodException(erc20ViewSize) }
+            .asReturnedInt(erc20ViewSize, ::UnexpectedValueException)
     }
 
     private fun getReferenceFromAccountsLedger(publicKey: String): StorageReference? {
-        Log.d(TAG, "looking in the ledger for $publicKey")
+        Log.d(TAG, "Looking in the accounts ledger for the account bound to $publicKey")
         val manifest = getManifestCached()
         val ledger = getAccountsLedgerCached()
-        val result = (node.runInstanceMethodCallTransaction(
+
+        val result = node.runInstanceMethodCallTransaction(
             TransactionRequests.instanceViewMethodCall(
                 manifest, _100_000, takamakaCode,
                 MethodSignatures.GET_FROM_ACCOUNTS_LEDGER,
                 ledger,
                 StorageValues.stringOf(publicKey)
             )
-        )).get()
+        )
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.GET_FROM_ACCOUNTS_LEDGER) }
+            as? StorageReference // it might also be a NullValue, that as? transforms into null
 
-        return if (result is StorageReference)
-            result
-        else
-            null
+        Log.d(TAG, "Found $result bound in the accounts ledger to $publicKey")
+
+        return result
     }
 
     private fun getPublicKey(reference: StorageReference): String {
@@ -690,6 +702,10 @@ class Controller(private val mvc: MVC) {
         ioScope.launch {
             try {
                 task.invoke()
+            }
+            catch (t: TimeoutException) {
+                Log.w(TAG, "The operation timed-out")
+                mainScope.launch { mvc.view?.notifyUser(mvc.getString(R.string.operation_timeout)) }
             }
             catch (t: Throwable) {
                 Log.w(TAG, "Background IO action failed", t)
@@ -720,7 +736,9 @@ class Controller(private val mvc: MVC) {
         val manifest = getManifestCached()
         val gamete = node.runInstanceMethodCallTransaction(TransactionRequests.instanceViewMethodCall(
             manifest, _100_000, takamakaCode, MethodSignatures.GET_GAMETE, manifest
-        )).get() as StorageReference
+        ))
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.GET_GAMETE) }
+            .asReturnedReference(MethodSignatures.GET_GAMETE, ::UnexpectedValueException)
 
         mvc.model.setGamete(gamete)
         return gamete
@@ -734,7 +752,9 @@ class Controller(private val mvc: MVC) {
         val manifest = getManifestCached()
         val accountsLedger = node.runInstanceMethodCallTransaction(TransactionRequests.instanceViewMethodCall(
             manifest, _100_000, takamakaCode, MethodSignatures.GET_ACCOUNTS_LEDGER, manifest
-        )).get() as StorageReference
+        ))
+            .orElseThrow { UnexpectedVoidMethodException(MethodSignatures.GET_ACCOUNTS_LEDGER) }
+            .asReturnedReference(MethodSignatures.GET_ACCOUNTS_LEDGER, ::UnexpectedValueException)
 
         mvc.model.setAccountsLedger(accountsLedger)
         return accountsLedger

@@ -24,7 +24,7 @@ class SendCoinsFragment: AbstractFragment<FragmentSendCoinsBinding>() {
     private lateinit var payer: Account
 
     companion object {
-        const val TAG = "SendCoinsFragment"
+        private const val TAG = "SendCoinsFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

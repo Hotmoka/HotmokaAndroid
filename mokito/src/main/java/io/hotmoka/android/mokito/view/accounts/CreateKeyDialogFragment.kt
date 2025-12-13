@@ -24,7 +24,7 @@ class CreateKeyDialogFragment: AbstractDialogFragment() {
             .setIcon(R.drawable.ic_new)
             .setMessage(getString(R.string.description_new_key))
             .setPositiveButton(R.string.create) { _, _ -> getController().requestNewKeyPair(binding.accountPassword.text.toString()) }
-            .setNegativeButton(R.string.dismiss) { _,_ -> }
+            .setNegativeButton(R.string.dismiss) { _, _ -> }
             .setView(binding.root)
             .create()
     }

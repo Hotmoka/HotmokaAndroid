@@ -26,7 +26,7 @@ open class ShowStateFragment : AbstractFragment<FragmentShowStateBinding>() {
     private lateinit var adapter: RecyclerAdapter
 
     companion object {
-        const val TAG = "ShowStateFragment"
+        private const val TAG = "ShowStateFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

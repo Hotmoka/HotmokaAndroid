@@ -20,7 +20,7 @@ class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBind
     private lateinit var account: Account
 
     companion object {
-        const val TAG = "ShowOrEditAccountFragment"
+        private const val TAG = "ShowOrEditAccountFragment"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +79,7 @@ class ShowOrEditAccountFragment : AbstractFragment<FragmentShowOrEditAccountBind
             }
         }
 
-        val newCoin = Coin.values()[binding.coinType.selectedItemPosition]
+        val newCoin = Coin.entries[binding.coinType.selectedItemPosition]
         if (account.coin != newCoin) {
             replace = true
             newAccount = newAccount.setCoin(newCoin)

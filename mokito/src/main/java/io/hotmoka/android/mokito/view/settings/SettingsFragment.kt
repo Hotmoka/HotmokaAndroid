@@ -75,12 +75,12 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
     @UiThread override fun onQRScanCancelled() {
         notifyUser(getString(R.string.qr_scan_cancelled))
-        Log.i(TAG, "QR scan cancelled")
+        Log.i(TAG, "QR code scan cancelled")
     }
 
     @UiThread override fun onQRScanAvailable(data: String) {
         notifyUser(getString(R.string.qr_scan_successful))
-        Log.i(TAG, "QR scan available")
+        Log.i(TAG, "QR code scan available")
     }
 
     @UiThread override fun onPaymentCompleted(

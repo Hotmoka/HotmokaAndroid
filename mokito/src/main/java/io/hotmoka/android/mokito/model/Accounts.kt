@@ -33,6 +33,10 @@ class Accounts(
      */
     private val accounts = TreeSet<Account>()
 
+    companion object {
+        private const val TAG = "Accounts"
+    }
+
     init {
         try {
             mvc.openFileInput(accountsFilename).use {
@@ -45,7 +49,7 @@ class Accounts(
         }
         catch (e: FileNotFoundException) {
             // this is fine: initially the file of the accounts is missing
-            Log.w("Accounts", "Missing file $accountsFilename: it will be created from scratch")
+            Log.w(TAG, "Missing file $accountsFilename: it will be created from scratch")
         }
 
         faucet?.let {
@@ -97,12 +101,13 @@ class Accounts(
     }
 
     /**
-     * Adds the given account from this object.
+     * Adds the given account to this object.
      *
      * @param account the account to add
      */
     fun add(account: Account) {
         accounts.add(account)
+        Log.i(TAG, "Added account $account")
     }
 
     /**
@@ -112,6 +117,7 @@ class Accounts(
      */
     fun delete(account: Account) {
         accounts.remove(account)
+        Log.i(TAG, "Deleted account $account")
     }
 
     /**
