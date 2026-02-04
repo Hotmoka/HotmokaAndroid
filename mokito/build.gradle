@@ -11,8 +11,8 @@ android {
         applicationId "io.hotmoka.android.mokito"
         minSdkVersion 24
         targetSdkVersion 36
-        versionCode 14
-        versionName "1.16"
+        versionCode 16
+        versionName "1.17"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,13 +49,13 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'com.google.android.material:material:1.13.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.6'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.9.6'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.7'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.9.7'
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'io.hotmoka:io-hotmoka-node:1.11.4'
-    implementation 'io.hotmoka:io-hotmoka-node-remote:1.11.4'
+    implementation 'io.hotmoka:io-hotmoka-node:1.11.6'
+    implementation 'io.hotmoka:io-hotmoka-node-remote:1.11.6'
     implementation 'io.hotmoka.crypto:io-hotmoka-crypto:1.5.4'
-    implementation 'io.hotmoka:io-hotmoka-helpers:1.11.4'
+    implementation 'io.hotmoka:io-hotmoka-helpers:1.11.6'
     implementation project(path: ':remote')
     implementation 'com.google.zxing:core:3.5.4'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'

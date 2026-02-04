@@ -712,8 +712,8 @@ class Controller(private val mvc: MVC) {
                 mainScope.launch { mvc.view?.notifyUser(t.toString()) }
             }
             finally {
-                working.decrementAndGet()
-                mainScope.launch { mvc.view?.onBackgroundEnd() }
+                if (working.decrementAndGet() == 0)
+                    mainScope.launch { mvc.view?.onBackgroundEnd() }
             }
         }
     }

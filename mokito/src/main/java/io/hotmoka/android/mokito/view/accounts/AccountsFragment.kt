@@ -46,6 +46,9 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
         adapter = RecyclerAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
+        // we create a quick link for the creation of a new key, as a hint to the user
+        binding.createNewKey.visibility = VISIBLE
+        binding.createNewKey.setOnClickListener { CreateKeyDialogFragment.show(this) }
         return binding.root
     }
 
@@ -88,15 +91,6 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
     }
 
     override fun onAccountsChanged(accounts: Accounts) {
-        if (accounts.getAll().allMatch { account -> account is Faucet }) {
-            // if there are no accounts but the faucet, we create a quick
-            // link for the creation of a new key, as a hint to the user
-            binding.createNewKey.visibility = VISIBLE
-            binding.createNewKey.setOnClickListener { CreateKeyDialogFragment.show(this) }
-        }
-        else
-            binding.createNewKey.visibility = GONE
-
         adapter.setAccounts(accounts)
     }
 
