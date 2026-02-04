@@ -46,6 +46,8 @@ class AccountsFragment : AbstractFragment<FragmentAccountsBinding>() {
         adapter = RecyclerAdapter()
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
+        binding.createNewKey.visibility = VISIBLE
+        binding.createNewKey.setOnClickListener { CreateKeyDialogFragment.show(this) }
         return binding.root
     }
 
